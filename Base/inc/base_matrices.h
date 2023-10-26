@@ -46,5 +46,47 @@ namespace Temple {
 
 		mat3 operator* (float s, const mat3& M);
 		mat3 operator/ (const mat3& M, float s);
+
+		struct mat4 {
+			union {
+				float data[4][4];
+				struct {
+					vec4 c0, c1, c2, c3;
+				};
+			};
+			mat4();
+			mat4(float m00, float m01, float m02, float m03,
+				 float m10, float m11, float m12, float m13,
+				 float m20, float m21, float m22, float m23, 
+				 float m30, float m31, float m32, float m33);
+			mat4(const vec4& a,
+				 const vec4& b,
+				 const vec4& c,
+				 const vec4& d);
+			mat4(const mat4& m);
+			mat4(mat4&& m) noexcept;
+			mat4& operator=(const mat4& M);
+			mat4& operator=(mat4&& M) noexcept;
+			vec4& operator[](int i);
+			const vec4& operator[](int i) const;
+			float& operator()(int i, int j);
+			const float& operator()(int i, int j) const;
+			const bool operator==(const mat4& M) const;
+			const bool operator!=(const mat4& M) const;
+			mat4& operator *=(float s);
+			mat4& operator /=(float s);
+			mat4& operator +=(const mat4& M);
+			mat4& operator -=(const mat4& M);
+			mat4 operator +(const mat4& M) const;
+			mat4 operator -() const;
+			mat4 operator -(const mat4& M) const;
+			mat4 operator *(const mat4& M) const;
+			vec4 operator *(const vec4& v) const;
+		};
+
+		std::ostream& operator<<(std::ostream& os, const mat4& M);
+
+		mat4 operator* (float s, const mat4& M);
+		mat4 operator/ (const mat4& M, float s);
 	}
 }
