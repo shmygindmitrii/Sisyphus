@@ -1,8 +1,8 @@
-#include <cmath>
-#include <iomanip>
-
 #include "base_constants.h"
 #include "base_vectors.h"
+
+#include <cmath>
+#include <iomanip>
 
 // other methods tend to be inlined
 
