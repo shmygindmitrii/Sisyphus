@@ -19,8 +19,8 @@ Temple::Base::mat3::mat3() {
 }
 
 Temple::Base::mat3::mat3(float m00, float m01, float m02,
-	 							  float m10, float m11, float m12,
-	 							  float m20, float m21, float m22) {
+	 					 float m10, float m11, float m12,
+	 					 float m20, float m21, float m22) {
 	data[0][0] = m00; 
 	data[0][1] = m10; 
 	data[0][2] = m20;
@@ -35,8 +35,8 @@ Temple::Base::mat3::mat3(float m00, float m01, float m02,
 }
 
 Temple::Base::mat3::mat3(const vec3& a,
-								  const vec3& b,
-								  const vec3& c) {
+						 const vec3& b,
+						 const vec3& c) {
 	c0.x = a.x; 
 	c0.y = a.y; 
 	c0.z = a.z;
