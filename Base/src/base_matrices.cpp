@@ -255,6 +255,24 @@ Temple::Base::mat3 Temple::Base::operator /(const Temple::Base::mat3& M, float s
 	return s * M;
 }
 
+Temple::Base::mat3 Temple::Base::mat3::rot(const Temple::Base::vec3& n, float angle) {
+	float R00 = cos(angle) + n.x * n.x * (1.0f - cos(angle));
+	float R01 = n.x * n.y * (1.0f - cos(angle)) - n.z * sin(angle);
+	float R02 = n.x * n.z * (1.0f - cos(angle)) + n.y * sin(angle);
+
+	float R10 = n.y * n.x * (1.0f - cos(angle)) + n.z * sin(angle);
+	float R11 = cos(angle) + n.y * n.y * (1.0f - cos(angle));
+	float R12 = n.y * n.z * (1 - cos(angle)) - n.x * sin(angle);
+
+	float R20 = n.z * n.x * (1.0f - cos(angle)) - n.y * sin(angle);
+	float R21 = n.z * n.y * (1.0f - cos(angle)) + n.x * sin(angle);
+	float R22 = cos(angle) + n.z * n.z * (1 - cos(angle));
+
+	return mat3(R00, R01, R02, 
+				R10, R11, R12, 
+				R20, R21, R22);
+}
+
 // mat4 
 
 Temple::Base::mat4::mat4() {
@@ -622,4 +640,23 @@ Temple::Base::mat4 Temple::Base::operator *(float s, const Temple::Base::mat4& M
 Temple::Base::mat4 Temple::Base::operator /(const Temple::Base::mat4& M, float s) {
 	s = 1.0f / s;
 	return s * M;
+}
+
+Temple::Base::mat4 Temple::Base::mat4::rot(const Temple::Base::vec4& n, float angle) {
+	float R00 = cos(angle) + n.x * n.x * (1.0f - cos(angle));
+	float R01 = n.x * n.y * (1.0f - cos(angle)) - n.z * sin(angle);
+	float R02 = n.x * n.z * (1.0f - cos(angle)) + n.y * sin(angle);
+
+	float R10 = n.y * n.x * (1.0f - cos(angle)) + n.z * sin(angle);
+	float R11 = cos(angle) + n.y * n.y * (1.0f - cos(angle));
+	float R12 = n.y * n.z * (1 - cos(angle)) - n.x * sin(angle);
+
+	float R20 = n.z * n.x * (1.0f - cos(angle)) - n.y * sin(angle);
+	float R21 = n.z * n.y * (1.0f - cos(angle)) + n.x * sin(angle);
+	float R22 = cos(angle) + n.z * n.z * (1 - cos(angle));
+
+	return mat4(R00,  R01,  R02,  0.0f,
+				R10,  R11,  R12,  0.0f,
+				R20,  R21,  R22,  0.0f,
+				0.0f, 0.0f, 0.0f, 1.0f);
 }

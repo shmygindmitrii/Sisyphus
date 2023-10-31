@@ -110,6 +110,27 @@ TEST_CASE("Temple::Base::mat3 tests", "[Base::mat3]") {
             REQUIRE(result == expected);
         }
     }
+    SECTION("mat3 rotation") {
+        SECTION("  Example 1") {
+            Temple::Base::vec3 n(1.0f, 2.0f, 3.0f);
+            n = n / n.magnitude();
+            Temple::Base::mat3 mrot = Temple::Base::mat3::rot(n, 1.0f); // angle in radians
+            Temple::Base::mat3 expected = Temple::Base::mat3( 0.5731379f, -0.6090066f,  0.5482918f, 
+                                                              0.7403488f,  0.6716445f, -0.0278793f, 
+                                                             -0.3512785f,  0.4219059f,  0.8358222f );
+            REQUIRE(mrot == expected);
+        }
+
+        SECTION("  Example 2") {
+            Temple::Base::vec3 n(-0.5f, 5.0f, 0.31f);
+            n = n / n.magnitude(); // should be unit-vector
+            Temple::Base::mat3 mrot = Temple::Base::mat3::rot(n, 1.0f); // angle in radians
+            Temple::Base::mat3 expected = Temple::Base::mat3( 0.5448365f, -0.0971558f, 0.8328949f,
+                                                              0.0064717f,  0.9937229f, 0.1116827f,
+                                                             -0.8385173f, -0.0554585f, 0.5420452f );
+            REQUIRE(mrot == expected);
+        }
+    }
 }
 
 TEST_CASE("Temple::Base::mat4 tests", "[Base::mat4]") {
@@ -226,6 +247,30 @@ TEST_CASE("Temple::Base::mat4 tests", "[Base::mat4]") {
             Temple::Base::vec4 result = B * w;
             Temple::Base::vec4 expected(57.1709f, 114.8111f, 143.4058f, 91.4969f);
             REQUIRE(result == expected);
+        }
+    }
+
+    SECTION("mat4 rotation") {
+        SECTION("  Example 1") {
+            Temple::Base::vec4 n(1.0f, 2.0f, 3.0f, 0.0f);
+            n = n / n.magnitude();
+            Temple::Base::mat4 mrot = Temple::Base::mat4::rot(n, 1.0f); // angle in radians
+            Temple::Base::mat4 expected = Temple::Base::mat4( 0.5731379f, -0.6090066f,  0.5482918f, 0.0f,
+                                                              0.7403488f,  0.6716445f, -0.0278793f, 0.0f,
+                                                             -0.3512785f,  0.4219059f,  0.8358222f, 0.0f,
+                                                              0.0f,        0.0f,        0.0f,       1.0f);
+            REQUIRE(mrot == expected);
+        }
+
+        SECTION("  Example 2") {
+            Temple::Base::vec4 n(-0.5f, 5.0f, 0.31f, 0.0f);
+            n = n / n.magnitude(); // should be unit-vector
+            Temple::Base::mat4 mrot = Temple::Base::mat4::rot(n, 1.0f); // angle in radians
+            Temple::Base::mat4 expected = Temple::Base::mat4( 0.5448365f, -0.0971558f, 0.8328949f, 0.0f,
+                                                              0.0064717f,  0.9937229f, 0.1116827f, 0.0f,
+                                                             -0.8385173f, -0.0554585f, 0.5420452f, 0.0f,
+                                                              0.0f,        0.0f,       0.0f,       1.0f );
+            REQUIRE(mrot == expected);
         }
     }
 }
