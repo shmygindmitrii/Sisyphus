@@ -130,6 +130,22 @@ TEST_CASE("Temple::Base::mat3 tests", "[Base::mat3]") {
                                                              -0.8385173f, -0.0554585f, 0.5420452f );
             REQUIRE(mrot == expected);
         }
+
+        SECTION("  Example 3") {
+            Temple::Base::vec3 i(1.0f, 0.0f, 0.0f);
+            Temple::Base::vec3 j(0.0f, 1.0f, 0.0f);
+            Temple::Base::vec3 k(0.0f, 0.0f, 1.0f);
+            float angle = 3.14 * 0.5f;
+            Temple::Base::mat3 mi = Temple::Base::mat3::rot(i, angle);
+            Temple::Base::mat3 mj = Temple::Base::mat3::rot(j, angle);
+            Temple::Base::mat3 mk = Temple::Base::mat3::rot(k, angle);
+
+            Temple::Base::mat3 mi0 = Temple::Base::mat3::rotx(angle);
+            Temple::Base::mat3 mj0 = Temple::Base::mat3::roty(angle);
+            Temple::Base::mat3 mk0 = Temple::Base::mat3::rotz(angle);
+
+            REQUIRE((mi == mi0 && mj == mj0 && mk == mk0));
+        }
     }
 }
 
@@ -271,6 +287,22 @@ TEST_CASE("Temple::Base::mat4 tests", "[Base::mat4]") {
                                                              -0.8385173f, -0.0554585f, 0.5420452f, 0.0f,
                                                               0.0f,        0.0f,       0.0f,       1.0f );
             REQUIRE(mrot == expected);
+        }
+
+        SECTION("  Example 3") {
+            Temple::Base::vec4 i(1.0f, 0.0f, 0.0f, 0.0f);
+            Temple::Base::vec4 j(0.0f, 1.0f, 0.0f, 0.0f);
+            Temple::Base::vec4 k(0.0f, 0.0f, 1.0f, 0.0f);
+            float angle = 3.14 * 0.5f;
+            Temple::Base::mat4 mi = Temple::Base::mat4::rot(i, angle);
+            Temple::Base::mat4 mj = Temple::Base::mat4::rot(j, angle);
+            Temple::Base::mat4 mk = Temple::Base::mat4::rot(k, angle);
+
+            Temple::Base::mat4 mi0 = Temple::Base::mat4::rotx(angle);
+            Temple::Base::mat4 mj0 = Temple::Base::mat4::roty(angle);
+            Temple::Base::mat4 mk0 = Temple::Base::mat4::rotz(angle);
+
+            REQUIRE((mi == mi0 && mj == mj0 && mk == mk0));
         }
     }
 }

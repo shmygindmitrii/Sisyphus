@@ -40,6 +40,10 @@ namespace Temple {
 			mat3 operator -(const mat3& M) const;
 			mat3 operator *(const mat3& M) const;
 			vec3 operator *(const vec3& v) const;
+			//
+			static mat3 rotx(float angle);
+			static mat3 roty(float angle);
+			static mat3 rotz(float angle);
 			static mat3 rot(const vec3& n, float angle);
 		};
 
@@ -83,6 +87,10 @@ namespace Temple {
 			mat4 operator -(const mat4& M) const;
 			mat4 operator *(const mat4& M) const;
 			vec4 operator *(const vec4& v) const;
+			//
+			static mat4 rotx(float angle);
+			static mat4 roty(float angle);
+			static mat4 rotz(float angle);
 			static mat4 rot(const vec4& n, float angle);
 		};
 
