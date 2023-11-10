@@ -19,9 +19,11 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="inc\Color.h" />
     <ClInclude Include="inc\RawCanvas.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Color.cpp" />
     <ClCompile Include="src\RawCanvas.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

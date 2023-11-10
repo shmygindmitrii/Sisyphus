@@ -131,6 +131,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     bmi.bmiHeader.biBitCount = 32;     // 32-bit
     bmi.bmiHeader.biCompression = BI_RGB;
 
+    // background color
+    Bonfire::col4u bgColor { 15, 15, 35, 255 };
+
+
     switch (message)
     {
     case WM_COMMAND:
@@ -165,7 +169,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         HDC hdc = BeginPaint(hWnd, &ps);
         // 
         // begin straight filling of color buffer
-        canvas.fill(15, 30, 15, 255); // fill background and also clear screen
+        canvas.fill(bgColor); // fill background and also clear screen
         // end of color buffer filling
         // 
         // Draw the buffer to the window

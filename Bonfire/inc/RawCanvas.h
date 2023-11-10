@@ -1,5 +1,7 @@
 #pragma once
 #include <cstdint>
+#include "Color.h"
+
 namespace Bonfire {
     class RawCanvas {
     private:
@@ -11,9 +13,9 @@ namespace Bonfire {
         RawCanvas(int width, int height, int bytesPerPixel);
         void resize(int width, int height, int bytesPerPixel);
         const uint8_t* getData() const;
-        void putPixelStraight(int x, int y, uint8_t r, uint8_t g, uint8_t b, uint8_t a);
-        void putPixel(int x, int y, uint8_t r, uint8_t g, uint8_t b, uint8_t a);
-        void fill(uint8_t r, uint8_t g, uint8_t b, uint8_t a);
+        void putPixelStraight(int x, int y, col4u color);
+        void putPixel(int x, int y, col4u color);
+        void fill(col4u color);
         ~RawCanvas();
     };
 }
