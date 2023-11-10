@@ -163,17 +163,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
         PAINTSTRUCT ps;
         HDC hdc = BeginPaint(hWnd, &ps);
-        for (int y = 0; y < height; y++) {
-            for (int x = 0; x < width; x++) {
-                canvas.putPixelStraight(x, y,
-                    x * 255 / width,     // red
-                    0,                   // green
-                    y * 255 / height,    // blue
-                    255);                // alpha
-            }
-        }
+        // 
+        // begin straight filling of color buffer
+        canvas.fill(15, 30, 15, 255); // fill background and also clear screen
+        // end of color buffer filling
+        // 
         // Draw the buffer to the window
-        SetDIBitsToDevice(hdc, 0, 0, width, height, 0, 0, 0, height, canvas.getData(), &bmi, DIB_RGB_COLORS);
+        SetDIBitsToDevice(hdc, 0, 0, width, height, 0, 0, 0, height, (unsigned char*)canvas.getData(), &bmi, DIB_RGB_COLORS);
         EndPaint(hWnd, &ps);
     }
     break;
