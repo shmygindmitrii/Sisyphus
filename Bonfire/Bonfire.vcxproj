@@ -19,12 +19,12 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="inc\Color.h" />
-    <ClInclude Include="inc\RawCanvas.h" />
+    <ClInclude Include="inc\bonfire_color.h" />
+    <ClInclude Include="inc\bonfire_raw_canvas.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\Color.cpp" />
-    <ClCompile Include="src\RawCanvas.cpp" />
+    <ClCompile Include="src\bonfire_color.cpp" />
+    <ClCompile Include="src\bonfire_raw_canvas.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
@@ -120,7 +120,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(ProjectDir)inc</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)inc;$(SolutionDir)Base\inc;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -138,7 +138,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(ProjectDir)inc</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)inc;$(SolutionDir)Base\inc;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>

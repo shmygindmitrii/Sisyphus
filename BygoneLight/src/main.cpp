@@ -1,5 +1,5 @@
 #include "framework.h"
-#include "RawCanvas.h"
+#include "bonfire_raw_canvas.h"
 #include <cassert>
 #include "resource.h"
 
@@ -121,7 +121,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
     RECT rect;
-    static Bonfire::RawCanvas canvas(1, 1, 4);
+    static Temple::Bonfire::RawCanvas canvas(1, 1, 4);
 
     // Prepare BITMAPINFO
     BITMAPINFO bmi;
@@ -132,7 +132,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     bmi.bmiHeader.biCompression = BI_RGB;
 
     // background color
-    Bonfire::col4u bgColor { 15, 15, 35, 255 };
+    Temple::Bonfire::col4u bgColor { 15, 15, 35, 255 };
 
 
     switch (message)

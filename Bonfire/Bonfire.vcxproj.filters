@@ -15,18 +15,18 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="inc\RawCanvas.h">
+    <ClInclude Include="inc\bonfire_raw_canvas.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="inc\Color.h">
+    <ClInclude Include="inc\bonfire_color.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\RawCanvas.cpp">
+    <ClCompile Include="src\bonfire_raw_canvas.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Color.cpp">
+    <ClCompile Include="src\bonfire_color.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
