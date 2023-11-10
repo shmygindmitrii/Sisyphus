@@ -133,7 +133,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
     // background color
     Temple::Bonfire::col4u bgColor { 15, 15, 35, 255 };
+    Temple::Bonfire::col4u lineColor { 0, 150, 0, 255 };
 
+    Temple::Base::vec3 a { 0, 0, 0 };
+    Temple::Base::vec3 b { -100, -300, 0 };
 
     switch (message)
     {
@@ -170,6 +173,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         // 
         // begin straight filling of color buffer
         canvas.fill(bgColor); // fill background and also clear screen
+        canvas.drawLine(a, b, lineColor);
         // end of color buffer filling
         // 
         // Draw the buffer to the window

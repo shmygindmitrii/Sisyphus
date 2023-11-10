@@ -61,18 +61,49 @@ void Temple::Bonfire::RawCanvas::fill(const col4u& color) {
 }
 
 void Temple::Bonfire::RawCanvas::drawLine(const Base::vec3& a, const Base::vec3& b, const col4u& color) {
+    Base::vec3 a0(a);
+    Base::vec3 b0(b);
     if (a.y > b.y) {
-        std::swap(a, b);
+        a0 = b;
+        b0 = a;
     }
-    if (EQUAL_FLOATS(a.x, b.x)) {
+    if (EQUAL_FLOATS(a0.x, b0.x)) {
         // y-line
+        int yStep = (int)(b0.y - a0.y);
+        for (int y = a0.y; y < b0.y + 1e-3f; y++) {
+            this->putPixel((int)a0.x, (int)y, color);
+        }
     }
     else {
-        if (EQUAL_FLOATS(a.y, b.y)) {
+        if (EQUAL_FLOATS(a0.y, b0.y)) {
             // x-line
+            if (a.x > b.x) {
+                a0 = b;
+                b0 = a;
+            }
+            for (int x = a0.x; x <= b0.x + 1e-3f; x++) {
+                this->putPixel((int)x, (int)a0.y, color);
+            }
         }
         else {
-
+            //
+            float yDif = b0.y - a0.y;
+            float xDif = b0.x - a0.x;
+            float step = yDif / xDif;
+            float yStep = yDif / abs(yDif);
+            if (yDif > xDif) {
+                for (float y = a0.y; y <= b0.y; y += yStep) {
+                    float x = y / step;
+                    this->putPixel((int)x, int(y), color);
+                }
+            }
+            else {
+                float xStep = xDif / abs(xDif);
+                for (float x = a0.x; x <= b0.x; x += xStep) {
+                    float y = x * step;
+                    this->putPixel((int)x, int(y), color);
+                }
+            }
         }
     }
 }

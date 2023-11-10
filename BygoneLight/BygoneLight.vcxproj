@@ -144,6 +144,9 @@
     <ClInclude Include="inc\targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Base\Base.vcxproj">
+      <Project>{b92b9866-d1e2-4ca1-ba3c-3dc05d915b98}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\Bonfire\Bonfire.vcxproj">
       <Project>{50e62fc4-d085-4ecf-9daf-84a405445994}</Project>
     </ProjectReference>

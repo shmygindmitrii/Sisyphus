@@ -20,6 +20,10 @@ namespace Temple {
             };
             vec3();
             vec3(float a, float b, float c);
+            vec3(const vec3& a);
+            vec3(vec3&& a);
+            vec3& operator=(const vec3& a);
+            vec3& operator=(vec3&& a) noexcept;
             inline const float& operator [](int i) const {
                 return (&x)[i]; // can use offset from first property
             }

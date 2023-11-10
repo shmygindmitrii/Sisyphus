@@ -16,6 +16,24 @@ Temple::Base::vec3::vec3(float a, float b, float c) : x(a), y(b), z(c) {
 
 }
 
+Temple::Base::vec3::vec3(const vec3& a) : x(a.x), y(a.y), z(a.z) {
+
+}
+
+Temple::Base::vec3& Temple::Base::vec3::operator=(const vec3& a) {
+    this->x = a.x;
+    this->y = a.y;
+    this->z = a.z;
+    return *this;
+}
+
+Temple::Base::vec3& Temple::Base::vec3::operator=(vec3&& a) noexcept {
+    this->x = a.x;
+    this->y = a.y;
+    this->z = a.z;
+    return *this;
+}
+
 std::ostream& Temple::Base::operator <<(std::ostream& os, const Temple::Base::vec3& v) {
     os << std::fixed << std::setprecision(4) << '[' << v.x << ' ' << v.y << ' ' << v.z << ']';
     return os;
