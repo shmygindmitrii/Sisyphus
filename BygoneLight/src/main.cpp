@@ -136,7 +136,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     Temple::Bonfire::col4u lineColor { 0, 150, 0, 255 };
 
     Temple::Base::vec3 a { 0, 0, 0 };
-    Temple::Base::vec3 b { -100, -300, 0 };
+    Temple::Base::vec3 b { -100, 10, 0 };
 
     switch (message)
     {
