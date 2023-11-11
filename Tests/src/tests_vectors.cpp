@@ -90,7 +90,7 @@ TEST_CASE("Temple::Base::vec4 tests", "[Base::vec4]") {
     }
     {
         Temple::Base::vec3 a(1, 2, 3);
-        Temple::Base::vec4 b(a);
+        Temple::Base::vec4 b(a, 0);
         INFO("Testing vec4 creation failed: " << b << " should be [1 2 3 0]");
         REQUIRE((EQUAL_FLOATS(b.x, 1.0f) && EQUAL_FLOATS(b.y, 2.0f) && EQUAL_FLOATS(b.z, 3.0f) && EQUAL_FLOATS(b.w, 0.0f)));
     }

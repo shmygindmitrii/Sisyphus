@@ -54,7 +54,7 @@ Temple::Base::vec4::vec4(float a, float b, float c) : x(a), y(b), z(c), w(0.0f) 
 
 }
 
-Temple::Base::vec4::vec4(const Temple::Base::vec3& v) : x(v.x), y(v.y), z(v.z), w(0.0f) {
+Temple::Base::vec4::vec4(const vec3& v, float _w) : x(v.x), y(v.y), z(v.z), w(_w) {
 
 }
 

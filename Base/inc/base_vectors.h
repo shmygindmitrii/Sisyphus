@@ -88,6 +88,11 @@ namespace Temple {
                         v.y * s, 
                         v.z * s);
         }
+        inline vec3 operator *(const vec3& v, const vec3& u) {
+            return vec3(v.x * u.x, 
+                        v.y * u.y, 
+                        v.z * u.z);
+        }
         inline vec3 operator /(const vec3& v, float s) {
             s = 1.0f / s;
             return vec3(v.x * s, 
@@ -99,10 +104,20 @@ namespace Temple {
                         v.y + u.y, 
                         v.z + u.z);
         }
+        inline vec3 operator +(const vec3& v, float s) {
+            return vec3(v.x + s,
+                        v.y + s, 
+                        v.z + s);
+        }
         inline vec3 operator -(const vec3& v, const vec3& u) {
             return vec3(v.x - u.x, 
                         v.y - u.y, 
                         v.z - u.z);
+        }
+        inline vec3 operator -(const vec3& v, float s) {
+            return vec3(v.x - s,
+                        v.y - s, 
+                        v.z - s);
         }
         std::ostream& operator <<(std::ostream& os, const vec3& v);
 
@@ -119,7 +134,7 @@ namespace Temple {
             vec4();
             vec4(float a, float b, float c, float d);
             vec4(float a, float b, float c);
-            vec4(const vec3& v);
+            vec4(const vec3& v, float w);
             inline const float& operator [](int i) const {
                 return (&x)[i]; // can use offset from first property
             }
@@ -190,6 +205,12 @@ namespace Temple {
                         v.z * s, 
                         v.w * s);
         }
+        inline vec4 operator *(const vec4& v, const vec4& u) {
+            return vec4(v.x * u.x, 
+                        v.y * u.y, 
+                        v.z * u.z, 
+                        v.w * u.w);
+        }
         inline vec4 operator /(const vec4& v, float s) {
             s = 1.0f / s;
             return vec4(v.x * s, 
@@ -203,11 +224,23 @@ namespace Temple {
                         v.z + u.z, 
                         v.w + u.w);
         }
+        inline vec4 operator +(const vec4& v, float s) {
+            return vec4(v.x + s, 
+                        v.y + s, 
+                        v.z + s, 
+                        v.w + s);
+        }
         inline vec4 operator -(const vec4& v, const vec4& u) {
             return vec4(v.x - u.x, 
                         v.y - u.y, 
                         v.z - u.z, 
                         v.w - u.w);
+        }
+        inline vec4 operator -(const vec4& v, float s) {
+            return vec4(v.x - s, 
+                        v.y - s, 
+                        v.z - s, 
+                        v.w - s);
         }
         std::ostream& operator <<(std::ostream& os, const vec4& v);
     }
