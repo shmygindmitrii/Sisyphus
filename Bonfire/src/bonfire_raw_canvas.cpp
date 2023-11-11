@@ -11,6 +11,10 @@ Temple::Bonfire::RawCanvas::RawCanvas(int width, int height, int bytesPerPixel) 
     m_data = new uint8_t[fullSize];
 }
 
+const uint8_t* Temple::Bonfire::RawCanvas::getData() const {
+    return m_data;
+}
+
 void Temple::Bonfire::RawCanvas::resize(int width, int height, int bytesPerPixel) {
     size_t oldSize = m_width * m_height * (size_t)m_bytesPerPixel;
     m_width = width;
@@ -29,8 +33,14 @@ void Temple::Bonfire::RawCanvas::resize(int width, int height, int bytesPerPixel
     }
 }
 
-const uint8_t* Temple::Bonfire::RawCanvas::getData() const {
-    return m_data;
+void Temple::Bonfire::RawCanvas::setViewport(float xMin, float yMin, float zMin, float xMax, float yMax, float zMax) {
+    m_viewportMin.x = xMin;
+    m_viewportMin.y = yMin;
+    m_viewportMin.z = zMin;
+
+    m_viewportMax.x = xMax;
+    m_viewportMax.y = yMax;
+    m_viewportMax.z = zMax;
 }
 
 void Temple::Bonfire::RawCanvas::putPixelStraight(int x, int y, const col4u& color) {
@@ -65,9 +75,9 @@ void Temple::Bonfire::RawCanvas::fill(const col4u& color) {
     }
 }
 
-void Temple::Bonfire::RawCanvas::drawLine(const Base::vec3& a, const Base::vec3& b, const col4u& color) {
-    Base::vec3 a0(a);
-    Base::vec3 b0(b);
+void Temple::Bonfire::RawCanvas::drawLine(const Base::vec4& a, const Base::vec4& b, const col4u& color) {
+    Base::vec4 a0(a);
+    Base::vec4 b0(b);
     if (a.y > b.y) {
         a0 = b;
         b0 = a;
@@ -76,7 +86,7 @@ void Temple::Bonfire::RawCanvas::drawLine(const Base::vec3& a, const Base::vec3&
         // y-line
         int yStep = (int)(b0.y - a0.y);
         for (int y = a0.y; y < b0.y + 1e-3f; y++) {
-            this->putPixel((int)a0.x, (int)y, color);
+            this->putPixelStraight((int)a0.x, (int)y, color);
         }
     }
     else {
@@ -87,7 +97,7 @@ void Temple::Bonfire::RawCanvas::drawLine(const Base::vec3& a, const Base::vec3&
                 b0 = a;
             }
             for (int x = a0.x; x <= b0.x + 1e-3f; x++) {
-                this->putPixel((int)x, (int)a0.y, color);
+                this->putPixelStraight((int)x, (int)a0.y, color);
             }
         }
         else {
@@ -99,7 +109,7 @@ void Temple::Bonfire::RawCanvas::drawLine(const Base::vec3& a, const Base::vec3&
             if (abs(yDif) > abs(xDif)) {
                 for (float y = a0.y; y <= b0.y; y += yStep) {
                     float x = a0.x + (y - a0.y) / step;
-                    this->putPixel((int)x, (int)y, color);
+                    this->putPixelStraight((int)x, (int)y, color);
                 }
             }
             else {
@@ -111,17 +121,34 @@ void Temple::Bonfire::RawCanvas::drawLine(const Base::vec3& a, const Base::vec3&
                 float xStep = xDif / abs(xDif);
                 for (float x = a0.x; x <= b0.x; x += xStep) {
                     float y = a0.y + (x - a0.x) * step;
-                    this->putPixel((int)x, (int)y, color);
+                    this->putPixelStraight((int)x, (int)y, color);
                 }
             }
         }
     }
 }
 
-void Temple::Bonfire::RawCanvas::drawTriangle(const Base::vec3& a, const Base::vec3& b, const Base::vec3& c, const col4u& color) {
-    this->drawLine(a, b, color);
-    this->drawLine(b, c, color);
-    this->drawLine(c, a, color);
+Temple::Base::vec4 Temple::Bonfire::RawCanvas::processVertex(const Base::vec4& v) {
+    Base::vec4 c(v);
+    float w = c.w;
+    c.w = 1.0f;
+    c = c / w;
+
+    Base::vec3 crd{ c.x, c.y, c.z };
+    crd = (crd + 1.0f) * 0.5f * (m_viewportMax - m_viewportMin) + m_viewportMin;
+
+    return Base::vec4(crd, c.w);
+}
+
+
+void Temple::Bonfire::RawCanvas::drawTriangle(const Base::vec4& a, const Base::vec4& b, const Base::vec4& c, const col4u& color) {
+    Base::vec4 va = processVertex(a);
+    Base::vec4 vb = processVertex(b);
+    Base::vec4 vc = processVertex(c);
+
+    this->drawLine(va, vb, color);
+    this->drawLine(vb, vc, color);
+    this->drawLine(vc, va, color);
 }
 
 Temple::Bonfire::RawCanvas::~RawCanvas() {
