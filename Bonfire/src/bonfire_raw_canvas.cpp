@@ -17,12 +17,15 @@ void Temple::Bonfire::RawCanvas::resize(int width, int height, int bytesPerPixel
     m_height = height;
     m_bytesPerPixel = bytesPerPixel;
     size_t fullSize = m_width * m_height * (size_t)m_bytesPerPixel;
-    assert(fullSize > 0);
+    assert(fullSize >= 0);
     if (fullSize != oldSize) {
         if (m_data != nullptr) {
             delete[] m_data;
+            m_data = nullptr;
         }
-        m_data = new uint8_t[fullSize];
+        if (fullSize > 0) {
+            m_data = new uint8_t[fullSize];
+        }
     }
 }
 
@@ -31,6 +34,8 @@ const uint8_t* Temple::Bonfire::RawCanvas::getData() const {
 }
 
 void Temple::Bonfire::RawCanvas::putPixelStraight(int x, int y, const col4u& color) {
+    if (x < 0 || x >= m_width || y < 0 || y >= m_height)
+        return;
     // coordinates 
     // x : 0 to w (left to right)
     // y : 0 to h (top to bottom)

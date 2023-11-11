@@ -16,6 +16,50 @@ BOOL                InitInstance(HINSTANCE, int);
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 
+void draw(HWND hWnd) {
+    RECT rect;
+    static Temple::Bonfire::RawCanvas canvas(1, 1, 4);
+
+    // Prepare BITMAPINFO
+    BITMAPINFO bmi;
+    bmi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+
+    bmi.bmiHeader.biPlanes = 1;
+    bmi.bmiHeader.biBitCount = 32;     // 32-bit
+    bmi.bmiHeader.biCompression = BI_RGB;
+
+    // background color
+    Temple::Bonfire::col4u bgColor{ 15, 15, 35, 255 };
+    Temple::Bonfire::col4u lineColor{ 0, 150, 0, 255 };
+
+    GetWindowRect(hWnd, &rect);
+
+    int width = rect.right - rect.left;
+    int height = rect.bottom - rect.top;
+
+    bmi.bmiHeader.biWidth = width;
+    bmi.bmiHeader.biHeight = -height;  // Top-down
+    canvas.resize(width, height, 4);
+
+    PAINTSTRUCT ps;
+    HDC hdc = BeginPaint(hWnd, &ps);
+    // 
+    // begin straight filling of color buffer
+    canvas.fill(bgColor); // fill background and also clear screen
+    //canvas.drawLine(a, b, lineColor);
+    Temple::Base::vec3 a{ -200, -200, 0 };
+    Temple::Base::vec3 b{ 200, -200, 0 };
+    Temple::Base::vec3 c{ 0, 200, 0 };
+    canvas.drawTriangle(a, b, c, lineColor);
+
+    //canvas.drawLine(b, c, lineColor);
+    // end of color buffer filling
+    // 
+    // Draw the buffer to the window
+    SetDIBitsToDevice(hdc, 0, 0, width, height, 0, 0, 0, height, (unsigned char*)canvas.getData(), &bmi, DIB_RGB_COLORS);
+    EndPaint(hWnd, &ps);
+}
+
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     _In_opt_ HINSTANCE hPrevInstance,
     _In_ LPWSTR    lpCmdLine,
@@ -47,6 +91,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
             TranslateMessage(&msg);
             DispatchMessage(&msg);
         }
+        draw(msg.hwnd);
     }
 
     return (int)msg.wParam;
@@ -120,24 +165,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 //
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-    RECT rect;
-    static Temple::Bonfire::RawCanvas canvas(1, 1, 4);
-
-    // Prepare BITMAPINFO
-    BITMAPINFO bmi;
-    bmi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
-
-    bmi.bmiHeader.biPlanes = 1;
-    bmi.bmiHeader.biBitCount = 32;     // 32-bit
-    bmi.bmiHeader.biCompression = BI_RGB;
-
-    // background color
-    Temple::Bonfire::col4u bgColor { 15, 15, 35, 255 };
-    Temple::Bonfire::col4u lineColor { 0, 150, 0, 255 };
-
-    Temple::Base::vec3 a { 0, 0, 0 };
-    Temple::Base::vec3 b { -100, 10, 0 };
-
+    
     switch (message)
     {
     case WM_COMMAND:
@@ -159,32 +187,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     break;
     case WM_PAINT:
     {
-        GetWindowRect(hWnd, &rect);
-
-        int width = rect.right - rect.left;
-        int height = rect.bottom - rect.top;
-
-        bmi.bmiHeader.biWidth = width;
-        bmi.bmiHeader.biHeight = -height;  // Top-down
-        canvas.resize(width, height, 4);
-
-        PAINTSTRUCT ps;
-        HDC hdc = BeginPaint(hWnd, &ps);
-        // 
-        // begin straight filling of color buffer
-        canvas.fill(bgColor); // fill background and also clear screen
-        //canvas.drawLine(a, b, lineColor);
-        Temple::Base::vec3 a{ -200, -200, 0 };
-        Temple::Base::vec3 b{ 200, -200, 0 };
-        Temple::Base::vec3 c{ 0, 200, 0 };
-        canvas.drawTriangle(a, b, c, lineColor);
-
-        //canvas.drawLine(b, c, lineColor);
-        // end of color buffer filling
-        // 
-        // Draw the buffer to the window
-        SetDIBitsToDevice(hdc, 0, 0, width, height, 0, 0, 0, height, (unsigned char*)canvas.getData(), &bmi, DIB_RGB_COLORS);
-        EndPaint(hWnd, &ps);
+        // nothing to do
+        draw(hWnd);
     }
     break;
     case WM_DESTROY:
