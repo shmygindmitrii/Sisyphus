@@ -43,13 +43,15 @@ void draw(HWND hWnd) {
 
     PAINTSTRUCT ps;
     HDC hdc = BeginPaint(hWnd, &ps);
-    // 
+
+    canvas.setViewport(0, 0, 0, width, height, 1);
     // begin straight filling of color buffer
     canvas.fill(bgColor); // fill background and also clear screen
     //canvas.drawLine(a, b, lineColor);
-    Temple::Base::vec3 a{ -200, -200, 0 };
-    Temple::Base::vec3 b{ 200, -200, 0 };
-    Temple::Base::vec3 c{ 0, 200, 0 };
+    Temple::Base::vec4 a{ -0.7f, -0.7f, +0.0f, +1.0f };
+    Temple::Base::vec4 b{ +0.7f, -0.7f, +0.0f, +1.0f };
+    Temple::Base::vec4 c{ +0.0f, +0.7f, +0.0f, +1.0f };
+    
     canvas.drawTriangle(a, b, c, lineColor);
 
     //canvas.drawLine(b, c, lineColor);
