@@ -173,7 +173,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         // 
         // begin straight filling of color buffer
         canvas.fill(bgColor); // fill background and also clear screen
-        canvas.drawLine(a, b, lineColor);
+        //canvas.drawLine(a, b, lineColor);
+        Temple::Base::vec3 a{ -200, -200, 0 };
+        Temple::Base::vec3 b{ 200, -200, 0 };
+        Temple::Base::vec3 c{ 0, 200, 0 };
+        canvas.drawTriangle(a, b, c, lineColor);
+
+        //canvas.drawLine(b, c, lineColor);
         // end of color buffer filling
         // 
         // Draw the buffer to the window

@@ -93,7 +93,7 @@ void Temple::Bonfire::RawCanvas::drawLine(const Base::vec3& a, const Base::vec3&
             float yStep = yDif / abs(yDif);
             if (abs(yDif) > abs(xDif)) {
                 for (float y = a0.y; y <= b0.y; y += yStep) {
-                    float x = y / step;
+                    float x = a0.x + (y - a0.y) / step;
                     this->putPixel((int)x, (int)y, color);
                 }
             }
@@ -105,7 +105,7 @@ void Temple::Bonfire::RawCanvas::drawLine(const Base::vec3& a, const Base::vec3&
                 xDif = b0.x - a0.x;
                 float xStep = xDif / abs(xDif);
                 for (float x = a0.x; x <= b0.x; x += xStep) {
-                    float y = x * step;
+                    float y = a0.y + (x - a0.x) * step;
                     this->putPixel((int)x, (int)y, color);
                 }
             }
@@ -114,7 +114,9 @@ void Temple::Bonfire::RawCanvas::drawLine(const Base::vec3& a, const Base::vec3&
 }
 
 void Temple::Bonfire::RawCanvas::drawTriangle(const Base::vec3& a, const Base::vec3& b, const Base::vec3& c, const col4u& color) {
-
+    this->drawLine(a, b, color);
+    this->drawLine(b, c, color);
+    this->drawLine(c, a, color);
 }
 
 Temple::Bonfire::RawCanvas::~RawCanvas() {
