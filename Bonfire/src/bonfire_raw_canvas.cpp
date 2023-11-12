@@ -82,48 +82,31 @@ void Temple::Bonfire::RawCanvas::drawLine(const Base::vec4& a, const Base::vec4&
         a0 = b;
         b0 = a;
     }
-    if (EQUAL_FLOATS(a0.x, b0.x)) {
-        // y-line
-        int yStep = (int)(b0.y - a0.y);
-        for (int y = a0.y; y < b0.y + 1e-3f; y++) {
-            this->putPixelStraight((int)a0.x, (int)y, color);
+    // a is bottom vertex and b is top vertex
+    float yDif = b0.y - a0.y;
+    float xDif = b0.x - a0.x;
+    if (fabs(yDif) < 0.001f && fabs(xDif) < 0.001f) {
+        // point
+        this->putPixelStraight(a0.x, a0.y, color);
+    }
+    if (abs(yDif) >= abs(xDif)) {
+        float yStep = yDif / abs(yDif);
+        float slope = xDif / yDif;
+        for (float y = a0.y; y < b0.y; y += yStep) {
+            float x = a0.x + (y - a0.y) * slope;
+            this->putPixelStraight((int)x, (int)y, color);
         }
     }
     else {
-        if (EQUAL_FLOATS(a0.y, b0.y)) {
-            // x-line
-            if (a.x > b.x) {
-                a0 = b;
-                b0 = a;
-            }
-            for (int x = a0.x; x <= b0.x + 1e-3f; x++) {
-                this->putPixelStraight((int)x, (int)a0.y, color);
-            }
+        if (a.x > b.x) {
+            a0 = b;
+            b0 = a;
         }
-        else {
-            //
-            float yDif = b0.y - a0.y;
-            float xDif = b0.x - a0.x;
-            float step = yDif / xDif;
-            float yStep = yDif / abs(yDif);
-            if (abs(yDif) > abs(xDif)) {
-                for (float y = a0.y; y <= b0.y; y += yStep) {
-                    float x = a0.x + (y - a0.y) / step;
-                    this->putPixelStraight((int)x, (int)y, color);
-                }
-            }
-            else {
-                if (a.x > b.x) {
-                    a0 = b;
-                    b0 = a;
-                }
-                xDif = b0.x - a0.x;
-                float xStep = xDif / abs(xDif);
-                for (float x = a0.x; x <= b0.x; x += xStep) {
-                    float y = a0.y + (x - a0.x) * step;
-                    this->putPixelStraight((int)x, (int)y, color);
-                }
-            }
+        float xStep = xDif / abs(xDif);
+        float slope = yDif / xDif;
+        for (float x = a0.x; x < b0.x; x += xStep) {
+            float y = a0.y + (x - a0.x) * slope;
+            this->putPixelStraight((int)x, (int)y, color);
         }
     }
 }
