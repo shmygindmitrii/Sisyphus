@@ -91,9 +91,8 @@ void Temple::Bonfire::RawCanvas::drawLine(const Base::vec4& a, const Base::vec4&
     }
     else {
         if (fabs(yDif) >= fabs(xDif)) {
-            float yStep = yDif / fabs(yDif);
             float slope = xDif / yDif;
-            for (float y = a0.y; y < b0.y; y += yStep) {
+            for (float y = a0.y; y < b0.y; y += 1.0f) {
                 float x = a0.x + (y - a0.y) * slope;
                 this->putPixelStraight((int)x, (int)y, color);
             }
@@ -103,10 +102,8 @@ void Temple::Bonfire::RawCanvas::drawLine(const Base::vec4& a, const Base::vec4&
                 a0 = b;
                 b0 = a;
             }
-            xDif = b0.x - a0.x;
-            float xStep = xDif / fabs(xDif);
             float slope = yDif / xDif;
-            for (float x = a0.x; x < b0.x; x += xStep) {
+            for (float x = a0.x; x < b0.x; x += 1.0f) {
                 float y = a0.y + (x - a0.x) * slope;
                 this->putPixelStraight((int)x, (int)y, color);
             }
