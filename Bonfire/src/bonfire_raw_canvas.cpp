@@ -43,6 +43,13 @@ void Temple::Bonfire::RawCanvas::setViewport(float xMin, float yMin, float zMin,
     m_viewportMax.z = zMax;
 }
 
+void Temple::Bonfire::RawCanvas::setDescriptorSet(const void* descriptorSet) {
+    m_descriptorSet = descriptorSet;
+}
+
+void Temple::Bonfire::RawCanvas::setVertexShader(Temple::Bonfire::vertexShaderFunc vsf) {
+    m_vsf = vsf;
+}
 void Temple::Bonfire::RawCanvas::putPixelStraight(int x, int y, const col4u& color) {
     if (x < 0 || x >= m_width || y < 0 || y >= m_height)
         return;
@@ -126,9 +133,14 @@ Temple::Base::vec4 Temple::Bonfire::RawCanvas::processVertex(const Base::vec4& v
 
 
 void Temple::Bonfire::RawCanvas::drawTriangle(const Base::vec4& a, const Base::vec4& b, const Base::vec4& c, const col4u& color) {
-    Base::vec4 va = processVertex(a);
-    Base::vec4 vb = processVertex(b);
-    Base::vec4 vc = processVertex(c);
+    Base::vec4 va, vb, vc;
+    this->m_vsf(a, &va, this->m_descriptorSet);
+    this->m_vsf(b, &vb, this->m_descriptorSet);
+    this->m_vsf(c, &vc, this->m_descriptorSet);
+
+    va = processVertex(va);
+    vb = processVertex(vb);
+    vc = processVertex(vc);
 
     this->drawLine(va, vb, color);
     this->drawLine(vb, vc, color);

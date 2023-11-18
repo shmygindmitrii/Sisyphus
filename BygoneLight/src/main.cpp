@@ -1,5 +1,6 @@
 #include "framework.h"
 #include "bonfire_raw_canvas.h"
+#include "base_matrices.h"
 #include <cassert>
 #include "resource.h"
 
@@ -9,6 +10,7 @@
 HINSTANCE hInst;                                // current instance
 WCHAR szTitle[MAX_LOADSTRING];                  // The title bar text
 WCHAR szWindowClass[MAX_LOADSTRING];            // the main window class name
+HWND hWnd;
 
 // Forward declarations of functions included in this code module:
 ATOM                MyRegisterClass(HINSTANCE hInstance);
@@ -32,7 +34,7 @@ void draw(HWND hWnd) {
     Temple::Bonfire::col4u bgColor{ 15, 15, 35, 255 };
     Temple::Bonfire::col4u lineColor{ 0, 150, 0, 255 };
 
-    GetWindowRect(hWnd, &rect);
+    GetClientRect(hWnd, &rect);
 
     int width = rect.right - rect.left;
     int height = rect.bottom - rect.top;
@@ -42,15 +44,36 @@ void draw(HWND hWnd) {
     canvas.resize(width, height, 4);
 
     PAINTSTRUCT ps;
-    HDC hdc = BeginPaint(hWnd, &ps);
+    HDC hdc = GetDC(hWnd);
 
     canvas.setViewport(0, 0, 0, width, height, 1);
     // begin straight filling of color buffer
     canvas.fill(bgColor); // fill background and also clear screen
     //canvas.drawLine(a, b, lineColor);
-    Temple::Base::vec4 a{ -0.7f, -0.7f, +0.0f, +1.0f };
-    Temple::Base::vec4 b{ +0.7f, -0.7f, +0.0f, +1.0f };
-    Temple::Base::vec4 c{ +0.0f, +0.7f, +0.0f, +1.0f };
+    Temple::Base::vec4 a{ -0.0f, -0.0f, +0.0f, +1.0f };
+    Temple::Base::vec4 b{ -0.7f, +0.0f, +0.0f, +1.0f };
+    Temple::Base::vec4 c{ -0.7f, +0.7f, +0.0f, +1.0f };
+
+    auto curTime = std::chrono::high_resolution_clock::now();
+    auto duration = curTime.time_since_epoch();
+    long long seconds = std::chrono::duration_cast<std::chrono::seconds>(duration).count();
+
+    //float angle = seconds * 0.1f;
+
+    static float angle = 0.0f;
+    angle += 0.01f;
+
+    const Temple::Base::mat4 mRotZ = Temple::Base::mat4::rotz(angle);
+    Temple::Base::mat4 mAspectTransform = mRotZ;
+    mAspectTransform.c0.x *= height / (float)width;
+    mAspectTransform.c1.x *= height / (float)width;
+    mAspectTransform.c2.x *= height / (float)width;
+        
+    canvas.setDescriptorSet(&mAspectTransform);
+    canvas.setVertexShader([](const Temple::Base::vec4& inp, Temple::Base::vec4* out, const void* descriptorSet) { 
+        const Temple::Base::mat4* mRot = reinterpret_cast<const Temple::Base::mat4*>(descriptorSet);
+        *out = (*mRot) * inp;
+    });
     
     canvas.drawTriangle(a, b, c, lineColor);
 
@@ -59,7 +82,6 @@ void draw(HWND hWnd) {
     // 
     // Draw the buffer to the window
     SetDIBitsToDevice(hdc, 0, 0, width, height, 0, 0, 0, height, (unsigned char*)canvas.getData(), &bmi, DIB_RGB_COLORS);
-    EndPaint(hWnd, &ps);
 }
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
@@ -86,14 +108,22 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     MSG msg;
 
     // Main message loop:
-    while (GetMessage(&msg, nullptr, 0, 0))
-    {
-        if (!TranslateAccelerator(msg.hwnd, hAccelTable, &msg))
-        {
+    BOOL bRet;
+    while (TRUE) {
+        // PeekMessage, unlike GetMessage, doesn't block if there's no message
+        bRet = PeekMessage(&msg, NULL, 0, 0, PM_REMOVE);
+
+        if (bRet) {
+            // Process the message
             TranslateMessage(&msg);
             DispatchMessage(&msg);
+
+            // Check for WM_QUIT message
+            if (msg.message == WM_QUIT)
+                break;
         }
-        draw(msg.hwnd);
+
+        draw(hWnd);
     }
 
     return (int)msg.wParam;
@@ -141,7 +171,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 {
     hInst = hInstance; // Store instance handle in our global variable
 
-    HWND hWnd = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
+    hWnd = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
         CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr, hInstance, nullptr);
 
     if (!hWnd)
