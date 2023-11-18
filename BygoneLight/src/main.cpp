@@ -1,8 +1,14 @@
+#define _USE_MATH_DEFINES
+#include <math.h>
+
 #include "framework.h"
 #include "bonfire_raw_canvas.h"
 #include "base_matrices.h"
 #include <cassert>
 #include "resource.h"
+#include <chrono>
+#include <dwmapi.h>
+#pragma comment(lib, "dwmapi.lib")
 
 #define MAX_LOADSTRING 100
 
@@ -49,19 +55,16 @@ void draw(HWND hWnd) {
     canvas.setViewport(0, 0, 0, width, height, 1);
     // begin straight filling of color buffer
     canvas.fill(bgColor); // fill background and also clear screen
-    //canvas.drawLine(a, b, lineColor);
     Temple::Base::vec4 a{ -0.0f, -0.0f, +0.0f, +1.0f };
     Temple::Base::vec4 b{ -0.7f, +0.0f, +0.0f, +1.0f };
     Temple::Base::vec4 c{ -0.7f, +0.7f, +0.0f, +1.0f };
 
     auto curTime = std::chrono::high_resolution_clock::now();
     auto duration = curTime.time_since_epoch();
-    long long seconds = std::chrono::duration_cast<std::chrono::seconds>(duration).count();
+    long long nanoseconds = std::chrono::duration_cast<std::chrono::nanoseconds>(duration).count();
 
-    //float angle = seconds * 0.1f;
-
-    static float angle = 0.0f;
-    angle += 0.01f;
+    long long circle_ns = 1000000000 * 2;
+    float angle = ((nanoseconds % circle_ns) / (float)circle_ns) * M_PI * 2.0f;
 
     const Temple::Base::mat4 mRotZ = Temple::Base::mat4::rotz(angle);
     Temple::Base::mat4 mAspectTransform = mRotZ;
@@ -77,11 +80,13 @@ void draw(HWND hWnd) {
     
     canvas.drawTriangle(a, b, c, lineColor);
 
-    //canvas.drawLine(b, c, lineColor);
     // end of color buffer filling
-    // 
     // Draw the buffer to the window
     SetDIBitsToDevice(hdc, 0, 0, width, height, 0, 0, 0, height, (unsigned char*)canvas.getData(), &bmi, DIB_RGB_COLORS);
+    HRESULT hr = DwmFlush();
+    if (FAILED(hr)) {
+        // Handle the error. For example, DWM might not be enabled or available.
+    }
 }
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
