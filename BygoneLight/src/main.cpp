@@ -76,9 +76,9 @@ void draw(HWND hWnd) {
     Temple::Base::mat4 mRotation = mRotY * mRotZ;
 
     Temple::Base::mat4 mScale = Temple::Base::mat4::identity();
-    mScale.c0.x = 0.5f;
-    mScale.c1.y = 0.5f;
-    mScale.c2.z = 0.5f;
+    mScale.c0.x = 0.25f;
+    mScale.c1.y = 0.25f;
+    mScale.c2.z = 0.25f;
 
     Temple::Base::mat4 mTranslation = Temple::Base::mat4::identity();
     mTranslation.c3.y = -0.2f;
