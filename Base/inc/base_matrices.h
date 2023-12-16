@@ -45,6 +45,7 @@ namespace Temple {
 			static mat3 roty(float angle);
 			static mat3 rotz(float angle);
 			static mat3 rot(const vec3& n, float angle);
+            static mat3 identity();
 		};
 
 		std::ostream& operator<<(std::ostream& os, const mat3& M);
@@ -92,6 +93,7 @@ namespace Temple {
 			static mat4 roty(float angle);
 			static mat4 rotz(float angle);
 			static mat4 rot(const vec4& n, float angle);
+            static mat4 identity();
 		};
 
 		std::ostream& operator<<(std::ostream& os, const mat4& M);

@@ -291,6 +291,14 @@ Temple::Base::mat3 Temple::Base::mat3::rot(const Temple::Base::vec3& n, float an
 				R20, R21, R22);
 }
 
+Temple::Base::mat3 Temple::Base::mat3::identity() {
+    mat3 m;
+    m.c0.x = 1.0f;
+    m.c1.y = 1.0f;
+    m.c2.z = 1.0f;
+    return m;
+}
+
 // mat4 
 
 Temple::Base::mat4::mat4() {
@@ -698,4 +706,13 @@ Temple::Base::mat4 Temple::Base::mat4::rot(const Temple::Base::vec4& n, float an
 				R10,  R11,  R12,  0.0f,
 				R20,  R21,  R22,  0.0f,
 				0.0f, 0.0f, 0.0f, 1.0f);
+}
+
+Temple::Base::mat4 Temple::Base::mat4::identity() {
+    mat4 m;
+    m.c0.x = 1.0f;
+    m.c1.y = 1.0f;
+    m.c2.z = 1.0f;
+    m.c3.w = 1.0f;
+    return m;
 }
