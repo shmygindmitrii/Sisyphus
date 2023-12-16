@@ -62,26 +62,48 @@ void draw(HWND hWnd) {
     Temple::Base::vec4 b{ -0.7f, +0.0f, +0.0f, +1.0f };
     Temple::Base::vec4 c{ -0.7f, +0.7f, +0.0f, +1.0f };
 
-    auto curTime = std::chrono::high_resolution_clock::now();
+    auto curTime = std::chrono::high_resolution_clock::now();    
     auto duration = curTime.time_since_epoch();
     long long nanoseconds = std::chrono::duration_cast<std::chrono::nanoseconds>(duration).count();
 
     long long circle_ns = 1000000000 * 2;
-    float angle = ((nanoseconds % circle_ns) / (float)circle_ns) * M_PI * 2.0f;
+    float angle = ((nanoseconds % circle_ns) / (float)circle_ns)* M_PI * 2.0f; // unused for now
 
-    const Temple::Base::mat4 mRotZ = Temple::Base::mat4::rotz(angle);
-    Temple::Base::mat4 mAspectTransform = mRotZ;
-    mAspectTransform.c0.x *= height / (float)width;
-    mAspectTransform.c1.x *= height / (float)width;
-    mAspectTransform.c2.x *= height / (float)width;
+    float angley = 30.0f / 360.0f * 2.0f * M_PI;
+    float anglez = 10.0f / 360.0f * 2.0f * M_PI;
+    const Temple::Base::mat4 mRotY = Temple::Base::mat4::roty(angley);
+    const Temple::Base::mat4 mRotZ = Temple::Base::mat4::rotz(anglez);
+    Temple::Base::mat4 mRotation = mRotY * mRotZ;
+
+    Temple::Base::mat4 mScale = Temple::Base::mat4::identity();
+    mScale.c0.x = 0.5f;
+    mScale.c1.y = 0.5f;
+    mScale.c2.z = 0.5f;
+
+    Temple::Base::mat4 mTranslation = Temple::Base::mat4::identity();
+    mTranslation.c3.y = -0.2f;
+    mTranslation.c3.z = 1.0f;
+
+    Temple::Base::mat4 mPerspective = Temple::Base::mat4::identity();
+    mPerspective.c2.w = 1.0f; // put z into w, x and y mults are 0
+    mPerspective.c3.w = 0.0f; // do not add 1.0 to final w result
+
+    Temple::Base::mat4 mAspectRation = Temple::Base::mat4::identity();
+    mAspectRation.c0.x *= height / (float)width;
+    mAspectRation.c0.y *= height / (float)width;
+    mAspectRation.c0.z *= height / (float)width;
+    
+    Temple::Base::mat4 matrix = mAspectRation * mPerspective * mTranslation * mRotation * mScale;
         
-    canvas.setDescriptorSet(&mAspectTransform);
+    canvas.setDescriptorSet(&matrix);
     canvas.setVertexShader([](const Temple::Base::vec4& inp, Temple::Base::vec4* out, const void* descriptorSet) { 
         const Temple::Base::mat4* mRot = reinterpret_cast<const Temple::Base::mat4*>(descriptorSet);
         *out = (*mRot) * inp;
     });
-    
-    canvas.drawTriangle(a, b, c, lineColor);
+
+    for (int i = 0; i < g_modelVerts.size(); i += 3) {
+        canvas.drawTriangle(g_modelVerts[i], g_modelVerts[i + 1], g_modelVerts[i + 2], lineColor);
+    }
 
     // end of color buffer filling
     // Draw the buffer to the window
