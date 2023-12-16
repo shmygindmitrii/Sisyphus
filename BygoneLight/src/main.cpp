@@ -4,6 +4,7 @@
 #include "framework.h"
 #include "bonfire_raw_canvas.h"
 #include "base_matrices.h"
+#include "obj_file.h"
 #include <cassert>
 #include "resource.h"
 #include <chrono>
@@ -23,6 +24,8 @@ ATOM                MyRegisterClass(HINSTANCE hInstance);
 BOOL                InitInstance(HINSTANCE, int);
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
+
+std::vector<Temple::Base::vec4> g_modelVerts;
 
 void draw(HWND hWnd) {
     RECT rect;
@@ -106,6 +109,21 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     if (!InitInstance(hInstance, nCmdShow))
     {
         return FALSE;
+    }
+    std::shared_ptr<Temple::Barn::ObjFile> objFile = Temple::Barn::ReadObj("D:\\Own\\CPP\\Temple\\Resources\\cube.obj");
+    for (int i = 0; i < objFile->faces.size(); i++) {
+        const Temple::Barn::ObjFace& face = objFile->faces[i];
+        for (int j = 0; j < 3; j++) {
+            int vertIdx = face.indices[j].position - 1;
+            if (vertIdx >= 0 && vertIdx < objFile->coord.size()) {
+                Temple::Base::vec4 pos(objFile->coord[vertIdx], 1.0f);
+                g_modelVerts.push_back(pos);
+            }
+            else {
+                Temple::Base::vec4 pos;
+                g_modelVerts.push_back(pos);
+            }
+        }
     }
 
     HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_BYGONE_LIGHT));
