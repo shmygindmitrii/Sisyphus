@@ -104,7 +104,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)inc;$(SolutionDir)Bonfire\inc;$(SolutionDir)Base\inc;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)inc;$(SolutionDir)Barn\inc;$(SolutionDir)Bonfire\inc;$(SolutionDir)Base\inc</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -119,7 +119,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)inc;$(SolutionDir)Bonfire\inc;$(SolutionDir)Base\inc;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)inc;$(SolutionDir)Barn\inc;$(SolutionDir)Bonfire\inc;$(SolutionDir)Base\inc</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -144,6 +144,9 @@
     <ClInclude Include="inc\targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Barn\Barn.vcxproj">
+      <Project>{5ad4534b-fa8d-48c6-a567-79bc5d470642}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\Base\Base.vcxproj">
       <Project>{b92b9866-d1e2-4ca1-ba3c-3dc05d915b98}</Project>
     </ProjectReference>
