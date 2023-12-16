@@ -8,6 +8,107 @@
 
 namespace Temple {
     namespace Base {
+        struct vec2 {
+            union {
+                struct {
+                    float x, y;
+                };
+                struct {
+                    float u, v;
+                };
+                float data[2];
+            };
+            vec2();
+            vec2(float a, float b);
+            vec2(const vec2& a);
+            vec2(vec2&& a);
+            vec2& operator=(const vec2& a);
+            vec2& operator=(vec2&& a) noexcept;
+            inline const float& operator [](int i) const {
+                return (&x)[i]; // can use offset from first property
+            }
+            inline float& operator [](int i) {
+                return (&x)[i];
+            }
+            inline vec2& operator *=(float s) {
+                x *= s;
+                y *= s;
+                return *this;
+            }
+            inline vec2 operator *(float s) {
+                return vec2(x * s, y * s);
+            }
+            inline vec2& operator /=(float s) {
+                s = 1.0f / s;
+                x *= s;
+                y *= s;
+                return *this;
+            }
+            inline vec2 operator /(float s) {
+                s = 1.0f / s;
+                return vec2(x * s, y * s);
+            }
+            inline vec2& operator +=(const vec2& v) {
+                x += v.x;
+                y += v.y;
+                return *this;
+            }
+            inline vec2& operator -=(const vec2& v) {
+                x -= v.x;
+                y -= v.y;
+                return *this;
+            }
+            inline const bool operator ==(const vec2& v) const {
+                float l = (x - v.x) * (x - v.x) +
+                          (y - v.y) * (y - v.y);
+                return l < EPS;
+            }
+            inline const bool operator !=(const vec2& v) const {
+                return !(v == (*this));
+            }
+            inline const float magnitude() const {
+                return sqrt(x * x + y * y);
+            }
+            inline vec2 norm() {
+                float l = magnitude();
+                l = 1.0f / l;
+                return vec2(x * l, y * l);
+            }
+        };
+        inline vec2 operator -(const vec2& v) {
+            return vec2(-v.x, -v.y);
+        }
+        inline vec2 operator *(const vec2& v, float s) {
+            return vec2(v.x * s,
+                        v.y * s);
+        }
+        inline vec2 operator *(const vec2& v, const vec2& u) {
+            return vec2(v.x * u.x,
+                        v.y * u.y);
+        }
+        inline vec2 operator /(const vec2& v, float s) {
+            s = 1.0f / s;
+            return vec2(v.x * s,
+                        v.y * s);
+        }
+        inline vec2 operator +(const vec2& v, const vec2& u) {
+            return vec2(v.x + u.x,
+                        v.y + u.y);
+        }
+        inline vec2 operator +(const vec2& v, float s) {
+            return vec2(v.x + s,
+                        v.y + s);
+        }
+        inline vec2 operator -(const vec2& v, const vec2& u) {
+            return vec2(v.x - u.x,
+                        v.y - u.y);
+        }
+        inline vec2 operator -(const vec2& v, float s) {
+            return vec2(v.x - s,
+                        v.y - s);
+        }
+        std::ostream& operator <<(std::ostream& os, const vec2& v);
+
         struct vec3 {
             union {
                 struct {
@@ -135,6 +236,10 @@ namespace Temple {
             vec4(float a, float b, float c, float d);
             vec4(float a, float b, float c);
             vec4(const vec3& v, float w);
+            vec4(const vec4& a);
+            vec4(vec4&& a);
+            vec4& operator=(const vec4& a);
+            vec4& operator=(vec4&& a) noexcept;
             inline const float& operator [](int i) const {
                 return (&x)[i]; // can use offset from first property
             }
