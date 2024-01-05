@@ -716,3 +716,16 @@ Temple::Base::mat4 Temple::Base::mat4::identity() {
     m.r3.w = 1.0f;
     return m;
 }
+
+Temple::Base::mat4 Temple::Base::mat4::projection(float znear, float zfar) {
+    mat4 m = identity();
+    // compress x and y according to perspective positions during canonical transformation (dividing by w)
+    m.r3.z = 1.00f;
+    m.r3.w = 0.00f;
+    // change z-coordinate from scene to NDC
+    m.r2.z = zfar / (zfar - znear);
+    m.r2.w = (-znear * zfar) / (zfar - znear);
+    // left-handed coordinate system to map z/w to range from 0 to 1
+    // after multiplying w contains divider that shoud not be modified and used for division to obtain final transformations
+    return m;
+}

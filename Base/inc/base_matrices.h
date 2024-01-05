@@ -94,6 +94,7 @@ namespace Temple {
 			static mat4 rotz(float angle);
 			static mat4 rot(const vec4& n, float angle);
             static mat4 identity();
+            static mat4 projection(float znear, float zfar);
 		};
 
 		std::ostream& operator<<(std::ostream& os, const mat4& M);

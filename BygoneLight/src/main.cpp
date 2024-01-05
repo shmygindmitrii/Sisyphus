@@ -86,11 +86,9 @@ void draw(HWND hWnd) {
     mScale.r2.z = 0.25f;
 
     Temple::Base::mat4 mTranslation = Temple::Base::mat4::identity();
-    mTranslation.r2.w = -1.0f; // z-shift
-
-    Temple::Base::mat4 mPerspective = Temple::Base::mat4::identity();
-    mPerspective.r3.z = 1.0f; // put z into w, x and y mults are 0
-    mPerspective.r3.w = 0.0f; // do not add 1.0 to final w result
+    mTranslation.r2.w = 1.0f; // z-shift
+    
+    Temple::Base::mat4 mPerspective = Temple::Base::mat4::projection(0.5f, 100.0f);
 
     Temple::Base::mat4 mAspectRation = Temple::Base::mat4::identity();
     mAspectRation.r0.x *= height / (float)width;
