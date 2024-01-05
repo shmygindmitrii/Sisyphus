@@ -88,12 +88,9 @@ void draw(HWND hWnd) {
     Temple::Base::mat4 mTranslation = Temple::Base::mat4::identity();
     mTranslation.r2.w = 1.0f; // z-shift
     
-    Temple::Base::mat4 mPerspective = Temple::Base::mat4::projection(0.5f, 100.0f);
-
-    Temple::Base::mat4 mAspectRation = Temple::Base::mat4::identity();
-    mAspectRation.r0.x *= height / (float)width;
-    
-    Temple::Base::mat4 matrix = mAspectRation * mPerspective * mTranslation * mRotation * mScale;
+    Temple::Base::mat4 mPerspective = Temple::Base::mat4::projection(90.0f, width / (float)height, 0.5f, 100.0f);
+   
+    Temple::Base::mat4 matrix = mPerspective * mTranslation * mRotation * mScale;
         
     canvas.setDescriptorSet(&matrix);
     canvas.setVertexShader([](const Temple::Base::vec4& inp, Temple::Base::vec4* out, const void* descriptorSet) { 

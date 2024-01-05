@@ -1,6 +1,7 @@
 #include "base_matrices.h"
 
 #include <iomanip>
+#include <cmath>
 
 // mat3
 
@@ -717,11 +718,16 @@ Temple::Base::mat4 Temple::Base::mat4::identity() {
     return m;
 }
 
-Temple::Base::mat4 Temple::Base::mat4::projection(float znear, float zfar) {
+Temple::Base::mat4 Temple::Base::mat4::projection(float fov, float aspect, float znear, float zfar) {
     mat4 m = identity();
     // compress x and y according to perspective positions during canonical transformation (dividing by w)
-    m.r3.z = 1.00f;
-    m.r3.w = 0.00f;
+    // take aspect into account + fov
+    fov *= Temple::Base::PI / 360.0f; // fov / 2 in radians
+    m.r1.y = cosf(fov) / sinf(fov); // ctg(fov)
+    m.r0.x = m.r1.y / aspect;
+    //
+    m.r3.z = 1.0f;
+    m.r3.w = 0.0f;
     // change z-coordinate from scene to NDC
     m.r2.z = zfar / (zfar - znear);
     m.r2.w = (-znear * zfar) / (zfar - znear);
