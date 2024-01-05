@@ -11,16 +11,16 @@ namespace Temple {
 			union {
 				float data[3][3];
 				struct {
-					vec3 c0, c1, c2;
+					vec3 r0, r1, r2;
 				};
 			};
 			mat3();
 			mat3(float m00, float m01, float m02,
-					 float m10, float m11, float m12,
-					 float m20, float m21, float m22);
+			     float m10, float m11, float m12,
+				 float m20, float m21, float m22);
 			mat3(const vec3& a, 
-					 const vec3& b, 
-					 const vec3& c);
+				 const vec3& b, 
+				 const vec3& c);
 			mat3(const mat3& m);
 			mat3(mat3&& m) noexcept;
 			mat3& operator=(const mat3& M);
@@ -57,7 +57,7 @@ namespace Temple {
 			union {
 				float data[4][4];
 				struct {
-					vec4 c0, c1, c2, c3;
+					vec4 r0, r1, r2, r3;
 				};
 			};
 			mat4();

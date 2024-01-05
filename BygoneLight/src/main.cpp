@@ -56,6 +56,11 @@ void draw(HWND hWnd) {
     HDC hdc = GetDC(hWnd);
 
     canvas.setViewport(0, 0, 0, width, height, 1);
+    /*
+    canvas.setPixelShader();
+    */
+    //setScissor(0, 0, width, height);
+
     // begin straight filling of color buffer
     canvas.fill(bgColor); // fill background and also clear screen
     Temple::Base::vec4 a{ -0.0f, -0.0f, +0.0f, +1.0f };
@@ -76,22 +81,19 @@ void draw(HWND hWnd) {
     Temple::Base::mat4 mRotation = mRotY * mRotZ;
 
     Temple::Base::mat4 mScale = Temple::Base::mat4::identity();
-    mScale.c0.x = 0.25f;
-    mScale.c1.y = 0.25f;
-    mScale.c2.z = 0.25f;
+    mScale.r0.x = 0.25f;
+    mScale.r1.y = 0.25f;
+    mScale.r2.z = 0.25f;
 
     Temple::Base::mat4 mTranslation = Temple::Base::mat4::identity();
-    mTranslation.c3.y = -0.2f;
-    mTranslation.c3.z = 1.0f;
+    mTranslation.r2.w = -1.0f; // z-shift
 
     Temple::Base::mat4 mPerspective = Temple::Base::mat4::identity();
-    mPerspective.c2.w = 1.0f; // put z into w, x and y mults are 0
-    mPerspective.c3.w = 0.0f; // do not add 1.0 to final w result
+    mPerspective.r3.z = 1.0f; // put z into w, x and y mults are 0
+    mPerspective.r3.w = 0.0f; // do not add 1.0 to final w result
 
     Temple::Base::mat4 mAspectRation = Temple::Base::mat4::identity();
-    mAspectRation.c0.x *= height / (float)width;
-    mAspectRation.c0.y *= height / (float)width;
-    mAspectRation.c0.z *= height / (float)width;
+    mAspectRation.r0.x *= height / (float)width;
     
     Temple::Base::mat4 matrix = mAspectRation * mPerspective * mTranslation * mRotation * mScale;
         
