@@ -720,12 +720,13 @@ Temple::Base::mat4 Temple::Base::mat4::identity() {
 
 Temple::Base::mat4 Temple::Base::mat4::projection(float fov, float aspect, float znear, float zfar) {
     mat4 m = identity();
-    // compress x and y according to perspective positions during canonical transformation (dividing by w)
     // take aspect into account + fov
+    // only fov in range of somewhat 45<fov<180 is described correctly - right limit is crucial, ctg of 90 is zero, nothing is seen.
     fov *= Temple::Base::PI / 360.0f; // fov / 2 in radians
-    m.r1.y = cosf(fov) / sinf(fov); // ctg(fov)
+    m.r1.y = cosf(fov) / sinf(fov); // ctg(fov), use vertical field of view. In case of 90 degrees it is just 1 as it was before fov addition
     m.r0.x = m.r1.y / aspect;
-    //
+    // compress x and y according to perspective positions during canonical transformation (dividing by w) 
+    // for that purpose z should be placed into w - far from znear - closer to center
     m.r3.z = 1.0f;
     m.r3.w = 0.0f;
     // change z-coordinate from scene to NDC
@@ -733,5 +734,7 @@ Temple::Base::mat4 Temple::Base::mat4::projection(float fov, float aspect, float
     m.r2.w = (-znear * zfar) / (zfar - znear);
     // left-handed coordinate system to map z/w to range from 0 to 1
     // after multiplying w contains divider that shoud not be modified and used for division to obtain final transformations
+    // this is classic transformation, z-value now contains normalized depth of the point
+    // but it is not distributed uniformly - around znear precision is fine, closer to zfar - precision is low
     return m;
 }
