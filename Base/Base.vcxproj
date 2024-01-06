@@ -130,6 +130,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\base_matrices.cpp" />
+    <ClCompile Include="src\base_utils.cpp" />
     <ClCompile Include="src\base_vectors.cpp" />
   </ItemGroup>
   <ItemGroup>
