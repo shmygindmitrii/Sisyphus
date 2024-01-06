@@ -63,9 +63,9 @@ void Temple::Bonfire::RawCanvas::putPixelStraight(int x, int y, const col4u& col
     // x : 0 to w (left to right)
     // y : 0 to h (top to bottom)
     int pixelIndex = y * m_width * m_bytesPerPixel + x * m_bytesPerPixel;
-    m_data[pixelIndex + 0] = color.r;
+    m_data[pixelIndex + 0] = color.b;
     m_data[pixelIndex + 1] = color.g;
-    m_data[pixelIndex + 2] = color.b;
+    m_data[pixelIndex + 2] = color.r;
     m_data[pixelIndex + 3] = color.a;
 }
 
@@ -166,15 +166,11 @@ void Temple::Bonfire::RawCanvas::drawFilledTriangle(const Base::vec4& a, const B
     }
     // from xab to xac
     float bottomy = sa.y;
-    col4u somcol = { 0, 0, 0, 255 };
-    float colstep = 255 / (float)n;
     for (int i = 0; i < n; i++) {
         float leftx = xab[i];
         float rightx = xac[i];
-        somcol.r = colstep * i;
-        somcol.b = 255 - somcol.r;
         while (leftx < rightx) {
-            this->putPixelStraight((int)leftx, (int)bottomy, somcol);
+            this->putPixelStraight((int)leftx, (int)bottomy, color);
             leftx += 1.0f;
         }
         bottomy += 1.0f;
