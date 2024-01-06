@@ -4,11 +4,13 @@
 #include <cstring>
 #include <cassert>
 #include <algorithm>
+#include <vector>
 
 Temple::Bonfire::RawCanvas::RawCanvas(int width, int height, int bytesPerPixel) : m_width(width), m_height(height), m_bytesPerPixel(bytesPerPixel) {
     size_t fullSize = m_width * m_height * (size_t)m_bytesPerPixel;
     assert(fullSize > 0);
     m_data = new uint8_t[fullSize];
+    m_renderMode = RenderMode::WIREFRAME;
 }
 
 const uint8_t* Temple::Bonfire::RawCanvas::getData() const {
@@ -45,6 +47,10 @@ void Temple::Bonfire::RawCanvas::setViewport(float xMin, float yMin, float zMin,
 
 void Temple::Bonfire::RawCanvas::setDescriptorSet(const void* descriptorSet) {
     m_descriptorSet = descriptorSet;
+}
+
+void Temple::Bonfire::RawCanvas::setRenderMode(RenderMode m) {
+    m_renderMode = m;
 }
 
 void Temple::Bonfire::RawCanvas::setVertexShader(Temple::Bonfire::vertexShaderFunc vsf) {
@@ -131,6 +137,49 @@ Temple::Base::vec4 Temple::Bonfire::RawCanvas::processVertex(const Base::vec4& v
     return Base::vec4(crd, c.w);
 }
 
+void Temple::Bonfire::RawCanvas::drawFilledTriangle(const Base::vec4& a, const Base::vec4& b, const Base::vec4& c, const col4u& color) {
+    Base::vec4 sa = a, sb = b, sc = c;
+    if (sa.y > sc.y) {
+        std::swap(sa, sc);
+    }
+    if (sa.y > sb.y) {
+        std::swap(sa, sb);
+    }
+    if (sb.y > sc.y) {
+        std::swap(sb, sc);
+    }
+    // get interpolated values
+    std::vector<float> xab = Base::interpolate(sa.y, sa.x, sb.y, sb.x);
+    std::vector<float> xbc = Base::interpolate(sb.y, sb.x, sc.y, sc.x);
+    std::vector<float> xac = Base::interpolate(sa.y, sa.x, sc.y, sc.x); // long side x
+    int nzeros = (int)(xab.size() == 0) + (int)(xbc.size() == 0) + (int)(xac.size() == 0);
+    if (nzeros > 1) {
+        return;
+    }
+    //
+    xab.insert(xab.end(), xbc.begin(), xbc.end());
+    int n = std::min(xab.size(), xac.size());
+    // now we have only two vectors with x-values, need to understandm what is left and what is right
+    int middle = n / 2;
+    if (xac[middle] < xab[middle]) {
+        std::swap(xac, xab);
+    }
+    // from xab to xac
+    float bottomy = sa.y;
+    col4u somcol = { 0, 0, 0, 255 };
+    float colstep = 255 / (float)n;
+    for (int i = 0; i < n; i++) {
+        float leftx = xab[i];
+        float rightx = xac[i];
+        somcol.r = colstep * i;
+        somcol.b = 255 - somcol.r;
+        while (leftx < rightx) {
+            this->putPixelStraight((int)leftx, (int)bottomy, somcol);
+            leftx += 1.0f;
+        }
+        bottomy += 1.0f;
+    }
+}
 
 void Temple::Bonfire::RawCanvas::drawTriangle(const Base::vec4& a, const Base::vec4& b, const Base::vec4& c, const col4u& color) {
     Base::vec4 va, vb, vc;
@@ -142,9 +191,18 @@ void Temple::Bonfire::RawCanvas::drawTriangle(const Base::vec4& a, const Base::v
     vb = processVertex(vb);
     vc = processVertex(vc);
 
-    this->drawLine(va, vb, color);
-    this->drawLine(vb, vc, color);
-    this->drawLine(vc, va, color);
+    // cut segments
+
+    switch (m_renderMode) {
+    case TRIANGLE:
+        this->drawFilledTriangle(va, vb, vc, color);
+        break;
+    case WIREFRAME:
+    default:
+        this->drawLine(va, vb, color);
+        this->drawLine(vb, vc, color);
+        this->drawLine(vc, va, color);
+    }
 }
 
 Temple::Bonfire::RawCanvas::~RawCanvas() {

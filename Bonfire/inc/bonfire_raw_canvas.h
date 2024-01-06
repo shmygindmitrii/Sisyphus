@@ -5,6 +5,10 @@
 
 namespace Temple {
     namespace Bonfire {
+        enum RenderMode {
+            WIREFRAME,
+            TRIANGLE,
+        };
         using vertexShaderFunc = void(*)(const Base::vec4& input, Base::vec4* output, const void* descriptorSet);
         class RawCanvas {
         private:
@@ -13,6 +17,7 @@ namespace Temple {
             int m_height = 0;
             int m_bytesPerPixel = 0;
             Base::vec3 m_viewportMin, m_viewportMax;
+            RenderMode m_renderMode;
             const void* m_descriptorSet = nullptr;
             vertexShaderFunc m_vsf = nullptr;
         public:
@@ -21,6 +26,7 @@ namespace Temple {
             void resize(int width, int height, int bytesPerPixel);
             void setViewport(float xMin, float yMin, float zMin, float xMax, float yMax, float zMax);
             void setDescriptorSet(const void* descriptorSet);
+            void setRenderMode(RenderMode m);
             void setVertexShader(vertexShaderFunc vsf);
             void putPixelStraight(int x, int y, const col4u& color);
             void putPixel(int x, int y, const col4u& color);
@@ -28,6 +34,7 @@ namespace Temple {
             void fill(const col4u& color);
             void drawLine(const Base::vec4 &a, const Base::vec4& b, const col4u& color);
             void drawTriangle(const Base::vec4& a, const Base::vec4& b, const Base::vec4& c, const col4u& color);
+            void drawFilledTriangle(const Base::vec4& a, const Base::vec4& b, const Base::vec4& c, const col4u& color);
             ~RawCanvas();
         };
     }

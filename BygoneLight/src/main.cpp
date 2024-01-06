@@ -91,7 +91,7 @@ void draw(HWND hWnd) {
     Temple::Base::mat4 mPerspective = Temple::Base::mat4::projection(90.0f, width / (float)height, 0.5f, 100.0f);
    
     Temple::Base::mat4 matrix = mPerspective * mTranslation * mRotation * mScale;
-        
+    canvas.setRenderMode(Temple::Bonfire::RenderMode::TRIANGLE);
     canvas.setDescriptorSet(&matrix);
     canvas.setVertexShader([](const Temple::Base::vec4& inp, Temple::Base::vec4* out, const void* descriptorSet) { 
         const Temple::Base::mat4* mRot = reinterpret_cast<const Temple::Base::mat4*>(descriptorSet);
@@ -214,7 +214,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
     hInst = hInstance; // Store instance handle in our global variable
 
     hWnd = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
-        CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr, hInstance, nullptr);
+        CW_USEDEFAULT, 0, 852, 480, nullptr, nullptr, hInstance, nullptr);
 
     if (!hWnd)
     {
