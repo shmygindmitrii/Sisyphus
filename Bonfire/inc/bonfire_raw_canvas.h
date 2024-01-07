@@ -9,7 +9,8 @@ namespace Temple {
             WIREFRAME,
             TRIANGLE,
         };
-        using vertexShaderFunc = void(*)(const Base::vec4& input, Base::vec4* output, const void* descriptorSet);
+        using vertexShaderFunc = void(*)(const Base::vec4& input, Base::vec4* output, const void* descriptorSet); // over single vertex
+        using pixelShaderFunc = void(*)(RawCanvas* canvas, const Base::vec4& input, const void* data, const void* descriptorSet); // over single pixel
         class RawCanvas {
         private:
             uint8_t* m_data = nullptr;
@@ -20,6 +21,7 @@ namespace Temple {
             RenderMode m_renderMode;
             const void* m_descriptorSet = nullptr;
             vertexShaderFunc m_vsf = nullptr;
+            pixelShaderFunc m_psf = nullptr;
         public:
             RawCanvas(int width, int height, int bytesPerPixel);
             const uint8_t* getData() const;
@@ -28,7 +30,7 @@ namespace Temple {
             void setDescriptorSet(const void* descriptorSet);
             void setRenderMode(RenderMode m);
             void setVertexShader(vertexShaderFunc vsf);
-            void putPixelStraight(int x, int y, const col4u& color);
+            void setPixelShader(pixelShaderFunc psf);
             void putPixel(int x, int y, const col4u& color);
             Base::vec4 processVertex(const Base::vec4& v);
             void fill(const col4u& color);

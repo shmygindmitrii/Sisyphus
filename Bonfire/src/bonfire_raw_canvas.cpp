@@ -56,7 +56,12 @@ void Temple::Bonfire::RawCanvas::setRenderMode(RenderMode m) {
 void Temple::Bonfire::RawCanvas::setVertexShader(Temple::Bonfire::vertexShaderFunc vsf) {
     m_vsf = vsf;
 }
-void Temple::Bonfire::RawCanvas::putPixelStraight(int x, int y, const col4u& color) {
+
+void Temple::Bonfire::RawCanvas::setPixelShader(Temple::Bonfire::pixelShaderFunc psf) {
+    m_psf = psf;
+}
+
+void Temple::Bonfire::RawCanvas::putPixel(int x, int y, const col4u& color) {
     if (x < 0 || x >= m_width || y < 0 || y >= m_height)
         return;
     // coordinates 
@@ -67,15 +72,6 @@ void Temple::Bonfire::RawCanvas::putPixelStraight(int x, int y, const col4u& col
     m_data[pixelIndex + 1] = color.g;
     m_data[pixelIndex + 2] = color.r;
     m_data[pixelIndex + 3] = color.a;
-}
-
-void Temple::Bonfire::RawCanvas::putPixel(int x, int y, const col4u& color) {
-    // coordinates 
-    // x : -w/2 to w/2 (left to right)
-    // y : -h/2 to h/2 (bottom to up)
-    int cx = x + m_width / 2;
-    int cy = m_height / 2 - y;
-    this->putPixelStraight(cx, cy, color);
 }
 
 void Temple::Bonfire::RawCanvas::fill(const col4u& color) {
@@ -100,14 +96,14 @@ void Temple::Bonfire::RawCanvas::drawLine(const Base::vec4& a, const Base::vec4&
     float xDif = b0.x - a0.x;
     if (fabs(yDif) < 0.001f && fabs(xDif) < 0.001f) {
         // point
-        this->putPixelStraight(a0.x, a0.y, color);
+        this->putPixel(a0.x, a0.y, color);
     }
     else {
         if (fabs(yDif) > fabs(xDif)) {
             float slope = xDif / yDif;
             for (float y = a0.y; y < b0.y; y += 1.0f) {
                 float x = a0.x + (y - a0.y) * slope;
-                this->putPixelStraight((int)x, (int)y, color);
+                this->putPixel((int)x, (int)y, color);
             }
         }
         else {
@@ -119,7 +115,7 @@ void Temple::Bonfire::RawCanvas::drawLine(const Base::vec4& a, const Base::vec4&
             float slope = yDif / xDif;
             for (float x = a0.x; x < b0.x; x += 1.0f) {
                 float y = a0.y + (x - a0.x) * slope;
-                this->putPixelStraight((int)x, (int)y, color);
+                this->putPixel((int)x, (int)y, color);
             }
         }
     }
@@ -159,7 +155,7 @@ void Temple::Bonfire::RawCanvas::drawFilledTriangle(const Base::vec4& a, const B
     //
     xab.insert(xab.end(), xbc.begin(), xbc.end());
     int n = std::min(xab.size(), xac.size());
-    // now we have only two vectors with x-values, need to understandm what is left and what is right
+    // now we have only two vectors with x-values, need to understand, what is left and what is right
     int middle = n / 2;
     if (xac[middle] < xab[middle]) {
         std::swap(xac, xab);
@@ -170,7 +166,7 @@ void Temple::Bonfire::RawCanvas::drawFilledTriangle(const Base::vec4& a, const B
         float leftx = xab[i];
         float rightx = xac[i];
         while (leftx < rightx) {
-            this->putPixelStraight((int)leftx, (int)bottomy, color);
+            this->putPixel((int)leftx, (int)bottomy, color);
             leftx += 1.0f;
         }
         bottomy += 1.0f;
