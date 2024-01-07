@@ -97,6 +97,11 @@ void draw(HWND hWnd) {
         const Temple::Base::mat4* mRot = reinterpret_cast<const Temple::Base::mat4*>(descriptorSet);
         *out = (*mRot) * inp;
     });
+    canvas.setPixelShader([](void* canvasRaw, const Temple::Base::vec4& inp, const void* perPixelData, const void* descriptorSet) {
+        Temple::Bonfire::RawCanvas* canvas = reinterpret_cast<Temple::Bonfire::RawCanvas*>(canvasRaw);
+        const Temple::Bonfire::col4u* pixelColor = reinterpret_cast<const Temple::Bonfire::col4u*>(perPixelData);
+        canvas->putPixel((int)inp.x, (int)inp.y, *pixelColor);
+    });
 
     for (int i = 0; i < g_modelVerts.size(); i += 3) {
         canvas.drawTriangle(g_modelVerts[i], g_modelVerts[i + 1], g_modelVerts[i + 2], lineColor);

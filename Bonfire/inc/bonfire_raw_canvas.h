@@ -10,7 +10,7 @@ namespace Temple {
             TRIANGLE,
         };
         using vertexShaderFunc = void(*)(const Base::vec4& input, Base::vec4* output, const void* descriptorSet); // over single vertex
-        using pixelShaderFunc = void(*)(RawCanvas* canvas, const Base::vec4& input, const void* data, const void* descriptorSet); // over single pixel
+        using pixelShaderFunc = void(*)(void* canvas, const Base::vec4& input, const void* data, const void* descriptorSet); // over single pixel
         class RawCanvas {
         private:
             uint8_t* m_data = nullptr;
