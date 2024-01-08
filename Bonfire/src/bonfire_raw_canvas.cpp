@@ -6,6 +6,71 @@
 #include <algorithm>
 #include <vector>
 
+Temple::Bonfire::VertexFormat::VertexFormat(const std::vector<Temple::Bonfire::VertexAttribType>& attribs) {
+    size = 0;
+    for (int i = 0; i < attribs.size(); i++) {
+        attributes.push_back(attribs[i]);
+        switch (attribs[i]) {
+        case VertexAttribType::FLOAT32:
+            size += 4;
+            break;
+        case VertexAttribType::INT32:
+            size += 4;
+            break;
+        case VertexAttribType::UINT8:
+            size += 1;
+            break;
+        case VertexAttribType::VEC3:
+            size += 12;
+            break;
+        case VertexAttribType::VEC4:
+            size += 16;
+            break;
+        case VertexAttribType::COL4U:
+            size += 4;
+            break;
+        }
+    }
+}
+
+template<typename T>
+static inline void interpolateTemplate(const uint8_t*& aIn, const uint8_t*& bIn, uint8_t*& cOut, float weight) {
+    *(T*)cOut = (*(T*)bIn) * weight - (*(T*)aIn) * weight + *(T*)aIn;
+    aIn += sizeof(T);
+    bIn += sizeof(T);
+    cOut += sizeof(T);
+}
+
+void Temple::Bonfire::interpolateAttributes(const uint8_t* aIn, const uint8_t* bIn, uint8_t* cOut, float weight, const VertexFormat& vf) {
+    // cOut should be enough to hold aIn or bIn (they are the same in terms of size)
+    // weight is always from 0 to 1
+    for (int i = 0; i < vf.attributes.size(); i++) {
+        switch (vf.attributes[i]) {
+        case VertexAttribType::FLOAT32:
+            interpolateTemplate<float>(aIn, bIn, cOut, weight);
+            break;
+        case VertexAttribType::INT32:
+            interpolateTemplate<int32_t>(aIn, bIn, cOut, weight);
+            break;
+        case VertexAttribType::UINT8:
+            interpolateTemplate<uint8_t>(aIn, bIn, cOut, weight);
+            break;
+        case VertexAttribType::VEC3:
+            interpolateTemplate<Base::vec3>(aIn, bIn, cOut, weight);
+            break;
+        case VertexAttribType::VEC4:
+            interpolateTemplate<Base::vec4>(aIn, bIn, cOut, weight);
+            break;
+        case VertexAttribType::COL4U:
+            interpolateTemplate<uint8_t>(aIn, bIn, cOut, weight);
+            interpolateTemplate<uint8_t>(aIn, bIn, cOut, weight);
+            interpolateTemplate<uint8_t>(aIn, bIn, cOut, weight);
+            interpolateTemplate<uint8_t>(aIn, bIn, cOut, weight); 
+            break;
+        }
+    }
+}
+
 Temple::Bonfire::RawCanvas::RawCanvas(int width, int height, int bytesPerPixel) : m_width(width), m_height(height), m_bytesPerPixel(bytesPerPixel) {
     size_t fullSize = m_width * m_height * (size_t)m_bytesPerPixel;
     assert(fullSize > 0);
@@ -175,9 +240,9 @@ void Temple::Bonfire::RawCanvas::drawFilledTriangle(const Base::vec4& a, const B
 
 void Temple::Bonfire::RawCanvas::drawTriangle(const Base::vec4& a, const Base::vec4& b, const Base::vec4& c, const col4u& color) {
     Base::vec4 va, vb, vc;
-    this->m_vsf(a, &va, this->m_descriptorSet);
-    this->m_vsf(b, &vb, this->m_descriptorSet);
-    this->m_vsf(c, &vc, this->m_descriptorSet);
+    this->m_vsf(a, &va, &color, this->m_descriptorSet);
+    this->m_vsf(b, &vb, &color, this->m_descriptorSet);
+    this->m_vsf(c, &vc, &color, this->m_descriptorSet);
 
     va = processVertex(va);
     vb = processVertex(vb);
@@ -186,14 +251,82 @@ void Temple::Bonfire::RawCanvas::drawTriangle(const Base::vec4& a, const Base::v
     // cut segments
 
     switch (m_renderMode) {
-    case TRIANGLE:
+    case RenderMode::TRIANGLE:
         this->drawFilledTriangle(va, vb, vc, color);
         break;
-    case WIREFRAME:
+    case RenderMode::WIREFRAME:
     default:
         this->drawLine(va, vb, color);
         this->drawLine(vb, vc, color);
         this->drawLine(vc, va, color);
+    }
+}
+
+void Temple::Bonfire::RawCanvas::drawLines(const std::vector<Base::vec4>& coords, const uint8_t* vertexData, int vertexDataSize, const VertexFormat& vf) {
+    int nLines = coords.size();
+    for (int i = 0; i < nLines; i += 2) {
+        const Base::vec4& va = coords[i];
+        const Base::vec4& vb = coords[i+1];
+        const uint8_t* aData = &vertexData[i * vf.size];
+        const uint8_t* bData = &vertexData[(i + 1) * vf.size];
+        // draw single line here
+        Base::vec4 a, b;
+        this->m_vsf(va, &a, aData, this->m_descriptorSet);
+        this->m_vsf(vb, &b, bData, this->m_descriptorSet);
+        //
+        a = processVertex(a);
+        b = processVertex(b);
+        // obtained vertex shader results and go to the pixel stage
+        Base::vec4 a0(a);
+        Base::vec4 b0(b);
+        const uint8_t *aData0 = aData, *bData0 = bData;
+        if (a.y > b.y) {
+            a0 = b;
+            b0 = a;
+            aData0 = bData;
+            bData0 = aData;
+        }
+        // a is bottom vertex and b is top vertex
+        float yDif = b0.y - a0.y;
+        float xDif = b0.x - a0.x;
+        if (fabs(yDif) < 0.001f && fabs(xDif) < 0.001f) {
+            // point
+            this->m_psf(this, a0, aData0, this->m_descriptorSet);
+        }
+        else {
+            if (fabs(yDif) > fabs(xDif)) {
+                float slope = xDif / yDif;
+                std::vector<uint8_t> cOut(vf.size);
+                Base::vec4 c;
+                for (c.y = a0.y; c.y < b0.y; c.y += 1.0f) {
+                    c.x = a0.x + (c.y - a0.y) * slope;
+                    float weight = (c.y - a0.y) / (b0.y - a0.y);
+                    c.z = (b.z - a.z) * weight + a.z;
+                    interpolateAttributes(aData0, bData0, &cOut[0], weight, vf);
+                    this->m_psf(this, c, cOut.data(), this->m_descriptorSet);
+                }
+            }
+            else {
+                if (a0.x > b0.x) {
+                    Base::vec4 c0 = a0;
+                    const uint8_t* cData0 = aData0;
+                    a0 = b0;
+                    b0 = c0;
+                    aData0 = bData0;
+                    bData0 = cData0;
+                }
+                float slope = yDif / xDif;
+                std::vector<uint8_t> cOut(vf.size);
+                Base::vec4 c;
+                for (c.x = a0.x; c.x < b0.x; c.x += 1.0f) {
+                    c.y = a0.y + (c.x - a0.x) * slope;
+                    float weight = (c.x - a0.x) / (b0.x - a0.x);
+                    c.z = (b.z - a.z) * weight + a.z;
+                    interpolateAttributes(aData0, bData0, &cOut[0], weight, vf);
+                    this->m_psf(this, c, cOut.data(), this->m_descriptorSet);
+                }
+            }
+        }
     }
 }
 

@@ -2,15 +2,34 @@
 #include <cstdint>
 #include "bonfire_color.h"
 #include "base_vectors.h"
+#include <tuple>
 
 namespace Temple {
     namespace Bonfire {
-        enum RenderMode {
+        enum class RenderMode {
             WIREFRAME,
             TRIANGLE,
         };
-        using vertexShaderFunc = void(*)(const Base::vec4& input, Base::vec4* output, const void* descriptorSet); // over single vertex
-        using pixelShaderFunc = void(*)(void* canvas, const Base::vec4& input, const void* data, const void* descriptorSet); // over single pixel
+        enum class PrimitiveType {
+            LINE,
+            TRIANGLE,
+        };
+        enum class VertexAttribType {
+            FLOAT32,
+            INT32,
+            UINT8,
+            VEC4,
+            VEC3,
+            COL4U,
+        };
+        struct VertexFormat {
+            size_t size;
+            std::vector<VertexAttribType> attributes; // position is always in the beginning
+            VertexFormat(const std::vector<VertexAttribType>& attribs);
+        };
+        void interpolateAttributes(const uint8_t* aIn, const uint8_t* bIn, uint8_t* cOut, float weight, const VertexFormat& vf);
+        using vertexShaderFunc = void(*)(const Base::vec4& input, Base::vec4* output, const void* data, const void* descriptorSet); // over single vertex
+        using pixelShaderFunc = void(*)(void* canvasRaw, const Base::vec4& input, const void* data, const void* descriptorSet); // over single pixel
         class RawCanvas {
         private:
             uint8_t* m_data = nullptr;
@@ -37,6 +56,9 @@ namespace Temple {
             void drawLine(const Base::vec4 &a, const Base::vec4& b, const col4u& color);
             void drawTriangle(const Base::vec4& a, const Base::vec4& b, const Base::vec4& c, const col4u& color);
             void drawFilledTriangle(const Base::vec4& a, const Base::vec4& b, const Base::vec4& c, const col4u& color);
+            //
+            void drawLines(const std::vector<Base::vec4>& coords, const uint8_t* vertexData, int vertexDataSize, const VertexFormat& vf);
+            //
             ~RawCanvas();
         };
     }
