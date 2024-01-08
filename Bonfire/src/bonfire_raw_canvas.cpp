@@ -86,11 +86,14 @@ const uint8_t* Temple::Bonfire::RawCanvas::getData() const {
 }
 
 void Temple::Bonfire::RawCanvas::resize(int width, int height, int bytesPerPixel) {
-    size_t oldSize = m_width * m_height * (size_t)m_bytesPerPixel;
+
+    size_t oldResolution = m_width * m_height;
+    size_t oldSize = oldResolution * (size_t)m_bytesPerPixel;
     m_width = width;
     m_height = height;
     m_bytesPerPixel = bytesPerPixel;
-    size_t fullSize = m_width * m_height * (size_t)m_bytesPerPixel;
+    size_t curResolution = m_width * m_height;
+    size_t fullSize = curResolution * (size_t)m_bytesPerPixel;
     assert(fullSize >= 0);
     if (fullSize != oldSize) {
         if (m_data != nullptr) {
@@ -99,6 +102,15 @@ void Temple::Bonfire::RawCanvas::resize(int width, int height, int bytesPerPixel
         }
         if (fullSize > 0) {
             m_data = new uint8_t[fullSize];
+        }
+    }
+    if (curResolution != oldResolution) {
+        if (m_depth != nullptr) {
+            delete[] m_depth;
+            m_depth = nullptr;
+        }
+        if (curResolution > 0) {
+            m_depth = new float[curResolution];
         }
     }
 }
