@@ -38,11 +38,14 @@ void draw(HWND hWnd) {
     bmi.bmiHeader.biPlanes = 1;
     bmi.bmiHeader.biBitCount = 32;     // 32-bit
     bmi.bmiHeader.biCompression = BI_RGB;
-
+    //
+    Temple::Bonfire::col4u red { 255, 0, 0, 255 };
+    Temple::Bonfire::col4u green { 0, 255, 0, 255 };
+    Temple::Bonfire::col4u blue { 0, 0, 255, 255 };
     // background color
     Temple::Bonfire::col4u bgColor{ 15, 15, 35, 255 };
     Temple::Bonfire::col4u lineColor{ 0, 150, 0, 255 };
-
+    //
     GetClientRect(hWnd, &rect);
 
     int width = rect.right - rect.left;
@@ -66,6 +69,11 @@ void draw(HWND hWnd) {
     Temple::Base::vec4 a{ -0.0f, -0.0f, +0.0f, +1.0f };
     Temple::Base::vec4 b{ -0.7f, +0.0f, +0.0f, +1.0f };
     Temple::Base::vec4 c{ -0.7f, +0.7f, +0.0f, +1.0f };
+    std::vector<Temple::Base::vec4> vertices = { a, b, b, c, a, c };
+    std::vector<Temple::Bonfire::col4u> colors(6);
+    colors[0] = red; colors[1] = green; colors[2] = green;
+    colors[3] = blue; colors[4] = red; colors[5] = blue;
+    Temple::Bonfire::VertexFormat vf({ Temple::Bonfire::VertexAttribType::COL4U });
 
     auto curTime = std::chrono::high_resolution_clock::now();    
     auto duration = curTime.time_since_epoch();
@@ -81,9 +89,9 @@ void draw(HWND hWnd) {
     Temple::Base::mat4 mRotation = mRotY * mRotZ;
 
     Temple::Base::mat4 mScale = Temple::Base::mat4::identity();
-    mScale.r0.x = 0.25f;
-    mScale.r1.y = 0.25f;
-    mScale.r2.z = 0.25f;
+    mScale.r0.x = 0.5f;
+    mScale.r1.y = 0.5f;
+    mScale.r2.z = 0.5f;
 
     Temple::Base::mat4 mTranslation = Temple::Base::mat4::identity();
     mTranslation.r2.w = 1.0f; // z-shift
@@ -93,7 +101,7 @@ void draw(HWND hWnd) {
     Temple::Base::mat4 matrix = mPerspective * mTranslation * mRotation * mScale;
     canvas.setRenderMode(Temple::Bonfire::RenderMode::TRIANGLE);
     canvas.setDescriptorSet(&matrix);
-    canvas.setVertexShader([](const Temple::Base::vec4& inp, Temple::Base::vec4* out, const void* descriptorSet) { 
+    canvas.setVertexShader([](const Temple::Base::vec4& inp, Temple::Base::vec4* out, const void* data, const void* descriptorSet) { 
         const Temple::Base::mat4* mRot = reinterpret_cast<const Temple::Base::mat4*>(descriptorSet);
         *out = (*mRot) * inp;
     });
@@ -102,11 +110,12 @@ void draw(HWND hWnd) {
         const Temple::Bonfire::col4u* pixelColor = reinterpret_cast<const Temple::Bonfire::col4u*>(perPixelData);
         canvas->putPixel((int)inp.x, (int)inp.y, *pixelColor);
     });
-
+    /*
     for (int i = 0; i < g_modelVerts.size(); i += 3) {
         canvas.drawTriangle(g_modelVerts[i], g_modelVerts[i + 1], g_modelVerts[i + 2], lineColor);
     }
-
+    */
+    canvas.drawLines(vertices, reinterpret_cast<const uint8_t*>(colors.data()), colors.size() * sizeof(colors[0]), vf);
     // end of color buffer filling
     // Draw the buffer to the window
     SetDIBitsToDevice(hdc, 0, 0, width, height, 0, 0, 0, height, (unsigned char*)canvas.getData(), &bmi, DIB_RGB_COLORS);
