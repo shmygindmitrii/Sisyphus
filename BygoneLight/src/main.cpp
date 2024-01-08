@@ -142,6 +142,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         return FALSE;
     }
     std::shared_ptr<Temple::Barn::ObjFile> objFile = Temple::Barn::ReadObj("D:\\Own\\CPP\\Temple\\Resources\\cube.obj");
+    for (int vertIdx = 0; vertIdx < objFile->coord.size(); vertIdx++) {
+        Temple::Base::vec4 pos(objFile->coord[vertIdx], 1.0f);
+        g_modelVerts.push_back(pos);
+    }
     for (int i = 0; i < objFile->faces.size(); i++) {
         const Temple::Barn::ObjFace& face = objFile->faces[i];
         for (int j = 0; j < 3; j++) {
