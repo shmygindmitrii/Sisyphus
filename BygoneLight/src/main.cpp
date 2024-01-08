@@ -40,12 +40,18 @@ void draw(HWND hWnd) {
     bmi.bmiHeader.biBitCount = 32;     // 32-bit
     bmi.bmiHeader.biCompression = BI_RGB;
     //
-    Temple::Bonfire::col4u red { 255, 0, 0, 255 };
-    Temple::Bonfire::col4u green { 0, 255, 0, 255 };
-    Temple::Bonfire::col4u blue { 0, 0, 255, 255 };
-    // background color
-    Temple::Bonfire::col4u bgColor{ 15, 15, 35, 255 };
-    Temple::Bonfire::col4u lineColor{ 0, 150, 0, 255 };
+    static Temple::Bonfire::col4u red { 255, 0, 0, 255 };
+    static Temple::Bonfire::col4u green { 0, 255, 0, 255 };
+    static Temple::Bonfire::col4u blue { 0, 0, 255, 255 };
+    static Temple::Bonfire::col4u yellow { 200, 200, 0, 255 };
+    static Temple::Bonfire::col4u pink { 200, 154, 165, 255 };
+    static Temple::Bonfire::col4u turquoise { 0, 154, 154, 255 };
+    static Temple::Bonfire::col4u orange { 205, 88, 0, 255 };
+    static Temple::Bonfire::col4u violet { 107, 0, 215, 255 };
+    static std::vector<Temple::Bonfire::col4u> defaultColors = { red, green, blue, yellow, pink, turquoise, orange, violet };
+
+    static Temple::Bonfire::col4u bgColor{ 15, 15, 35, 255 };
+    static Temple::Bonfire::col4u lineColor{ 0, 150, 0, 255 };
     //
     GetClientRect(hWnd, &rect);
 
@@ -65,13 +71,18 @@ void draw(HWND hWnd) {
     // begin straight filling of color buffer
     canvas.clearDepth(10.0f);
     canvas.fill(bgColor); // fill background and also clear screen
+#if TWO_TRIANGLES_TEST
     Temple::Base::vec4 a{ -0.0f, -0.0f, +0.0f, +1.0f };
     Temple::Base::vec4 b{ -0.7f, +0.0f, +0.0f, +1.0f };
     Temple::Base::vec4 c{ -0.7f, +0.7f, +0.0f, +1.0f };
-    std::vector<Temple::Base::vec4> vertices = { a, b, c };
+    Temple::Base::vec4 d{  0.9f,  0.2f, +0.5f, +1.0f };
+    Temple::Base::vec4 e{ -0.5f, +0.2f, +0.5f, +1.0f };
+    Temple::Base::vec4 f{ -0.5f, +0.9f, +0.5f, +1.0f };
+    std::vector<Temple::Base::vec4> abc = { a, b, c };
+    std::vector<Temple::Base::vec4> def = { d, e, f };
     std::vector<Temple::Bonfire::col4u> colors = { red, green, blue };
-    //std::vector<int> indices = { 0, 1, 1, 2, 0, 2 };
-    std::vector<int> indices = { 0, 1, 2 };
+    std::vector<Temple::Bonfire::col4u> defColors = { yellow, pink, turquoise };
+#endif
     Temple::Bonfire::VertexFormat vf({ Temple::Bonfire::VertexAttribType::COL4U });
 
     auto curTime = std::chrono::high_resolution_clock::now();    
@@ -79,9 +90,9 @@ void draw(HWND hWnd) {
     long long nanoseconds = std::chrono::duration_cast<std::chrono::nanoseconds>(duration).count();
 
     long long circle_ns = 1000000000 * 2;
-    float angle = ((nanoseconds % circle_ns) / (float)circle_ns)* M_PI * 2.0f; // unused for now
+    float angley = ((nanoseconds % circle_ns) / (float)circle_ns)* M_PI * 2.0f; // unused for now
 
-    float angley = 30.0f / 360.0f * 2.0f * M_PI;
+    //float angley = 30.0f / 360.0f * 2.0f * M_PI;
     float anglez = 10.0f / 360.0f * 2.0f * M_PI;
     const Temple::Base::mat4 mRotY = Temple::Base::mat4::roty(angley);
     const Temple::Base::mat4 mRotZ = Temple::Base::mat4::rotz(anglez);
@@ -96,7 +107,7 @@ void draw(HWND hWnd) {
     mTranslation.r2.w = 1.0f; // z-shift
     
     Temple::Base::mat4 mPerspective = Temple::Base::mat4::projection(90.0f, width / (float)height, 0.5f, 100.0f);
-   
+
     Temple::Base::mat4 matrix = mPerspective * mTranslation * mRotation * mScale;
     canvas.setRenderMode(Temple::Bonfire::RenderMode::TRIANGLE);
     canvas.setDescriptorSet(&matrix);
@@ -112,12 +123,9 @@ void draw(HWND hWnd) {
 
     std::vector<Temple::Bonfire::col4u> vertColors;
     for (int i = 0; i < g_modelVerts.size(); i++) {
-        vertColors.push_back(colors[i % colors.size()]);
+        vertColors.push_back(defaultColors[i % defaultColors.size()]);
     }
     canvas.drawTriangles(g_modelVerts, g_modelInds, reinterpret_cast<const uint8_t*>(vertColors.data()), vf);
-    //canvas.drawLines(vertices, indices, reinterpret_cast<const uint8_t*>(colors.data()), vf);
-    //canvas.drawTriangles(abc, indices, reinterpret_cast<const uint8_t*>(colors.data()), vf);
-    //canvas.drawTriangles(def, indices, reinterpret_cast<const uint8_t*>(defColors.data()), vf);
     // end of color buffer filling
     // Draw the buffer to the window
     SetDIBitsToDevice(hdc, 0, 0, width, height, 0, 0, 0, height, (unsigned char*)canvas.getData(), &bmi, DIB_RGB_COLORS);
