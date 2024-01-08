@@ -452,7 +452,7 @@ void Temple::Bonfire::RawCanvas::drawTriangles(const std::vector<Base::vec4>& co
                     if (pixFlatIdx >= 0 && pixFlatIdx < m_width * m_height) {
                         if (m_depthTest) {
                             if (c.z < m_depth[pixFlatIdx]) {
-                    this->m_psf(this, c, vInterpolatedLR.data(), this->m_descriptorSet);
+                                this->m_psf(this, c, vInterpolatedLR.data(), this->m_descriptorSet);
                             }
                         }
                         else {
@@ -487,7 +487,7 @@ void Temple::Bonfire::RawCanvas::drawTriangles(const std::vector<Base::vec4>& co
                     if (pixFlatIdx >= 0 && pixFlatIdx < m_width * m_height) {
                         if (m_depthTest) {
                             if (c.z < m_depth[pixFlatIdx]) {
-                    this->m_psf(this, c, vInterpolatedLR.data(), this->m_descriptorSet);
+                                this->m_psf(this, c, vInterpolatedLR.data(), this->m_descriptorSet);
                             }
                         }
                         else {
@@ -529,7 +529,7 @@ void Temple::Bonfire::RawCanvas::drawTriangles(const std::vector<Base::vec4>& co
                             }
                         }
                         else {
-                    this->m_psf(this, c, vInterpolatedLR.data(), this->m_descriptorSet);
+                            this->m_psf(this, c, vInterpolatedLR.data(), this->m_descriptorSet);
                         }
                         if (m_depthWrite) {
                             if (c.z < m_depth[pixFlatIdx]) {
@@ -560,7 +560,7 @@ void Temple::Bonfire::RawCanvas::drawTriangles(const std::vector<Base::vec4>& co
                     if (pixFlatIdx >= 0 && pixFlatIdx < m_width * m_height) {
                         if (m_depthTest) {
                             if (c.z < m_depth[pixFlatIdx]) {
-                    this->m_psf(this, c, vInterpolatedLR.data(), this->m_descriptorSet);
+                                this->m_psf(this, c, vInterpolatedLR.data(), this->m_descriptorSet);
                             }
                         }
                         else {
