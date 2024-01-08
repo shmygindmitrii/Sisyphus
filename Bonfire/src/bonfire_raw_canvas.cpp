@@ -339,7 +339,7 @@ void Temple::Bonfire::RawCanvas::drawLines(const std::vector<Base::vec4>& coords
         float xDif = b0.x - a0.x;
         if (fabs(yDif) < 0.001f && fabs(xDif) < 0.001f) {
             // point
-            this->m_psf(this, a0, aData0, this->m_descriptorSet);
+            renderPixelDepthWise(a0, aData0);
         }
         else {
             if (fabs(yDif) > fabs(xDif)) {
@@ -351,7 +351,7 @@ void Temple::Bonfire::RawCanvas::drawLines(const std::vector<Base::vec4>& coords
                     float weight = (c.y - a0.y) / (b0.y - a0.y);
                     c.z = (b.z - a.z) * weight + a.z;
                     interpolateAttributes(aData0, bData0, &cOut[0], weight, vf);
-                    this->m_psf(this, c, cOut.data(), this->m_descriptorSet);
+                    renderPixelDepthWise(c, cOut.data());
                 }
             }
             else {
@@ -371,7 +371,7 @@ void Temple::Bonfire::RawCanvas::drawLines(const std::vector<Base::vec4>& coords
                     float weight = (c.x - a0.x) / (b0.x - a0.x);
                     c.z = (b.z - a.z) * weight + a.z;
                     interpolateAttributes(aData0, bData0, &cOut[0], weight, vf);
-                    this->m_psf(this, c, cOut.data(), this->m_descriptorSet);
+                    renderPixelDepthWise(c, cOut.data());
                 }
             }
         }

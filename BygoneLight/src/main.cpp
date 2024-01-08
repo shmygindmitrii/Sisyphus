@@ -71,18 +71,14 @@ void draw(HWND hWnd) {
     // begin straight filling of color buffer
     canvas.clearDepth(10.0f);
     canvas.fill(bgColor); // fill background and also clear screen
-#if TWO_TRIANGLES_TEST
-    Temple::Base::vec4 a{ -0.0f, -0.0f, +0.0f, +1.0f };
-    Temple::Base::vec4 b{ -0.7f, +0.0f, +0.0f, +1.0f };
-    Temple::Base::vec4 c{ -0.7f, +0.7f, +0.0f, +1.0f };
-    Temple::Base::vec4 d{  0.9f,  0.2f, +0.5f, +1.0f };
-    Temple::Base::vec4 e{ -0.5f, +0.2f, +0.5f, +1.0f };
-    Temple::Base::vec4 f{ -0.5f, +0.9f, +0.5f, +1.0f };
+
+    Temple::Base::vec4 a{ -0.0f, -0.0f, +2.0f, +1.0f };
+    Temple::Base::vec4 b{ -0.7f, -0.7f, +2.0f, +1.0f };
+    Temple::Base::vec4 c{ +0.7f, -0.7f, +2.0f, +1.0f };
     std::vector<Temple::Base::vec4> abc = { a, b, c };
-    std::vector<Temple::Base::vec4> def = { d, e, f };
-    std::vector<Temple::Bonfire::col4u> colors = { red, green, blue };
-    std::vector<Temple::Bonfire::col4u> defColors = { yellow, pink, turquoise };
-#endif
+    std::vector<Temple::Bonfire::col4u> abcColors = { red, green, blue };
+    std::vector<int> abcWireIndices = { 0, 1, 1, 2, 2, 0 };
+
     Temple::Bonfire::VertexFormat vf({ Temple::Bonfire::VertexAttribType::COL4U });
 
     auto curTime = std::chrono::high_resolution_clock::now();    
@@ -126,6 +122,7 @@ void draw(HWND hWnd) {
         vertColors.push_back(defaultColors[i % defaultColors.size()]);
     }
     canvas.drawTriangles(g_modelVerts, g_modelInds, reinterpret_cast<const uint8_t*>(vertColors.data()), vf);
+    canvas.drawLines(abc, abcWireIndices, reinterpret_cast<const uint8_t*>(abcColors.data()), vf);
     // end of color buffer filling
     // Draw the buffer to the window
     SetDIBitsToDevice(hdc, 0, 0, width, height, 0, 0, 0, height, (unsigned char*)canvas.getData(), &bmi, DIB_RGB_COLORS);
