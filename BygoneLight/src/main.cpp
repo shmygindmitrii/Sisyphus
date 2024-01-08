@@ -146,17 +146,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         const Temple::Barn::ObjFace& face = objFile->faces[i];
         for (int j = 0; j < 3; j++) {
             int vertIdx = face.indices[j].position - 1;
-            if (vertIdx >= 0 && vertIdx < objFile->coord.size()) {
-                Temple::Base::vec4 pos(objFile->coord[vertIdx], 1.0f);
-                g_modelVerts.push_back(pos);
-            }
-            else {
-                Temple::Base::vec4 pos;
-                g_modelVerts.push_back(pos);
+            g_modelInds.push_back(vertIdx);
             }
         }
-    }
-
     HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_BYGONE_LIGHT));
 
     MSG msg;

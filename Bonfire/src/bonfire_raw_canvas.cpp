@@ -407,8 +407,8 @@ void Temple::Bonfire::RawCanvas::drawTriangles(const std::vector<Base::vec4>& co
             for (idx = 0; idx < xab.size() % (n + 1); idx++) {
                 float leftx = xab[idx];
                 float rightx = xac[idx];
-                float vWeightAC = getWeightBetween(leftx, bottomy, sa.x, sa.y, sc.x, sc.y);
-                float vWeightAB = getWeightBetween(rightx, bottomy, sa.x, sa.y, sb.x, sb.y);
+                float vWeightAB = getWeightBetween(leftx, bottomy, sa.x, sa.y, sb.x, sb.y);
+                float vWeightAC = getWeightBetween(rightx, bottomy, sa.x, sa.y, sc.x, sc.y);
                 interpolateAttributes(aData, bData, &vInterpolatedAB[0], vWeightAB, vf);
                 interpolateAttributes(aData, cData, &vInterpolatedAC[0], vWeightAC, vf);
                 float lz = sa.z + (sb.z - sa.z) * vWeightAB;
@@ -427,15 +427,15 @@ void Temple::Bonfire::RawCanvas::drawTriangles(const std::vector<Base::vec4>& co
             for (; idx < n; idx++) {
                 float leftx = xbc[idx - xab.size()];
                 float rightx = xac[idx];
-                float vWeightAC = getWeightBetween(leftx, bottomy, sa.x, sa.y, sc.x, sc.y);
-                float vWeightBC = getWeightBetween(rightx, bottomy, sb.x, sb.y, sc.x, sc.y);
+                float vWeightBC = getWeightBetween(leftx, bottomy, sb.x, sb.y, sc.x, sc.y);
+                float vWeightAC = getWeightBetween(rightx, bottomy, sa.x, sa.y, sc.x, sc.y);
                 interpolateAttributes(bData, cData, &vInterpolatedBC[0], vWeightBC, vf);
                 interpolateAttributes(aData, cData, &vInterpolatedAC[0], vWeightAC, vf);
                 float lz = sb.z + (sc.z - sb.z) * vWeightBC;
                 float rz = sa.z + (sc.z - sa.z) * vWeightAC;
                 while (leftx < rightx) {
                     float hWeight = (leftx - xbc[idx - xab.size()]) / (xac[idx] - xbc[idx - xab.size()]);
-                    interpolateAttributes(vInterpolatedAB.data(), vInterpolatedAC.data(), &vInterpolatedLR[0], hWeight, vf);
+                    interpolateAttributes(vInterpolatedBC.data(), vInterpolatedAC.data(), &vInterpolatedLR[0], hWeight, vf);
                     c.x = leftx;
                     c.y = bottomy;
                     c.z = lz + (rz - lz) * hWeight;
