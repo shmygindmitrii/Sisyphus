@@ -90,12 +90,12 @@ void draw(HWND hWnd) {
     long long nanoseconds = std::chrono::duration_cast<std::chrono::nanoseconds>(duration).count();
 
     long long circle_ns = 1000000000 * 2;
-    float angley = ((nanoseconds % circle_ns) / (float)circle_ns)* M_PI * 2.0f; // unused for now
+    float angle = ((nanoseconds % circle_ns) / (float)circle_ns)* M_PI * 2.0f; // unused for now
 
     //float angley = 30.0f / 360.0f * 2.0f * M_PI;
-    float anglez = 10.0f / 360.0f * 2.0f * M_PI;
-    const Temple::Base::mat4 mRotY = Temple::Base::mat4::roty(angley);
-    const Temple::Base::mat4 mRotZ = Temple::Base::mat4::rotz(anglez);
+    //float anglez = 10.0f / 360.0f * 2.0f * M_PI;
+    const Temple::Base::mat4 mRotY = Temple::Base::mat4::roty(angle);
+    const Temple::Base::mat4 mRotZ = Temple::Base::mat4::rotz(angle);
     Temple::Base::mat4 mRotation = mRotY * mRotZ;
 
     Temple::Base::mat4 mScale = Temple::Base::mat4::identity();
