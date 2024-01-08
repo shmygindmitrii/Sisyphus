@@ -26,6 +26,7 @@ LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 
 std::vector<Temple::Base::vec4> g_modelVerts;
+std::vector<int> g_modelInds;
 
 void draw(HWND hWnd) {
     RECT rect;
@@ -62,6 +63,7 @@ void draw(HWND hWnd) {
     //setScissor(0, 0, width, height);
 
     // begin straight filling of color buffer
+    canvas.clearDepth(10.0f);
     canvas.fill(bgColor); // fill background and also clear screen
     Temple::Base::vec4 a{ -0.0f, -0.0f, +0.0f, +1.0f };
     Temple::Base::vec4 b{ -0.7f, +0.0f, +0.0f, +1.0f };
@@ -86,9 +88,9 @@ void draw(HWND hWnd) {
     Temple::Base::mat4 mRotation = mRotY * mRotZ;
 
     Temple::Base::mat4 mScale = Temple::Base::mat4::identity();
-    mScale.r0.x = 1.5f;
-    mScale.r1.y = 1.5f;
-    mScale.r2.z = 1.5f;
+    mScale.r0.x = 0.25f;
+    mScale.r1.y = 0.25f;
+    mScale.r2.z = 0.25f;
 
     Temple::Base::mat4 mTranslation = Temple::Base::mat4::identity();
     mTranslation.r2.w = 1.0f; // z-shift
@@ -107,13 +109,15 @@ void draw(HWND hWnd) {
         const Temple::Bonfire::col4u* pixelColor = reinterpret_cast<const Temple::Bonfire::col4u*>(perPixelData);
         canvas->putPixel((int)inp.x, (int)inp.y, *pixelColor);
     });
-    /*
-    for (int i = 0; i < g_modelVerts.size(); i += 3) {
-        canvas.drawTriangle(g_modelVerts[i], g_modelVerts[i + 1], g_modelVerts[i + 2], lineColor);
+
+    std::vector<Temple::Bonfire::col4u> vertColors;
+    for (int i = 0; i < g_modelVerts.size(); i++) {
+        vertColors.push_back(colors[i % colors.size()]);
     }
-    */
-    //canvas.drawLines(vertices, indices, reinterpret_cast<const uint8_t*>(colors.data()), colors.size() * sizeof(colors[0]), vf);
-    canvas.drawTriangles(vertices, indices, reinterpret_cast<const uint8_t*>(colors.data()), colors.size() * sizeof(colors[0]), vf);
+    canvas.drawTriangles(g_modelVerts, g_modelInds, reinterpret_cast<const uint8_t*>(vertColors.data()), vf);
+    //canvas.drawLines(vertices, indices, reinterpret_cast<const uint8_t*>(colors.data()), vf);
+    //canvas.drawTriangles(abc, indices, reinterpret_cast<const uint8_t*>(colors.data()), vf);
+    //canvas.drawTriangles(def, indices, reinterpret_cast<const uint8_t*>(defColors.data()), vf);
     // end of color buffer filling
     // Draw the buffer to the window
     SetDIBitsToDevice(hdc, 0, 0, width, height, 0, 0, 0, height, (unsigned char*)canvas.getData(), &bmi, DIB_RGB_COLORS);
@@ -151,8 +155,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         for (int j = 0; j < 3; j++) {
             int vertIdx = face.indices[j].position - 1;
             g_modelInds.push_back(vertIdx);
-            }
         }
+    }
     HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_BYGONE_LIGHT));
 
     MSG msg;
