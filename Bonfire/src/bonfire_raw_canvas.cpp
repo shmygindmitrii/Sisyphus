@@ -474,8 +474,8 @@ void Temple::Bonfire::RawCanvas::drawTriangles(const std::vector<Base::vec4>& co
                 float vWeightBC = getWeightBetween(rightx, bottomy, sb.x, sb.y, sc.x, sc.y);
                 interpolateAttributes(bData, cData, &vInterpolatedBC[0], vWeightBC, vf);
                 interpolateAttributes(aData, cData, &vInterpolatedAC[0], vWeightAC, vf);
-                float lz = sb.z + (sc.z - sb.z) * vWeightBC;
-                float rz = sa.z + (sc.z - sa.z) * vWeightAC;
+                float lz = sa.z + (sc.z - sa.z) * vWeightAC;
+                float rz = sb.z + (sc.z - sb.z) * vWeightBC;
                 while (leftx < rightx) {
                     float hWeight = (leftx - xac[idx]) / (xbc[idx - xab.size()] - xac[idx]);
                     interpolateAttributes(vInterpolatedAC.data(), vInterpolatedBC.data(), &vInterpolatedLR[0], hWeight, vf);
