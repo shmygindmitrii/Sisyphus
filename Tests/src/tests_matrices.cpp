@@ -309,7 +309,7 @@ TEST_CASE("Temple::Base::mat4 tests", "[Base::mat4]") {
         SECTION("  Example 1") {
             float zNear = 10.0f;
             float zFar = 100.0f;
-            Temple::Base::mat4 proj = Temple::Base::mat4::projection(zNear, zFar);
+            Temple::Base::mat4 proj = Temple::Base::mat4::projection(90.0, 1.0f, zNear, zFar);
             Temple::Base::vec4 pNear(0.0f, 0.0f, zNear, 1.0f);
             Temple::Base::vec4 pFar(0.0f, 0.0f, zFar, 1.0f);
             Temple::Base::vec4 pNearProjected = proj * pNear;
