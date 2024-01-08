@@ -68,7 +68,8 @@ void draw(HWND hWnd) {
     Temple::Base::vec4 c{ -0.7f, +0.7f, +0.0f, +1.0f };
     std::vector<Temple::Base::vec4> vertices = { a, b, c };
     std::vector<Temple::Bonfire::col4u> colors = { red, green, blue };
-    std::vector<int> indices = { 0, 1, 1, 2, 0, 2 };
+    //std::vector<int> indices = { 0, 1, 1, 2, 0, 2 };
+    std::vector<int> indices = { 0, 1, 2 };
     Temple::Bonfire::VertexFormat vf({ Temple::Bonfire::VertexAttribType::COL4U });
 
     auto curTime = std::chrono::high_resolution_clock::now();    
@@ -85,9 +86,9 @@ void draw(HWND hWnd) {
     Temple::Base::mat4 mRotation = mRotY * mRotZ;
 
     Temple::Base::mat4 mScale = Temple::Base::mat4::identity();
-    mScale.r0.x = 0.5f;
-    mScale.r1.y = 0.5f;
-    mScale.r2.z = 0.5f;
+    mScale.r0.x = 1.5f;
+    mScale.r1.y = 1.5f;
+    mScale.r2.z = 1.5f;
 
     Temple::Base::mat4 mTranslation = Temple::Base::mat4::identity();
     mTranslation.r2.w = 1.0f; // z-shift
@@ -111,7 +112,8 @@ void draw(HWND hWnd) {
         canvas.drawTriangle(g_modelVerts[i], g_modelVerts[i + 1], g_modelVerts[i + 2], lineColor);
     }
     */
-    canvas.drawLines(vertices, indices, reinterpret_cast<const uint8_t*>(colors.data()), colors.size() * sizeof(colors[0]), vf);
+    //canvas.drawLines(vertices, indices, reinterpret_cast<const uint8_t*>(colors.data()), colors.size() * sizeof(colors[0]), vf);
+    canvas.drawTriangles(vertices, indices, reinterpret_cast<const uint8_t*>(colors.data()), colors.size() * sizeof(colors[0]), vf);
     // end of color buffer filling
     // Draw the buffer to the window
     SetDIBitsToDevice(hdc, 0, 0, width, height, 0, 0, 0, height, (unsigned char*)canvas.getData(), &bmi, DIB_RGB_COLORS);

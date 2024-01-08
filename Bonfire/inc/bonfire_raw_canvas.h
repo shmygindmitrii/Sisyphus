@@ -58,6 +58,7 @@ namespace Temple {
             void drawFilledTriangle(const Base::vec4& a, const Base::vec4& b, const Base::vec4& c, const col4u& color);
             //
             void drawLines(const std::vector<Base::vec4>& coords, const std::vector<int> indices, const uint8_t* vertexData, int vertexDataSize, const VertexFormat& vf);
+            void drawTriangles(const std::vector<Base::vec4>& coords, const std::vector<int> indices, const uint8_t* vertexData, int vertexDataSize, const VertexFormat& vf);
             //
             ~RawCanvas();
         };

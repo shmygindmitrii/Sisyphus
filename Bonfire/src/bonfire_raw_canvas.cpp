@@ -263,9 +263,10 @@ void Temple::Bonfire::RawCanvas::drawTriangle(const Base::vec4& a, const Base::v
 }
 
 void Temple::Bonfire::RawCanvas::drawLines(const std::vector<Base::vec4>& coords, const std::vector<int> indices, const uint8_t* vertexData, int vertexDataSize, const VertexFormat& vf) {
+    if (indices.size() == 0 || indices.size() % 2 != 0) return;
     for (int i = 0; i < indices.size(); i += 2) {
         const Base::vec4& va = coords[indices[i]];
-        const Base::vec4& vb = coords[indices[i+1]];
+        const Base::vec4& vb = coords[indices[i + 1]];
         const uint8_t* aData = &vertexData[indices[i] * vf.size];
         const uint8_t* bData = &vertexData[indices[i + 1] * vf.size];
         // draw single line here
@@ -324,6 +325,167 @@ void Temple::Bonfire::RawCanvas::drawLines(const std::vector<Base::vec4>& coords
                     interpolateAttributes(aData0, bData0, &cOut[0], weight, vf);
                     this->m_psf(this, c, cOut.data(), this->m_descriptorSet);
                 }
+            }
+        }
+    }
+}
+
+static inline float getWeightBetween(float x, float y, float x0, float y0, float x1, float y1) {
+    float dx = x1 - x0;
+    float dy = y1 - y0;
+    if (fabs(dx) < fabs(dy)) {
+        return (y - y0) / (y1 - y0);
+    }
+    else {
+        if (EQUAL_FLOATS(x0, x1)) {
+            return 0.0f;
+        }
+        return (x - x0) / (x1 - x0);
+    }
+}
+
+void Temple::Bonfire::RawCanvas::drawTriangles(const std::vector<Base::vec4>& coords, const std::vector<int> indices, 
+                                               const uint8_t* vertexData, int vertexDataSize, const VertexFormat& vf) {
+    if (indices.size() == 0 || indices.size() % 3 != 0) return;
+    for (int i = 0; i < indices.size(); i += 3) {
+        const Base::vec4& va(coords[indices[i]]);
+        const Base::vec4& vb(coords[indices[i + 1]]);
+        const Base::vec4& vc(coords[indices[i + 2]]);
+        const uint8_t* aData = &vertexData[indices[i] * vf.size];
+        const uint8_t* bData = &vertexData[indices[i + 1] * vf.size];
+        const uint8_t* cData = &vertexData[indices[i + 2] * vf.size];
+        //
+        Base::vec4 a, b, c;
+        this->m_vsf(va, &a, aData, this->m_descriptorSet);
+        this->m_vsf(vb, &b, bData, this->m_descriptorSet);
+        this->m_vsf(vc, &c, cData, this->m_descriptorSet);
+        //
+        a = processVertex(a);
+        b = processVertex(b);
+        c = processVertex(c);
+        //
+        Base::vec4 sa = a, sb = b, sc = c;
+        if (sa.y > sc.y) {
+            std::swap(sa, sc);
+            std::swap(aData, cData);
+        }
+        if (sa.y > sb.y) {
+            std::swap(sa, sb);
+            std::swap(aData, bData);
+        }
+        if (sb.y > sc.y) {
+            std::swap(sb, sc);
+            std::swap(bData, cData);
+        }
+        // get interpolated values - line coordinates, only one component
+        std::vector<float> xab = Base::interpolate(sa.y, sa.x, sb.y, sb.x);
+        std::vector<float> xbc = Base::interpolate(sb.y, sb.x, sc.y, sc.x);
+        std::vector<float> xac = Base::interpolate(sa.y, sa.x, sc.y, sc.x); // long side x
+        int nzeros = (int)(xab.size() == 0) + (int)(xbc.size() == 0) + (int)(xac.size() == 0);
+        if (nzeros > 1) {
+            return;
+        }
+        // here is the diffrence - we don't want to merge xab and xbc
+        int n = std::min(xac.size(), xab.size() + xbc.size());
+        int middle = n / 2;
+        bool leftToRight = true;
+        if (middle >= xab.size()) {
+            if (xac[middle] < xbc[middle - xab.size()]) {
+                leftToRight = false;
+            }
+        }
+        else {
+            if (xac[middle] < xab[middle]) {
+                leftToRight = false;
+            }
+        }
+        float bottomy = sa.y;
+        int idx = 0;
+        std::vector<uint8_t> vInterpolatedAC(vf.size), vInterpolatedAB(vf.size), vInterpolatedBC(vf.size), vInterpolatedLR(vf.size);
+        if (leftToRight) {
+            Base::vec4 c;
+            for (idx = 0; idx < xab.size() % (n + 1); idx++) {
+                float leftx = xab[idx];
+                float rightx = xac[idx];
+                float vWeightAC = getWeightBetween(leftx, bottomy, sa.x, sa.y, sc.x, sc.y);
+                float vWeightAB = getWeightBetween(rightx, bottomy, sa.x, sa.y, sb.x, sb.y);
+                interpolateAttributes(aData, bData, &vInterpolatedAB[0], vWeightAB, vf);
+                interpolateAttributes(aData, cData, &vInterpolatedAC[0], vWeightAC, vf);
+                float lz = sa.z + (sb.z - sa.z) * vWeightAB;
+                float rz = sa.z + (sc.z - sa.z) * vWeightAC;
+                while (leftx < rightx) {
+                    float hWeight = (leftx - xab[idx]) / (xac[idx] - xab[idx]);
+                    interpolateAttributes(vInterpolatedAB.data(), vInterpolatedAC.data(), &vInterpolatedLR[0], hWeight, vf);
+                    c.x = leftx;
+                    c.y = bottomy;
+                    c.z = lz + (rz - lz) * hWeight;
+                    this->m_psf(this, c, vInterpolatedLR.data(), this->m_descriptorSet);
+                    leftx += 1.0f;
+                }
+                bottomy += 1.0f;
+            }
+            for (; idx < n; idx++) {
+                float leftx = xbc[idx - xab.size()];
+                float rightx = xac[idx];
+                float vWeightAC = getWeightBetween(leftx, bottomy, sa.x, sa.y, sc.x, sc.y);
+                float vWeightBC = getWeightBetween(rightx, bottomy, sb.x, sb.y, sc.x, sc.y);
+                interpolateAttributes(bData, cData, &vInterpolatedBC[0], vWeightBC, vf);
+                interpolateAttributes(aData, cData, &vInterpolatedAC[0], vWeightAC, vf);
+                float lz = sb.z + (sc.z - sb.z) * vWeightBC;
+                float rz = sa.z + (sc.z - sa.z) * vWeightAC;
+                while (leftx < rightx) {
+                    float hWeight = (leftx - xbc[idx - xab.size()]) / (xac[idx] - xbc[idx - xab.size()]);
+                    interpolateAttributes(vInterpolatedAB.data(), vInterpolatedAC.data(), &vInterpolatedLR[0], hWeight, vf);
+                    c.x = leftx;
+                    c.y = bottomy;
+                    c.z = lz + (rz - lz) * hWeight;
+                    this->m_psf(this, c, vInterpolatedLR.data(), this->m_descriptorSet);
+                    leftx += 1.0f;
+                }
+                bottomy += 1.0f;
+            }
+        }
+        else {
+            Base::vec4 c;
+            for (idx = 0; idx < xab.size() % (n + 1); idx++) {
+                float leftx = xac[idx];
+                float rightx = xab[idx];
+                float vWeightAC = getWeightBetween(leftx, bottomy, sa.x, sa.y, sc.x, sc.y);
+                float vWeightAB = getWeightBetween(rightx, bottomy, sa.x, sa.y, sb.x, sb.y);
+                interpolateAttributes(aData, bData, &vInterpolatedAB[0], vWeightAB, vf);
+                interpolateAttributes(aData, cData, &vInterpolatedAC[0], vWeightAC, vf);
+                float lz = sa.z + (sb.z - sa.z) * vWeightAB;
+                float rz = sa.z + (sc.z - sa.z) * vWeightAC;
+                while (leftx < rightx) {
+                    float hWeight = (leftx - xac[idx]) / (xab[idx] - xac[idx]);
+                    interpolateAttributes(vInterpolatedAC.data(), vInterpolatedAB.data(), &vInterpolatedLR[0], hWeight, vf);
+                    c.x = leftx;
+                    c.y = bottomy;
+                    c.z = lz + (rz - lz) * hWeight;
+                    this->m_psf(this, c, vInterpolatedLR.data(), this->m_descriptorSet);
+                    leftx += 1.0f;
+                }
+                bottomy += 1.0f;
+            }
+            for (; idx < n; idx++) {
+                float leftx = xac[idx];
+                float rightx = xbc[idx - xab.size()];
+                float vWeightAC = getWeightBetween(leftx, bottomy, sa.x, sa.y, sc.x, sc.y);
+                float vWeightBC = getWeightBetween(rightx, bottomy, sb.x, sb.y, sc.x, sc.y);
+                interpolateAttributes(bData, cData, &vInterpolatedBC[0], vWeightBC, vf);
+                interpolateAttributes(aData, cData, &vInterpolatedAC[0], vWeightAC, vf);
+                float lz = sb.z + (sc.z - sb.z) * vWeightBC;
+                float rz = sa.z + (sc.z - sa.z) * vWeightAC;
+                while (leftx < rightx) {
+                    float hWeight = (leftx - xac[idx]) / (xbc[idx - xab.size()] - xac[idx]);
+                    interpolateAttributes(vInterpolatedAC.data(), vInterpolatedBC.data(), &vInterpolatedLR[0], hWeight, vf);
+                    c.x = leftx;
+                    c.y = bottomy;
+                    c.z = lz + (rz - lz) * hWeight;
+                    this->m_psf(this, c, vInterpolatedLR.data(), this->m_descriptorSet);
+                    leftx += 1.0f;
+                }
+                bottomy += 1.0f;
             }
         }
     }
