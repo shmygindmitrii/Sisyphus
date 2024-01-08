@@ -262,13 +262,12 @@ void Temple::Bonfire::RawCanvas::drawTriangle(const Base::vec4& a, const Base::v
     }
 }
 
-void Temple::Bonfire::RawCanvas::drawLines(const std::vector<Base::vec4>& coords, const uint8_t* vertexData, int vertexDataSize, const VertexFormat& vf) {
-    int nLines = coords.size();
-    for (int i = 0; i < nLines; i += 2) {
-        const Base::vec4& va = coords[i];
-        const Base::vec4& vb = coords[i+1];
-        const uint8_t* aData = &vertexData[i * vf.size];
-        const uint8_t* bData = &vertexData[(i + 1) * vf.size];
+void Temple::Bonfire::RawCanvas::drawLines(const std::vector<Base::vec4>& coords, const std::vector<int> indices, const uint8_t* vertexData, int vertexDataSize, const VertexFormat& vf) {
+    for (int i = 0; i < indices.size(); i += 2) {
+        const Base::vec4& va = coords[indices[i]];
+        const Base::vec4& vb = coords[indices[i+1]];
+        const uint8_t* aData = &vertexData[indices[i] * vf.size];
+        const uint8_t* bData = &vertexData[indices[i + 1] * vf.size];
         // draw single line here
         Base::vec4 a, b;
         this->m_vsf(va, &a, aData, this->m_descriptorSet);
