@@ -62,6 +62,7 @@ void Temple::Bonfire::interpolateAttributes(const uint8_t* aIn, const uint8_t* b
             interpolateTemplate<Base::vec4>(aIn, bIn, cOut, weight);
             break;
         case VertexAttribType::COL4U:
+            // because temporary result can be negative too
             interpolateTemplate<uint8_t>(aIn, bIn, cOut, weight);
             interpolateTemplate<uint8_t>(aIn, bIn, cOut, weight);
             interpolateTemplate<uint8_t>(aIn, bIn, cOut, weight);
@@ -71,10 +72,12 @@ void Temple::Bonfire::interpolateAttributes(const uint8_t* aIn, const uint8_t* b
     }
 }
 
-Temple::Bonfire::RawCanvas::RawCanvas(int width, int height, int bytesPerPixel) : m_width(width), m_height(height), m_bytesPerPixel(bytesPerPixel) {
+Temple::Bonfire::RawCanvas::RawCanvas(int width, int height, int bytesPerPixel) : m_width(width), m_height(height), m_bytesPerPixel(bytesPerPixel),
+                                                                                  m_depthWrite(true), m_depthTest(true) {
     size_t fullSize = m_width * m_height * (size_t)m_bytesPerPixel;
     assert(fullSize > 0);
     m_data = new uint8_t[fullSize];
+    m_depth = new float[m_width * m_height];
     m_renderMode = RenderMode::WIREFRAME;
 }
 
@@ -262,7 +265,21 @@ void Temple::Bonfire::RawCanvas::drawTriangle(const Base::vec4& a, const Base::v
     }
 }
 
-void Temple::Bonfire::RawCanvas::drawLines(const std::vector<Base::vec4>& coords, const std::vector<int> indices, const uint8_t* vertexData, int vertexDataSize, const VertexFormat& vf) {
+void Temple::Bonfire::RawCanvas::setDepthTest(bool flag) {
+    m_depthTest = flag;
+}
+
+void Temple::Bonfire::RawCanvas::setDepthWrite(bool flag) {
+    m_depthWrite = flag;
+}
+
+void Temple::Bonfire::RawCanvas::clearDepth(float val) {
+    for (int i = 0; i < m_width * m_height; i++) {
+        m_depth[i] = val;
+    }
+}
+
+void Temple::Bonfire::RawCanvas::drawLines(const std::vector<Base::vec4>& coords, const std::vector<int> indices, const uint8_t* vertexData, const VertexFormat& vf) {
     if (indices.size() == 0 || indices.size() % 2 != 0) return;
     for (int i = 0; i < indices.size(); i += 2) {
         const Base::vec4& va = coords[indices[i]];
@@ -345,7 +362,7 @@ static inline float getWeightBetween(float x, float y, float x0, float y0, float
 }
 
 void Temple::Bonfire::RawCanvas::drawTriangles(const std::vector<Base::vec4>& coords, const std::vector<int> indices, 
-                                               const uint8_t* vertexData, int vertexDataSize, const VertexFormat& vf) {
+                                               const uint8_t* vertexData, const VertexFormat& vf) {
     if (indices.size() == 0 || indices.size() % 3 != 0) return;
     for (int i = 0; i < indices.size(); i += 3) {
         const Base::vec4& va(coords[indices[i]]);
@@ -419,7 +436,22 @@ void Temple::Bonfire::RawCanvas::drawTriangles(const std::vector<Base::vec4>& co
                     c.x = leftx;
                     c.y = bottomy;
                     c.z = lz + (rz - lz) * hWeight;
+                    int pixFlatIdx = ((int)c.y) * m_width + (int)c.x;
+                    if (pixFlatIdx >= 0 && pixFlatIdx < m_width * m_height) {
+                        if (m_depthTest) {
+                            if (c.z < m_depth[pixFlatIdx]) {
                     this->m_psf(this, c, vInterpolatedLR.data(), this->m_descriptorSet);
+                            }
+                        }
+                        else {
+                            this->m_psf(this, c, vInterpolatedLR.data(), this->m_descriptorSet);
+                        }
+                        if (m_depthWrite) {
+                            if (c.z < m_depth[pixFlatIdx]) {
+                                m_depth[pixFlatIdx] = c.z;
+                            }
+                        }
+                    }
                     leftx += 1.0f;
                 }
                 bottomy += 1.0f;
@@ -439,7 +471,22 @@ void Temple::Bonfire::RawCanvas::drawTriangles(const std::vector<Base::vec4>& co
                     c.x = leftx;
                     c.y = bottomy;
                     c.z = lz + (rz - lz) * hWeight;
+                    int pixFlatIdx = ((int)c.y) * m_width + (int)c.x;
+                    if (pixFlatIdx >= 0 && pixFlatIdx < m_width * m_height) {
+                        if (m_depthTest) {
+                            if (c.z < m_depth[pixFlatIdx]) {
                     this->m_psf(this, c, vInterpolatedLR.data(), this->m_descriptorSet);
+                            }
+                        }
+                        else {
+                            this->m_psf(this, c, vInterpolatedLR.data(), this->m_descriptorSet);
+                        }
+                        if (m_depthWrite) {
+                            if (c.z < m_depth[pixFlatIdx]) {
+                                m_depth[pixFlatIdx] = c.z;
+                            }
+                        }
+                    }
                     leftx += 1.0f;
                 }
                 bottomy += 1.0f;
@@ -454,15 +501,30 @@ void Temple::Bonfire::RawCanvas::drawTriangles(const std::vector<Base::vec4>& co
                 float vWeightAB = getWeightBetween(rightx, bottomy, sa.x, sa.y, sb.x, sb.y);
                 interpolateAttributes(aData, bData, &vInterpolatedAB[0], vWeightAB, vf);
                 interpolateAttributes(aData, cData, &vInterpolatedAC[0], vWeightAC, vf);
-                float lz = sa.z + (sb.z - sa.z) * vWeightAB;
-                float rz = sa.z + (sc.z - sa.z) * vWeightAC;
+                float lz = sa.z + (sc.z - sa.z) * vWeightAC;
+                float rz = sa.z + (sb.z - sa.z) * vWeightAB;
                 while (leftx < rightx) {
                     float hWeight = (leftx - xac[idx]) / (xab[idx] - xac[idx]);
                     interpolateAttributes(vInterpolatedAC.data(), vInterpolatedAB.data(), &vInterpolatedLR[0], hWeight, vf);
                     c.x = leftx;
                     c.y = bottomy;
                     c.z = lz + (rz - lz) * hWeight;
+                    int pixFlatIdx = ((int)c.y) * m_width + (int)c.x;
+                    if (pixFlatIdx >= 0 && pixFlatIdx < m_width * m_height) {
+                        if (m_depthTest) {
+                            if (c.z < m_depth[pixFlatIdx]) {
+                                this->m_psf(this, c, vInterpolatedLR.data(), this->m_descriptorSet);
+                            }
+                        }
+                        else {
                     this->m_psf(this, c, vInterpolatedLR.data(), this->m_descriptorSet);
+                        }
+                        if (m_depthWrite) {
+                            if (c.z < m_depth[pixFlatIdx]) {
+                                m_depth[pixFlatIdx] = c.z;
+                            }
+                        }
+                    }
                     leftx += 1.0f;
                 }
                 bottomy += 1.0f;
@@ -482,7 +544,22 @@ void Temple::Bonfire::RawCanvas::drawTriangles(const std::vector<Base::vec4>& co
                     c.x = leftx;
                     c.y = bottomy;
                     c.z = lz + (rz - lz) * hWeight;
+                    int pixFlatIdx = ((int)c.y) * m_width + (int)c.x;
+                    if (pixFlatIdx >= 0 && pixFlatIdx < m_width * m_height) {
+                        if (m_depthTest) {
+                            if (c.z < m_depth[pixFlatIdx]) {
                     this->m_psf(this, c, vInterpolatedLR.data(), this->m_descriptorSet);
+                            }
+                        }
+                        else {
+                            this->m_psf(this, c, vInterpolatedLR.data(), this->m_descriptorSet);
+                        }
+                        if (m_depthWrite) {
+                            if (c.z < m_depth[pixFlatIdx]) {
+                                m_depth[pixFlatIdx] = c.z;
+                            }
+                        }
+                    }
                     leftx += 1.0f;
                 }
                 bottomy += 1.0f;

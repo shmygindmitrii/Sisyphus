@@ -33,6 +33,7 @@ namespace Temple {
         class RawCanvas {
         private:
             uint8_t* m_data = nullptr;
+            float* m_depth = nullptr;
             int m_width = 0;
             int m_height = 0;
             int m_bytesPerPixel = 0;
@@ -41,6 +42,8 @@ namespace Temple {
             const void* m_descriptorSet = nullptr;
             vertexShaderFunc m_vsf = nullptr;
             pixelShaderFunc m_psf = nullptr;
+            bool m_depthWrite = true;
+            bool m_depthTest = true;
         public:
             RawCanvas(int width, int height, int bytesPerPixel);
             const uint8_t* getData() const;
@@ -57,8 +60,11 @@ namespace Temple {
             void drawTriangle(const Base::vec4& a, const Base::vec4& b, const Base::vec4& c, const col4u& color);
             void drawFilledTriangle(const Base::vec4& a, const Base::vec4& b, const Base::vec4& c, const col4u& color);
             //
-            void drawLines(const std::vector<Base::vec4>& coords, const std::vector<int> indices, const uint8_t* vertexData, int vertexDataSize, const VertexFormat& vf);
-            void drawTriangles(const std::vector<Base::vec4>& coords, const std::vector<int> indices, const uint8_t* vertexData, int vertexDataSize, const VertexFormat& vf);
+            void setDepthTest(bool flag);
+            void setDepthWrite(bool flag);
+            void clearDepth(float val);
+            void drawLines(const std::vector<Base::vec4>& coords, const std::vector<int> indices, const uint8_t* vertexData, const VertexFormat& vf);
+            void drawTriangles(const std::vector<Base::vec4>& coords, const std::vector<int> indices, const uint8_t* vertexData, const VertexFormat& vf);
             //
             ~RawCanvas();
         };
