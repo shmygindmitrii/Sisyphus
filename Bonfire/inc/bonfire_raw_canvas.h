@@ -54,6 +54,7 @@ namespace Temple {
             void setVertexShader(vertexShaderFunc vsf);
             void setPixelShader(pixelShaderFunc psf);
             void putPixel(int x, int y, const col4u& color);
+            void renderPixelDepthWise(const Base::vec4& p, const void* data);
             Base::vec4 processVertex(const Base::vec4& v);
             void fill(const col4u& color);
             void drawLine(const Base::vec4 &a, const Base::vec4& b, const col4u& color);
