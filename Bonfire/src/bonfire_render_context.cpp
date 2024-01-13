@@ -93,7 +93,7 @@ Temple::Bonfire::RenderContext::RenderContext(int width, int height, int bytesPe
     m_renderMode = RenderMode::WIREFRAME;
 }
 
-const uint8_t* Temple::Bonfire::RenderContext::getData() const {
+const uint8_t* Temple::Bonfire::RenderContext::getFrame() const {
     return m_data;
 }
 

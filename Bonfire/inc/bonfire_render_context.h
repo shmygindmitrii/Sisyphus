@@ -68,7 +68,7 @@ namespace Temple {
             bool m_depthTest = true;
         public:
             RenderContext(int width, int height, int bytesPerPixel);
-            const uint8_t* getData() const;
+            const uint8_t* getFrame() const;
             void resize(int width, int height, int bytesPerPixel);
             void setViewport(float xMin, float yMin, float zMin, float xMax, float yMax, float zMax);
             void setDescriptorSet(const void* descriptorSet);

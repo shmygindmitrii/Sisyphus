@@ -148,7 +148,7 @@ void draw(HWND hWnd) {
     //renderContext.drawTriangles(abc, abcTriangleIndices, wireTriangleAttribs.data(), vf);
     // end of color buffer filling
     // Draw the buffer to the window
-    SetDIBitsToDevice(hdc, 0, 0, width, height, 0, 0, 0, height, (unsigned char*)renderContext.getData(), &bmi, DIB_RGB_COLORS);
+    SetDIBitsToDevice(hdc, 0, 0, width, height, 0, 0, 0, height, (unsigned char*)renderContext.getFrame(), &bmi, DIB_RGB_COLORS);
     HRESULT hr = DwmFlush();
     if (FAILED(hr)) {
         // Handle the error. For example, DWM might not be enabled or available.
