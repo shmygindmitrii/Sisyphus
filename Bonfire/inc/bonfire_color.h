@@ -14,6 +14,7 @@ namespace Temple {
             col4u& operator=(const col4u& other);
             col4u operator+(const col4u& other);
             col4u operator-(const col4u& other);
+            col4u operator*(const col4u& other) const;
             col4u operator*(float other);
         };
 #pragma pack(pop)
