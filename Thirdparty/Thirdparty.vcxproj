@@ -19,6 +19,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="inc\stb_image.h" />
+    <ClInclude Include="inc\stb_image_write.h" />
     <ClInclude Include="inc\thirdparty_catch_amalgamated.hpp" />
   </ItemGroup>
   <ItemGroup>
