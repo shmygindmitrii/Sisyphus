@@ -18,9 +18,15 @@
     <ClCompile Include="src\obj_file.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\win_tex_loader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="inc\obj_file.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\win_tex_loader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
