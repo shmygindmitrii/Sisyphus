@@ -67,3 +67,7 @@ Temple::Bonfire::col4u Temple::Bonfire::col4u::operator*(float other) {
     res.a = (uint8_t)( ((int)(a * other)) % 256 );
     return res;
 }
+
+Temple::Base::vec4 Temple::Bonfire::getFloatColor(const col4u& c) {
+    return Base::vec4(c.r / 255.f, c.g / 255.f, c.b / 255.f, c.a / 255.f);
+}

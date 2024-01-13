@@ -1,5 +1,6 @@
 #pragma once
 #include <cstdint>
+#include <base_vectors.h>
 
 namespace Temple {
     namespace Bonfire {
@@ -18,5 +19,6 @@ namespace Temple {
             col4u operator*(float other);
         };
 #pragma pack(pop)
+        Base::vec4 getFloatColor(const col4u& c);
     }
 }

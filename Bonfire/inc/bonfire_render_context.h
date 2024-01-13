@@ -41,7 +41,6 @@ namespace Temple {
             VEC2,
             VEC3,
             VEC4,
-            COL4U,
             UV,
         };
         struct VertexFormat {

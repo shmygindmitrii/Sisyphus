@@ -41,7 +41,11 @@ static Temple::Bonfire::col4u pink { 200, 154, 165, 255 };
 static Temple::Bonfire::col4u turquoise { 0, 154, 154, 255 };
 static Temple::Bonfire::col4u orange { 205, 88, 0, 255 };
 static Temple::Bonfire::col4u violet { 107, 0, 215, 255 };
-static std::vector<Temple::Bonfire::col4u> defaultColors = { red, green, blue, yellow, pink, turquoise, orange, violet };
+static std::vector<Temple::Bonfire::col4u> defaultColorsU = { red, green, blue, yellow, pink, turquoise, orange, violet };
+static std::vector<Temple::Base::vec4> defaultColors = { Temple::Bonfire::getFloatColor(red), Temple::Bonfire::getFloatColor(green), 
+                                                         Temple::Bonfire::getFloatColor(blue), Temple::Bonfire::getFloatColor(yellow), 
+                                                         Temple::Bonfire::getFloatColor(pink), Temple::Bonfire::getFloatColor(turquoise), 
+                                                         Temple::Bonfire::getFloatColor(orange), Temple::Bonfire::getFloatColor(violet) };
 static Temple::Bonfire::col4u bgColor{ 15, 15, 35, 255 };
 static Temple::Bonfire::col4u lineColor{ 0, 150, 0, 255 };
 
@@ -101,7 +105,7 @@ void draw(HWND hWnd) {
     std::vector<int> abcLineIndices = { 0, 1, 1, 2, 2, 0 };
     std::vector<int> abcTriangleIndices = { 0, 1, 2 };
 
-    Temple::Bonfire::VertexFormat vf({ Temple::Bonfire::VertexAttribType::COL4U, Temple::Bonfire::VertexAttribType::VEC2 });
+    Temple::Bonfire::VertexFormat vf({ Temple::Bonfire::VertexAttribType::VEC4, Temple::Bonfire::VertexAttribType::VEC2 });
 
     auto curTime = std::chrono::high_resolution_clock::now();    
     auto duration = curTime.time_since_epoch();
@@ -135,12 +139,11 @@ void draw(HWND hWnd) {
     });
     renderContext.setPixelShader([](void* renderContextRaw, const Temple::Base::vec4& inp, const void* perPixelData, const void* descriptorSet) {
         Temple::Bonfire::RenderContext* renderContextPtr = reinterpret_cast<Temple::Bonfire::RenderContext*>(renderContextRaw);
-        const Temple::Bonfire::col4u* pixelColor = reinterpret_cast<const Temple::Bonfire::col4u*>(perPixelData);
+        const Temple::Base::vec4* pixelColor = reinterpret_cast<const Temple::Base::vec4*>(perPixelData);
         const Temple::Base::vec2* texPtr = reinterpret_cast<const Temple::Base::vec2*>(pixelColor + 1);
         // per-pixel
         const Temple::Base::vec4& texColor = Temple::Bonfire::TextureHolder::instance()->getPixel(0, texPtr->u, texPtr->v);
-        Temple::Base::vec4 colMask { pixelColor->r / 255.0f, pixelColor->g / 255.0f, pixelColor->b / 255.0f, pixelColor->a / 255.0f};
-        renderContextPtr->putPixel((int)inp.x, (int)inp.y, colMask * texColor);
+        renderContextPtr->putPixel((int)inp.x, (int)inp.y, (*pixelColor) * texColor);
     });
 
     renderContext.drawTriangles(g_modelVerts, g_modelInds, reinterpret_cast<const uint8_t*>(g_modelVertAttribs.data()), vf);
@@ -177,7 +180,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     mosaicTexture = loadTexture("D:\\Own\\CPP\\Temple\\Resources\\side_colored.png");
     std::shared_ptr<Temple::Barn::ObjFile> objFile = Temple::Barn::ReadObj("D:\\Own\\CPP\\Temple\\Resources\\cube_sided.obj");
 
-    std::vector<Temple::Bonfire::col4u> colors;
+    std::vector<Temple::Base::vec4> colors;
     for (int vertIdx = 0; vertIdx < objFile->coord.size(); vertIdx++) {
         colors.push_back(defaultColors[vertIdx % defaultColors.size()]);
     }

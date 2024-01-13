@@ -29,9 +29,6 @@ Temple::Bonfire::VertexFormat::VertexFormat(const std::vector<Temple::Bonfire::V
         case VertexAttribType::VEC4:
             size += 16;
             break;
-        case VertexAttribType::COL4U:
-            size += 4;
-            break;
         case VertexAttribType::UV:
             size += 8;
             break;
@@ -69,13 +66,6 @@ void Temple::Bonfire::interpolateAttributes(const uint8_t* aIn, const uint8_t* b
             break;
         case VertexAttribType::VEC4:
             interpolateTemplate<Base::vec4>(aIn, bIn, cOut, weight);
-            break;
-        case VertexAttribType::COL4U:
-            // because temporary result can be negative too
-            interpolateTemplate<uint8_t>(aIn, bIn, cOut, weight);
-            interpolateTemplate<uint8_t>(aIn, bIn, cOut, weight);
-            interpolateTemplate<uint8_t>(aIn, bIn, cOut, weight);
-            interpolateTemplate<uint8_t>(aIn, bIn, cOut, weight); 
             break;
         case VertexAttribType::UV:
             interpolateTemplate<Base::vec2>(aIn, bIn, cOut, weight);
