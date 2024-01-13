@@ -15,7 +15,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="inc\bonfire_raw_canvas.h">
+    <ClInclude Include="inc\bonfire_render_context.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="inc\bonfire_color.h">
@@ -29,7 +29,7 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\bonfire_raw_canvas.cpp">
+    <ClCompile Include="src\bonfire_render_context.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\bonfire_color.cpp">

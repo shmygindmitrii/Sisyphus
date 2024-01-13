@@ -5,6 +5,25 @@
 #include "base_vectors.h"
 #include <tuple>
 
+/*
+void ps()
+{
+    ctx->dfdy(float value);
+    SampleTexture(Texture * tex, Sampelr * sampler, flaot2 uv)
+    {
+        uv *= tex.size();
+
+        float2 slope = dfdy(uv);
+        float2 slope = dfdx(uv);
+
+        mip_level = tex_pixel_size / scren_pixel_size;
+
+        mip_level1;
+        mip_level2
+    }
+}
+*/
+
 namespace Temple {
     namespace Bonfire {
         enum class RenderMode {
@@ -23,6 +42,7 @@ namespace Temple {
             VEC3,
             VEC4,
             COL4U,
+            UV,
         };
         struct VertexFormat {
             size_t size;
