@@ -107,7 +107,7 @@ void draw(HWND hWnd) {
     auto duration = curTime.time_since_epoch();
     long long nanoseconds = std::chrono::duration_cast<std::chrono::nanoseconds>(duration).count();
 
-    long long circle_ns = 50000000000;
+    long long circle_ns = 10000000000;
     float angle = ((nanoseconds % circle_ns) / (float)circle_ns)* M_PI * 2.0f; // unused for now
 
     //float angley = 30.0f / 360.0f * 2.0f * M_PI;

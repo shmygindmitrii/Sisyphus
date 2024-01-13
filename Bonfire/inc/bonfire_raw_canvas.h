@@ -60,9 +60,6 @@ namespace Temple {
             void renderPixelDepthWise(const Base::vec4& p, const void* data);
             Base::vec4 processVertex(const Base::vec4& v);
             void fill(const col4u& color);
-            void drawLine(const Base::vec4 &a, const Base::vec4& b, const col4u& color);
-            void drawTriangle(const Base::vec4& a, const Base::vec4& b, const Base::vec4& c, const col4u& color);
-            void drawFilledTriangle(const Base::vec4& a, const Base::vec4& b, const Base::vec4& c, const col4u& color);
             //
             void setDepthTest(bool flag);
             void setDepthWrite(bool flag);
