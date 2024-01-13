@@ -312,7 +312,7 @@ void Temple::Bonfire::RawCanvas::renderPixelDepthWise(const Base::vec4& p, const
     int pixFlatIdx = ((int)p.y) * m_width + (int)p.x;
     if (pixFlatIdx >= 0 && pixFlatIdx < m_width * m_height) {
         if (m_depthTest) {
-            if (p.z < m_depth[pixFlatIdx]) {
+            if (p.z > m_depth[pixFlatIdx]) {
                 this->m_psf(this, p, data, this->m_descriptorSet);
             }
         }
@@ -320,7 +320,7 @@ void Temple::Bonfire::RawCanvas::renderPixelDepthWise(const Base::vec4& p, const
             this->m_psf(this, p, data, this->m_descriptorSet);
         }
         if (m_depthWrite) {
-            if (p.z < m_depth[pixFlatIdx]) {
+            if (p.z > m_depth[pixFlatIdx]) {
                 m_depth[pixFlatIdx] = p.z;
             }
         }

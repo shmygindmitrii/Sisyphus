@@ -730,11 +730,19 @@ Temple::Base::mat4 Temple::Base::mat4::projection(float fov, float aspect, float
     m.r3.z = 1.0f;
     m.r3.w = 0.0f;
     // change z-coordinate from scene to NDC
-    m.r2.z = zfar / (zfar - znear);
-    m.r2.w = (-znear * zfar) / (zfar - znear);
-    // left-handed coordinate system to map z/w to range from 0 to 1
-    // after multiplying w contains divider that shoud not be modified and used for division to obtain final transformations
-    // this is classic transformation, z-value now contains normalized depth of the point
+    // there are two possible options:
+    //      1. Default:
+    // m.r2.z = zfar / (zfar - znear);
+    // m.r2.w = (-znear * zfar) / (zfar - znear);
+    // left-handed coordinate system to map z/w to range from 0 at near plane to 1 at far plane
+    // this is classic transformation, z-value now contains normalized depth of the point 
     // but it is not distributed uniformly - around znear precision is fine, closer to zfar - precision is low
+    //      2. Reverse-Z:
+    m.r2.z = znear / (znear - zfar);
+    m.r2.w = (-znear * zfar) / (znear - zfar);
+    // this transformation maps z to 1 at znear and to 0 at zfar
+    // such trick allows to fix low precision and non-linear nature of previous transformation
+    // z-itself after classical perspective transformation is not linear, but 1/z is!
+    // after multiplying w contains divider that shoud not be modified and used for division to obtain final transformations
     return m;
 }

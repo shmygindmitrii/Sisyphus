@@ -314,7 +314,7 @@ TEST_CASE("Temple::Base::mat4 tests", "[Base::mat4]") {
             Temple::Base::vec4 pFar(0.0f, 0.0f, zFar, 1.0f);
             Temple::Base::vec4 pNearProjected = proj * pNear;
             Temple::Base::vec4 pFarProjected = proj * pFar;
-            REQUIRE((EQUAL_FLOATS(pNearProjected.z, 0.0f) && EQUAL_FLOATS(pFarProjected.z / pFarProjected.w, 1.0f)));
+            REQUIRE((EQUAL_FLOATS(pNearProjected.z / pNearProjected.w, 1.0f) && EQUAL_FLOATS(pFarProjected.z, 0.0f)));
         }
     }
 }

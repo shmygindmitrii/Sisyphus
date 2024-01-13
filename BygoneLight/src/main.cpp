@@ -80,7 +80,7 @@ void draw(HWND hWnd) {
     //setScissor(0, 0, width, height);
 
     // begin straight filling of color buffer
-    canvas.clearDepth(10.0f);
+    canvas.clearDepth(0.0f);
     canvas.fill(bgColor); // fill background and also clear screen
 
     Temple::Base::vec4 a{ -0.0f, -0.0f, +0.0f, +1.0f };
