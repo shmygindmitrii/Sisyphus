@@ -21,12 +21,24 @@
     <ClInclude Include="inc\bonfire_color.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="inc\bonfire_texture.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\bonfire_texture_holder.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\bonfire_raw_canvas.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\bonfire_color.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\bonfire_texture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\bonfire_texture_holder.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

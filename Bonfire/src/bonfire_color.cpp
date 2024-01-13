@@ -50,6 +50,14 @@ Temple::Bonfire::col4u Temple::Bonfire::col4u::operator-(const col4u& other) {
     return res;
 }
 
+Temple::Bonfire::col4u Temple::Bonfire::col4u::operator*(const col4u& other) const {
+    col4u res;
+    res.r = (uint8_t)(r * other.r >= 0 ? r * other.r : 0);
+    res.g = (uint8_t)(g * other.g >= 0 ? g * other.g : 0);
+    res.b = (uint8_t)(b * other.b >= 0 ? b * other.b : 0);
+    res.a = (uint8_t)(a * other.a >= 0 ? a * other.a : 0);
+    return res;
+}
 
 Temple::Bonfire::col4u Temple::Bonfire::col4u::operator*(float other) {
     col4u res;

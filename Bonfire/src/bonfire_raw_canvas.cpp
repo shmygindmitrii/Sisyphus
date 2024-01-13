@@ -20,6 +20,9 @@ Temple::Bonfire::VertexFormat::VertexFormat(const std::vector<Temple::Bonfire::V
         case VertexAttribType::UINT8:
             size += 1;
             break;
+        case VertexAttribType::VEC2:
+            size += 8;
+            break;
         case VertexAttribType::VEC3:
             size += 12;
             break;
@@ -54,6 +57,9 @@ void Temple::Bonfire::interpolateAttributes(const uint8_t* aIn, const uint8_t* b
             break;
         case VertexAttribType::UINT8:
             interpolateTemplate<uint8_t>(aIn, bIn, cOut, weight);
+            break;
+        case VertexAttribType::VEC2:
+            interpolateTemplate<Base::vec2>(aIn, bIn, cOut, weight);
             break;
         case VertexAttribType::VEC3:
             interpolateTemplate<Base::vec3>(aIn, bIn, cOut, weight);
@@ -152,6 +158,17 @@ void Temple::Bonfire::RawCanvas::putPixel(int x, int y, const col4u& color) {
     m_data[pixelIndex + 1] = color.g;
     m_data[pixelIndex + 2] = color.r;
     m_data[pixelIndex + 3] = color.a;
+}
+
+void Temple::Bonfire::RawCanvas::putPixel(int x, int y, const Base::vec4& color) {
+    // color - from 0 to 1 each component
+    if (x < 0 || x >= m_width || y < 0 || y >= m_height)
+        return;
+    int pixelIndex = y * m_width * m_bytesPerPixel + x * m_bytesPerPixel;
+    m_data[pixelIndex + 0] = (uint8_t)((color.b - floor(color.b)) * 255.0f);
+    m_data[pixelIndex + 1] = (uint8_t)((color.g - floor(color.g)) * 255.0f);
+    m_data[pixelIndex + 2] = (uint8_t)((color.r - floor(color.r)) * 255.0f);
+    m_data[pixelIndex + 3] = (uint8_t)((color.a - floor(color.a)) * 255.0f);
 }
 
 void Temple::Bonfire::RawCanvas::fill(const col4u& color) {
