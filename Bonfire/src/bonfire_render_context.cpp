@@ -1,4 +1,4 @@
-#include "bonfire_raw_canvas.h"
+#include "bonfire_render_context.h"
 
 #include <cstdint>
 #include <cstring>

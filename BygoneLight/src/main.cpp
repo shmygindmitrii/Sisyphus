@@ -2,7 +2,7 @@
 #include <math.h>
 
 #include "framework.h"
-#include "bonfire_raw_canvas.h"
+#include "bonfire_render_context.h"
 #include "base_matrices.h"
 #include "obj_file.h"
 #include "bonfire_texture_holder.h"
@@ -54,7 +54,7 @@ static void packData(std::vector<uint8_t>& v, T data) {
 
 void draw(HWND hWnd) {
     RECT rect;
-    static Temple::Bonfire::RawCanvas canvas(1, 1, 4);
+    static Temple::Bonfire::RenderContext renderContext(1, 1, 4);
 
     // Prepare BITMAPINFO
     BITMAPINFO bmi;
@@ -71,17 +71,17 @@ void draw(HWND hWnd) {
 
     bmi.bmiHeader.biWidth = width;
     bmi.bmiHeader.biHeight = -height;  // Top-down
-    canvas.resize(width, height, 4);
+    renderContext.resize(width, height, 4);
 
     PAINTSTRUCT ps;
     HDC hdc = GetDC(hWnd);
 
-    canvas.setViewport(0, 0, 0, width, height, 1);
+    renderContext.setViewport(0, 0, 0, width, height, 1);
     //setScissor(0, 0, width, height);
 
     // begin straight filling of color buffer
-    canvas.clearDepth(0.0f);
-    canvas.fill(bgColor); // fill background and also clear screen
+    renderContext.clearDepth(0.0f);
+    renderContext.fill(bgColor); // fill background and also clear screen
 
     Temple::Base::vec4 a{ -0.0f, -0.0f, +0.0f, +1.0f };
     Temple::Base::vec4 b{ -0.7f, -0.7f, +0.0f, +1.0f };
@@ -127,28 +127,28 @@ void draw(HWND hWnd) {
     Temple::Base::mat4 mPerspective = Temple::Base::mat4::projection(90.0f, width / (float)height, 0.5f, 100.0f);
 
     Temple::Base::mat4 matrix = mPerspective * mTranslation * mRotation * mScale;
-    canvas.setRenderMode(Temple::Bonfire::RenderMode::TRIANGLE);
-    canvas.setDescriptorSet(&matrix);
-    canvas.setVertexShader([](const Temple::Base::vec4& inp, Temple::Base::vec4* out, const void* data, const void* descriptorSet) { 
+    renderContext.setRenderMode(Temple::Bonfire::RenderMode::TRIANGLE);
+    renderContext.setDescriptorSet(&matrix);
+    renderContext.setVertexShader([](const Temple::Base::vec4& inp, Temple::Base::vec4* out, const void* data, const void* descriptorSet) { 
         const Temple::Base::mat4* mTransform = reinterpret_cast<const Temple::Base::mat4*>(descriptorSet);
         *out = (*mTransform) * inp;
     });
-    canvas.setPixelShader([](void* canvasRaw, const Temple::Base::vec4& inp, const void* perPixelData, const void* descriptorSet) {
-        Temple::Bonfire::RawCanvas* canvas = reinterpret_cast<Temple::Bonfire::RawCanvas*>(canvasRaw);
+    renderContext.setPixelShader([](void* renderContextRaw, const Temple::Base::vec4& inp, const void* perPixelData, const void* descriptorSet) {
+        Temple::Bonfire::RenderContext* renderContextPtr = reinterpret_cast<Temple::Bonfire::RenderContext*>(renderContextRaw);
         const Temple::Bonfire::col4u* pixelColor = reinterpret_cast<const Temple::Bonfire::col4u*>(perPixelData);
         const Temple::Base::vec2* texPtr = reinterpret_cast<const Temple::Base::vec2*>(pixelColor + 1);
         // per-pixel
         const Temple::Base::vec4& texColor = Temple::Bonfire::TextureHolder::instance()->getPixel(0, texPtr->u, texPtr->v);
         Temple::Base::vec4 colMask { pixelColor->r / 255.0f, pixelColor->g / 255.0f, pixelColor->b / 255.0f, pixelColor->a / 255.0f};
-        canvas->putPixel((int)inp.x, (int)inp.y, colMask * texColor);
+        renderContextPtr->putPixel((int)inp.x, (int)inp.y, colMask * texColor);
     });
 
-    canvas.drawTriangles(g_modelVerts, g_modelInds, reinterpret_cast<const uint8_t*>(g_modelVertAttribs.data()), vf);
-    //canvas.drawLines(abc, abcLineIndices, wireTriangleAttribs.data(), vf);
-    //canvas.drawTriangles(abc, abcTriangleIndices, wireTriangleAttribs.data(), vf);
+    renderContext.drawTriangles(g_modelVerts, g_modelInds, reinterpret_cast<const uint8_t*>(g_modelVertAttribs.data()), vf);
+    //renderContext.drawLines(abc, abcLineIndices, wireTriangleAttribs.data(), vf);
+    //renderContext.drawTriangles(abc, abcTriangleIndices, wireTriangleAttribs.data(), vf);
     // end of color buffer filling
     // Draw the buffer to the window
-    SetDIBitsToDevice(hdc, 0, 0, width, height, 0, 0, 0, height, (unsigned char*)canvas.getData(), &bmi, DIB_RGB_COLORS);
+    SetDIBitsToDevice(hdc, 0, 0, width, height, 0, 0, 0, height, (unsigned char*)renderContext.getData(), &bmi, DIB_RGB_COLORS);
     HRESULT hr = DwmFlush();
     if (FAILED(hr)) {
         // Handle the error. For example, DWM might not be enabled or available.
