@@ -78,7 +78,7 @@ void Temple::Bonfire::interpolateAttributes(const uint8_t* aIn, const uint8_t* b
     }
 }
 
-Temple::Bonfire::RawCanvas::RawCanvas(int width, int height, int bytesPerPixel) : m_width(width), m_height(height), m_bytesPerPixel(bytesPerPixel),
+Temple::Bonfire::RenderContext::RenderContext(int width, int height, int bytesPerPixel) : m_width(width), m_height(height), m_bytesPerPixel(bytesPerPixel),
                                                                                   m_depthWrite(true), m_depthTest(true) {
     size_t fullSize = m_width * m_height * (size_t)m_bytesPerPixel;
     assert(fullSize > 0);
@@ -87,11 +87,11 @@ Temple::Bonfire::RawCanvas::RawCanvas(int width, int height, int bytesPerPixel) 
     m_renderMode = RenderMode::WIREFRAME;
 }
 
-const uint8_t* Temple::Bonfire::RawCanvas::getData() const {
+const uint8_t* Temple::Bonfire::RenderContext::getData() const {
     return m_data;
 }
 
-void Temple::Bonfire::RawCanvas::resize(int width, int height, int bytesPerPixel) {
+void Temple::Bonfire::RenderContext::resize(int width, int height, int bytesPerPixel) {
 
     size_t oldResolution = m_width * m_height;
     size_t oldSize = oldResolution * (size_t)m_bytesPerPixel;
@@ -121,7 +121,7 @@ void Temple::Bonfire::RawCanvas::resize(int width, int height, int bytesPerPixel
     }
 }
 
-void Temple::Bonfire::RawCanvas::setViewport(float xMin, float yMin, float zMin, float xMax, float yMax, float zMax) {
+void Temple::Bonfire::RenderContext::setViewport(float xMin, float yMin, float zMin, float xMax, float yMax, float zMax) {
     m_viewportMin.x = xMin;
     m_viewportMin.y = yMin;
     m_viewportMin.z = zMin;
@@ -131,23 +131,23 @@ void Temple::Bonfire::RawCanvas::setViewport(float xMin, float yMin, float zMin,
     m_viewportMax.z = zMax;
 }
 
-void Temple::Bonfire::RawCanvas::setDescriptorSet(const void* descriptorSet) {
+void Temple::Bonfire::RenderContext::setDescriptorSet(const void* descriptorSet) {
     m_descriptorSet = descriptorSet;
 }
 
-void Temple::Bonfire::RawCanvas::setRenderMode(RenderMode m) {
+void Temple::Bonfire::RenderContext::setRenderMode(RenderMode m) {
     m_renderMode = m;
 }
 
-void Temple::Bonfire::RawCanvas::setVertexShader(Temple::Bonfire::vertexShaderFunc vsf) {
+void Temple::Bonfire::RenderContext::setVertexShader(Temple::Bonfire::vertexShaderFunc vsf) {
     m_vsf = vsf;
 }
 
-void Temple::Bonfire::RawCanvas::setPixelShader(Temple::Bonfire::pixelShaderFunc psf) {
+void Temple::Bonfire::RenderContext::setPixelShader(Temple::Bonfire::pixelShaderFunc psf) {
     m_psf = psf;
 }
 
-void Temple::Bonfire::RawCanvas::putPixel(int x, int y, const col4u& color) {
+void Temple::Bonfire::RenderContext::putPixel(int x, int y, const col4u& color) {
     if (x < 0 || x >= m_width || y < 0 || y >= m_height)
         return;
     // coordinates 
@@ -160,7 +160,7 @@ void Temple::Bonfire::RawCanvas::putPixel(int x, int y, const col4u& color) {
     m_data[pixelIndex + 3] = color.a;
 }
 
-void Temple::Bonfire::RawCanvas::putPixel(int x, int y, const Base::vec4& color) {
+void Temple::Bonfire::RenderContext::putPixel(int x, int y, const Base::vec4& color) {
     // color - from 0 to 1 each component
     if (x < 0 || x >= m_width || y < 0 || y >= m_height)
         return;
@@ -171,7 +171,7 @@ void Temple::Bonfire::RawCanvas::putPixel(int x, int y, const Base::vec4& color)
     m_data[pixelIndex + 3] = (uint8_t)((color.a - floor(color.a)) * 255.0f);
 }
 
-void Temple::Bonfire::RawCanvas::fill(const col4u& color) {
+void Temple::Bonfire::RenderContext::fill(const col4u& color) {
     uint32_t colors = m_width * m_height * m_bytesPerPixel;
     for (uint32_t i = 0; i < colors; i += m_bytesPerPixel) { // fake m_bytesPerPixel - now always 4 and maybe will always be 4
         m_data[i + 0] = color.b;
@@ -181,7 +181,7 @@ void Temple::Bonfire::RawCanvas::fill(const col4u& color) {
     }
 }
 
-Temple::Base::vec4 Temple::Bonfire::RawCanvas::processVertex(const Base::vec4& v) {
+Temple::Base::vec4 Temple::Bonfire::RenderContext::processVertex(const Base::vec4& v) {
     Base::vec4 c(v);
     float w = c.w;
     c.w = 1.0f;
@@ -193,21 +193,21 @@ Temple::Base::vec4 Temple::Bonfire::RawCanvas::processVertex(const Base::vec4& v
     return Base::vec4(crd, c.w);
 }
 
-void Temple::Bonfire::RawCanvas::setDepthTest(bool flag) {
+void Temple::Bonfire::RenderContext::setDepthTest(bool flag) {
     m_depthTest = flag;
 }
 
-void Temple::Bonfire::RawCanvas::setDepthWrite(bool flag) {
+void Temple::Bonfire::RenderContext::setDepthWrite(bool flag) {
     m_depthWrite = flag;
 }
 
-void Temple::Bonfire::RawCanvas::clearDepth(float val) {
+void Temple::Bonfire::RenderContext::clearDepth(float val) {
     for (int i = 0; i < m_width * m_height; i++) {
         m_depth[i] = val;
     }
 }
 
-void Temple::Bonfire::RawCanvas::renderPixelDepthWise(const Base::vec4& p, const void* data) {
+void Temple::Bonfire::RenderContext::renderPixelDepthWise(const Base::vec4& p, const void* data) {
     int pixFlatIdx = ((int)p.y) * m_width + (int)p.x;
     if (pixFlatIdx >= 0 && pixFlatIdx < m_width * m_height) {
         if (m_depthTest) {
@@ -226,7 +226,7 @@ void Temple::Bonfire::RawCanvas::renderPixelDepthWise(const Base::vec4& p, const
     }
 }
 
-void Temple::Bonfire::RawCanvas::drawLines(const std::vector<Base::vec4>& coords, const std::vector<int> indices, const uint8_t* vertexData, const VertexFormat& vf) {
+void Temple::Bonfire::RenderContext::drawLines(const std::vector<Base::vec4>& coords, const std::vector<int> indices, const uint8_t* vertexData, const VertexFormat& vf) {
     if (indices.size() == 0 || indices.size() % 2 != 0) return;
     for (int i = 0; i < indices.size(); i += 2) {
         const Base::vec4& va = coords[indices[i]];
@@ -308,7 +308,7 @@ static inline float getWeightBetween(float x, float y, float x0, float y0, float
     }
 }
 
-void Temple::Bonfire::RawCanvas::drawTriangles(const std::vector<Base::vec4>& coords, const std::vector<int> indices, 
+void Temple::Bonfire::RenderContext::drawTriangles(const std::vector<Base::vec4>& coords, const std::vector<int> indices, 
                                                const uint8_t* vertexData, const VertexFormat& vf) {
     if (indices.size() == 0 || indices.size() % 3 != 0) return;
     for (int i = 0; i < indices.size(); i += 3) {
@@ -455,7 +455,7 @@ void Temple::Bonfire::RawCanvas::drawTriangles(const std::vector<Base::vec4>& co
     }
 }
 
-Temple::Bonfire::RawCanvas::~RawCanvas() {
+Temple::Bonfire::RenderContext::~RenderContext() {
     delete[] m_data;
     m_data = nullptr;
 }

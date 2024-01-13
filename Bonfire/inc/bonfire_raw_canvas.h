@@ -32,7 +32,7 @@ namespace Temple {
         void interpolateAttributes(const uint8_t* aIn, const uint8_t* bIn, uint8_t* cOut, float weight, const VertexFormat& vf);
         using vertexShaderFunc = void(*)(const Base::vec4& input, Base::vec4* output, const void* data, const void* descriptorSet); // over single vertex
         using pixelShaderFunc = void(*)(void* canvasRaw, const Base::vec4& input, const void* data, const void* descriptorSet); // over single pixel
-        class RawCanvas {
+        class RenderContext {
         private:
             uint8_t* m_data = nullptr;
             float* m_depth = nullptr;
@@ -47,7 +47,7 @@ namespace Temple {
             bool m_depthWrite = true;
             bool m_depthTest = true;
         public:
-            RawCanvas(int width, int height, int bytesPerPixel);
+            RenderContext(int width, int height, int bytesPerPixel);
             const uint8_t* getData() const;
             void resize(int width, int height, int bytesPerPixel);
             void setViewport(float xMin, float yMin, float zMin, float xMax, float yMax, float zMax);
@@ -67,7 +67,7 @@ namespace Temple {
             void drawLines(const std::vector<Base::vec4>& coords, const std::vector<int> indices, const uint8_t* vertexData, const VertexFormat& vf);
             void drawTriangles(const std::vector<Base::vec4>& coords, const std::vector<int> indices, const uint8_t* vertexData, const VertexFormat& vf);
             //
-            ~RawCanvas();
+            ~RenderContext();
         };
     }
 }
