@@ -187,7 +187,7 @@ Temple::Base::vec4 Temple::Bonfire::RenderContext::processVertex(const Base::vec
     c.w = 1.0f;
     c = c / w;
 
-    Base::vec3 crd{ c.x, c.y, c.z };
+    Base::vec3 crd{ c.x, -c.y, c.z };
     crd = (crd + 1.0f) * 0.5f * (m_viewportMax - m_viewportMin) + m_viewportMin;
 
     return Base::vec4(crd, c.w);
