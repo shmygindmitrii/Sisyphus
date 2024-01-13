@@ -5,6 +5,8 @@
 #include "bonfire_raw_canvas.h"
 #include "base_matrices.h"
 #include "obj_file.h"
+#include "bonfire_texture_holder.h"
+#include "win_tex_loader.h"
 #include <cassert>
 #include "resource.h"
 #include <chrono>
@@ -27,6 +29,28 @@ INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 
 std::vector<Temple::Base::vec4> g_modelVerts;
 std::vector<int> g_modelInds;
+std::vector<uint8_t> g_modelVertAttribs;
+static uint32_t mosaicTexture;
+
+//
+static Temple::Bonfire::col4u red { 255, 0, 0, 255 };
+static Temple::Bonfire::col4u green { 0, 255, 0, 255 };
+static Temple::Bonfire::col4u blue { 0, 0, 255, 255 };
+static Temple::Bonfire::col4u yellow { 200, 200, 0, 255 };
+static Temple::Bonfire::col4u pink { 200, 154, 165, 255 };
+static Temple::Bonfire::col4u turquoise { 0, 154, 154, 255 };
+static Temple::Bonfire::col4u orange { 205, 88, 0, 255 };
+static Temple::Bonfire::col4u violet { 107, 0, 215, 255 };
+static std::vector<Temple::Bonfire::col4u> defaultColors = { red, green, blue, yellow, pink, turquoise, orange, violet };
+static Temple::Bonfire::col4u bgColor{ 15, 15, 35, 255 };
+static Temple::Bonfire::col4u lineColor{ 0, 150, 0, 255 };
+
+template<typename T>
+static void packData(std::vector<uint8_t>& v, T data) {
+    int oldSize = v.size();
+    v.resize(oldSize + sizeof(T));
+    memcpy(&v[oldSize], (void*)&data, sizeof(T));
+}
 
 void draw(HWND hWnd) {
     RECT rect;
@@ -39,20 +63,7 @@ void draw(HWND hWnd) {
     bmi.bmiHeader.biPlanes = 1;
     bmi.bmiHeader.biBitCount = 32;     // 32-bit
     bmi.bmiHeader.biCompression = BI_RGB;
-    //
-    static Temple::Bonfire::col4u red { 255, 0, 0, 255 };
-    static Temple::Bonfire::col4u green { 0, 255, 0, 255 };
-    static Temple::Bonfire::col4u blue { 0, 0, 255, 255 };
-    static Temple::Bonfire::col4u yellow { 200, 200, 0, 255 };
-    static Temple::Bonfire::col4u pink { 200, 154, 165, 255 };
-    static Temple::Bonfire::col4u turquoise { 0, 154, 154, 255 };
-    static Temple::Bonfire::col4u orange { 205, 88, 0, 255 };
-    static Temple::Bonfire::col4u violet { 107, 0, 215, 255 };
-    static std::vector<Temple::Bonfire::col4u> defaultColors = { red, green, blue, yellow, pink, turquoise, orange, violet };
 
-    static Temple::Bonfire::col4u bgColor{ 15, 15, 35, 255 };
-    static Temple::Bonfire::col4u lineColor{ 0, 150, 0, 255 };
-    //
     GetClientRect(hWnd, &rect);
 
     int width = rect.right - rect.left;
@@ -72,20 +83,31 @@ void draw(HWND hWnd) {
     canvas.clearDepth(10.0f);
     canvas.fill(bgColor); // fill background and also clear screen
 
-    Temple::Base::vec4 a{ -0.0f, -0.0f, +2.0f, +1.0f };
-    Temple::Base::vec4 b{ -0.7f, -0.7f, +2.0f, +1.0f };
-    Temple::Base::vec4 c{ +0.7f, -0.7f, +2.0f, +1.0f };
+    Temple::Base::vec4 a{ -0.0f, -0.0f, +0.0f, +1.0f };
+    Temple::Base::vec4 b{ -0.7f, -0.7f, +0.0f, +1.0f };
+    Temple::Base::vec4 c{ +0.7f, -0.7f, +0.0f, +1.0f };
+    Temple::Base::vec2 uv0 { 0.0f, 0.0f };
+    Temple::Base::vec2 uv1 { 1.0f, 0.0f };
+    Temple::Base::vec2 uv2 { 0.0f, 1.0f };
     std::vector<Temple::Base::vec4> abc = { a, b, c };
-    std::vector<Temple::Bonfire::col4u> abcColors = { red, green, blue };
-    std::vector<int> abcWireIndices = { 0, 1, 1, 2, 2, 0 };
+    std::vector<uint8_t> wireTriangleAttribs;
+    packData(wireTriangleAttribs, red);
+    packData(wireTriangleAttribs, uv0);
+    packData(wireTriangleAttribs, green);
+    packData(wireTriangleAttribs, uv1);
+    packData(wireTriangleAttribs, blue);
+    packData(wireTriangleAttribs, uv2);
 
-    Temple::Bonfire::VertexFormat vf({ Temple::Bonfire::VertexAttribType::COL4U });
+    std::vector<int> abcLineIndices = { 0, 1, 1, 2, 2, 0 };
+    std::vector<int> abcTriangleIndices = { 0, 1, 2 };
+
+    Temple::Bonfire::VertexFormat vf({ Temple::Bonfire::VertexAttribType::COL4U, Temple::Bonfire::VertexAttribType::VEC2 });
 
     auto curTime = std::chrono::high_resolution_clock::now();    
     auto duration = curTime.time_since_epoch();
     long long nanoseconds = std::chrono::duration_cast<std::chrono::nanoseconds>(duration).count();
 
-    long long circle_ns = 1000000000 * 2;
+    long long circle_ns = 50000000000;
     float angle = ((nanoseconds % circle_ns) / (float)circle_ns)* M_PI * 2.0f; // unused for now
 
     //float angley = 30.0f / 360.0f * 2.0f * M_PI;
@@ -95,9 +117,9 @@ void draw(HWND hWnd) {
     Temple::Base::mat4 mRotation = mRotY * mRotZ;
 
     Temple::Base::mat4 mScale = Temple::Base::mat4::identity();
-    mScale.r0.x = 0.25f;
-    mScale.r1.y = 0.25f;
-    mScale.r2.z = 0.25f;
+    mScale.r0.x = 0.5f;
+    mScale.r1.y = 0.5f;
+    mScale.r2.z = 0.5f;
 
     Temple::Base::mat4 mTranslation = Temple::Base::mat4::identity();
     mTranslation.r2.w = 1.0f; // z-shift
@@ -108,21 +130,22 @@ void draw(HWND hWnd) {
     canvas.setRenderMode(Temple::Bonfire::RenderMode::TRIANGLE);
     canvas.setDescriptorSet(&matrix);
     canvas.setVertexShader([](const Temple::Base::vec4& inp, Temple::Base::vec4* out, const void* data, const void* descriptorSet) { 
-        const Temple::Base::mat4* mRot = reinterpret_cast<const Temple::Base::mat4*>(descriptorSet);
-        *out = (*mRot) * inp;
+        const Temple::Base::mat4* mTransform = reinterpret_cast<const Temple::Base::mat4*>(descriptorSet);
+        *out = (*mTransform) * inp;
     });
     canvas.setPixelShader([](void* canvasRaw, const Temple::Base::vec4& inp, const void* perPixelData, const void* descriptorSet) {
         Temple::Bonfire::RawCanvas* canvas = reinterpret_cast<Temple::Bonfire::RawCanvas*>(canvasRaw);
         const Temple::Bonfire::col4u* pixelColor = reinterpret_cast<const Temple::Bonfire::col4u*>(perPixelData);
-        canvas->putPixel((int)inp.x, (int)inp.y, *pixelColor);
+        const Temple::Base::vec2* texPtr = reinterpret_cast<const Temple::Base::vec2*>(pixelColor + 1);
+        // per-pixel
+        const Temple::Base::vec4& texColor = Temple::Bonfire::TextureHolder::instance()->getPixel(0, texPtr->u, texPtr->v);
+        Temple::Base::vec4 colMask { pixelColor->r / 255.0f, pixelColor->g / 255.0f, pixelColor->b / 255.0f, pixelColor->a / 255.0f};
+        canvas->putPixel((int)inp.x, (int)inp.y, colMask * texColor);
     });
 
-    std::vector<Temple::Bonfire::col4u> vertColors;
-    for (int i = 0; i < g_modelVerts.size(); i++) {
-        vertColors.push_back(defaultColors[i % defaultColors.size()]);
-    }
-    canvas.drawTriangles(g_modelVerts, g_modelInds, reinterpret_cast<const uint8_t*>(vertColors.data()), vf);
-    canvas.drawLines(abc, abcWireIndices, reinterpret_cast<const uint8_t*>(abcColors.data()), vf);
+    canvas.drawTriangles(g_modelVerts, g_modelInds, reinterpret_cast<const uint8_t*>(g_modelVertAttribs.data()), vf);
+    //canvas.drawLines(abc, abcLineIndices, wireTriangleAttribs.data(), vf);
+    //canvas.drawTriangles(abc, abcTriangleIndices, wireTriangleAttribs.data(), vf);
     // end of color buffer filling
     // Draw the buffer to the window
     SetDIBitsToDevice(hdc, 0, 0, width, height, 0, 0, 0, height, (unsigned char*)canvas.getData(), &bmi, DIB_RGB_COLORS);
@@ -150,16 +173,25 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     {
         return FALSE;
     }
-    std::shared_ptr<Temple::Barn::ObjFile> objFile = Temple::Barn::ReadObj("D:\\Own\\CPP\\Temple\\Resources\\cube.obj");
+    
+    mosaicTexture = loadTexture("D:\\Own\\CPP\\Temple\\Resources\\side_colored.png");
+    std::shared_ptr<Temple::Barn::ObjFile> objFile = Temple::Barn::ReadObj("D:\\Own\\CPP\\Temple\\Resources\\cube_sided.obj");
+
+    std::vector<Temple::Bonfire::col4u> colors;
     for (int vertIdx = 0; vertIdx < objFile->coord.size(); vertIdx++) {
-        Temple::Base::vec4 pos(objFile->coord[vertIdx], 1.0f);
-        g_modelVerts.push_back(pos);
+        colors.push_back(defaultColors[vertIdx % defaultColors.size()]);
     }
+    int gidx = 0;
     for (int i = 0; i < objFile->faces.size(); i++) {
         const Temple::Barn::ObjFace& face = objFile->faces[i];
         for (int j = 0; j < 3; j++) {
             int vertIdx = face.indices[j].position - 1;
-            g_modelInds.push_back(vertIdx);
+            int uvIdx = face.indices[j].texture - 1;
+            Temple::Base::vec4 pos(objFile->coord[vertIdx], 1.0f);
+            g_modelVerts.push_back(pos);
+            g_modelInds.push_back(gidx++);
+            packData(g_modelVertAttribs, colors[vertIdx]);
+            packData(g_modelVertAttribs, objFile->uv[uvIdx]);
         }
     }
     HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_BYGONE_LIGHT));
