@@ -94,13 +94,13 @@ void draw(HWND hWnd) {
     Temple::Base::vec2 uv1 { 1.0f, 0.0f };
     Temple::Base::vec2 uv2 { 0.0f, 1.0f };
     std::vector<Temple::Base::vec4> abc = { a, b, c };
-    std::vector<uint8_t> wireTriangleAttribs;
-    packData(wireTriangleAttribs, red);
-    packData(wireTriangleAttribs, uv0);
-    packData(wireTriangleAttribs, green);
-    packData(wireTriangleAttribs, uv1);
-    packData(wireTriangleAttribs, blue);
-    packData(wireTriangleAttribs, uv2);
+    std::vector<uint8_t> abcTriangleAttribs;
+    packData(abcTriangleAttribs, Temple::Bonfire::getFloatColor(red));
+    packData(abcTriangleAttribs, uv0);
+    packData(abcTriangleAttribs, Temple::Bonfire::getFloatColor(green));
+    packData(abcTriangleAttribs, uv1);
+    packData(abcTriangleAttribs, Temple::Bonfire::getFloatColor(blue));
+    packData(abcTriangleAttribs, uv2);
 
     std::vector<int> abcLineIndices = { 0, 1, 1, 2, 2, 0 };
     std::vector<int> abcTriangleIndices = { 0, 1, 2 };
@@ -126,7 +126,7 @@ void draw(HWND hWnd) {
     mScale.r2.z = 0.5f;
 
     Temple::Base::mat4 mTranslation = Temple::Base::mat4::identity();
-    mTranslation.r2.w = 1.0f; // z-shift
+    mTranslation.r2.w = 0.7f; // z-shift
     
     Temple::Base::mat4 mPerspective = Temple::Base::mat4::projection(90.0f, width / (float)height, 0.5f, 100.0f);
 
@@ -147,8 +147,8 @@ void draw(HWND hWnd) {
     });
 
     renderContext.drawTriangles(g_modelVerts, g_modelInds, reinterpret_cast<const uint8_t*>(g_modelVertAttribs.data()), vf);
-    //renderContext.drawLines(abc, abcLineIndices, wireTriangleAttribs.data(), vf);
-    //renderContext.drawTriangles(abc, abcTriangleIndices, wireTriangleAttribs.data(), vf);
+    //renderContext.drawLines(abc, abcLineIndices, abcTriangleAttribs.data(), vf);
+    //renderContext.drawTriangles(abc, abcTriangleIndices, abcTriangleAttribs.data(), vf);
     // end of color buffer filling
     // Draw the buffer to the window
     SetDIBitsToDevice(hdc, 0, 0, width, height, 0, 0, 0, height, (unsigned char*)renderContext.getFrame(), &bmi, DIB_RGB_COLORS);
