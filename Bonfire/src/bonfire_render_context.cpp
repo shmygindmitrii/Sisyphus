@@ -37,7 +37,7 @@ Temple::Bonfire::VertexFormat::VertexFormat(const std::vector<Temple::Bonfire::V
 }
 
 template<typename T>
-static inline void interpolateTemplate(const uint8_t*& aIn, const uint8_t*& bIn, uint8_t*& cOut, float weight) {
+static inline void __interpolateAttribsTemplate(const uint8_t*& aIn, const uint8_t*& bIn, uint8_t*& cOut, float weight) {
     *(T*)cOut = (*(T*)bIn) * weight - (*(T*)aIn) * weight + *(T*)aIn;
     aIn += sizeof(T);
     bIn += sizeof(T);
@@ -50,25 +50,60 @@ void Temple::Bonfire::interpolateAttributes(const uint8_t* aIn, const uint8_t* b
     for (int i = 0; i < vf.attributes.size(); i++) {
         switch (vf.attributes[i]) {
         case VertexAttribType::FLOAT32:
-            interpolateTemplate<float>(aIn, bIn, cOut, weight);
+            __interpolateAttribsTemplate<float>(aIn, bIn, cOut, weight);
             break;
         case VertexAttribType::INT32:
-            interpolateTemplate<int32_t>(aIn, bIn, cOut, weight);
+            __interpolateAttribsTemplate<int32_t>(aIn, bIn, cOut, weight);
             break;
         case VertexAttribType::UINT8:
-            interpolateTemplate<uint8_t>(aIn, bIn, cOut, weight);
+            __interpolateAttribsTemplate<uint8_t>(aIn, bIn, cOut, weight);
             break;
         case VertexAttribType::VEC2:
-            interpolateTemplate<Base::vec2>(aIn, bIn, cOut, weight);
+            __interpolateAttribsTemplate<Base::vec2>(aIn, bIn, cOut, weight);
             break;
         case VertexAttribType::VEC3:
-            interpolateTemplate<Base::vec3>(aIn, bIn, cOut, weight);
+            __interpolateAttribsTemplate<Base::vec3>(aIn, bIn, cOut, weight);
             break;
         case VertexAttribType::VEC4:
-            interpolateTemplate<Base::vec4>(aIn, bIn, cOut, weight);
+            __interpolateAttribsTemplate<Base::vec4>(aIn, bIn, cOut, weight);
             break;
         case VertexAttribType::UV:
-            interpolateTemplate<Base::vec2>(aIn, bIn, cOut, weight);
+            __interpolateAttribsTemplate<Base::vec2>(aIn, bIn, cOut, weight);
+            break;
+        }
+    }
+}
+
+template<typename T>
+static inline void __multAttribsTemplate(const uint8_t*& aIn, uint8_t*& cOut, float mult) {
+    *(T*)cOut = (*(T*)aIn) * mult;
+    aIn += sizeof(T);
+    cOut += sizeof(T);
+}
+
+void Temple::Bonfire::multiplyAttributes(const uint8_t* aIn, uint8_t* cOut, float mult, const VertexFormat& vf) {
+    for (int i = 0; i < vf.attributes.size(); i++) {
+        switch (vf.attributes[i]) {
+        case VertexAttribType::FLOAT32:
+            __multAttribsTemplate<float>(aIn, cOut, mult);
+            break;
+        case VertexAttribType::INT32:
+            __multAttribsTemplate<int32_t>(aIn, cOut, mult);
+            break;
+        case VertexAttribType::UINT8:
+            __multAttribsTemplate<uint8_t>(aIn, cOut, mult);
+            break;
+        case VertexAttribType::VEC2:
+            __multAttribsTemplate<Base::vec2>(aIn, cOut, mult);
+            break;
+        case VertexAttribType::VEC3:
+            __multAttribsTemplate<Base::vec3>(aIn, cOut, mult);
+            break;
+        case VertexAttribType::VEC4:
+            __multAttribsTemplate<Base::vec4>(aIn, cOut, mult);
+            break;
+        case VertexAttribType::UV:
+            __multAttribsTemplate<Base::vec2>(aIn, cOut, mult);
             break;
         }
     }

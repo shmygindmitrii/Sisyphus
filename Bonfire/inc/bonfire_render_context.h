@@ -49,6 +49,7 @@ namespace Temple {
             VertexFormat(const std::vector<VertexAttribType>& attribs);
         };
         void interpolateAttributes(const uint8_t* aIn, const uint8_t* bIn, uint8_t* cOut, float weight, const VertexFormat& vf);
+        void multiplyAttributes(const uint8_t* aIn, uint8_t* cOut, float mult, const VertexFormat& vf);
         using vertexShaderFunc = void(*)(const Base::vec4& input, Base::vec4* output, const void* data, const void* descriptorSet); // over single vertex
         using pixelShaderFunc = void(*)(void* canvasRaw, const Base::vec4& input, const void* data, const void* descriptorSet); // over single pixel
         class RenderContext {
