@@ -50,7 +50,7 @@ static Temple::Bonfire::col4u bgColor{ 15, 15, 35, 255 };
 static Temple::Bonfire::col4u lineColor{ 0, 150, 0, 255 };
 
 template<typename T>
-static void packData(std::vector<uint8_t>& v, T data) {
+static void packData(std::vector<uint8_t>& v, const T& data) {
     int oldSize = v.size();
     v.resize(oldSize + sizeof(T));
     memcpy(&v[oldSize], (void*)&data, sizeof(T));
@@ -96,13 +96,16 @@ void draw(HWND hWnd) {
     Temple::Base::vec3 normal { 0.0f, 0.0f, -1.0f };
     std::vector<Temple::Base::vec4> abc = { a, b, c };
     std::vector<uint8_t> abcTriangleAttribs;
-    packData(abcTriangleAttribs, Temple::Bonfire::getFloatColor(red));
+    Temple::Base::vec4 fred = Temple::Bonfire::getFloatColor(red);
+    Temple::Base::vec4 fgreen = Temple::Bonfire::getFloatColor(green);
+    Temple::Base::vec4 fblue = Temple::Bonfire::getFloatColor(blue);
+    packData(abcTriangleAttribs, fred);
     packData(abcTriangleAttribs, uv0);
     packData(abcTriangleAttribs, normal);
-    packData(abcTriangleAttribs, Temple::Bonfire::getFloatColor(green));
+    packData(abcTriangleAttribs, fgreen);
     packData(abcTriangleAttribs, uv1);
     packData(abcTriangleAttribs, normal);
-    packData(abcTriangleAttribs, Temple::Bonfire::getFloatColor(blue));
+    packData(abcTriangleAttribs, fblue);
     packData(abcTriangleAttribs, uv2);
     packData(abcTriangleAttribs, normal);
 
