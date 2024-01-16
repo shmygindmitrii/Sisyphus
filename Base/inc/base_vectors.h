@@ -180,6 +180,9 @@ namespace Temple {
                 l = 1.0f / l;
                 return vec3(x * l, y * l, z * l);
             }
+            inline float dot(const vec3& v) {
+                return x * v.x + y * v.y + z * v.z;
+            }
         };
         inline vec3 operator -(const vec3& v) {
             return vec3(-v.x, -v.y, -v.z);
