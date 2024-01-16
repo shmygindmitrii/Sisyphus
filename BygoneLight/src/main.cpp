@@ -143,6 +143,20 @@ void draw(HWND hWnd) {
 
     std::vector<uint8_t> descriptorSet;
     packData(descriptorSet, matrix);
+    Temple::Base::vec3 cameraPosition { 0.0f, 0.0f, 0.0f };
+    packData(descriptorSet, cameraPosition);
+    int lightCount = 2;
+    packData(descriptorSet, lightCount);
+    int lightAmbient = 0;
+    float ambientIllumination = 0.2f;
+    int lightPoint = 1;
+    float pointIllumination = 0.8f;
+    packData(descriptorSet, lightAmbient);
+    packData(descriptorSet, ambientIllumination);
+    packData(descriptorSet, lightPoint);
+    packData(descriptorSet, pointIllumination);
+    Temple::Base::vec3 lightPointPosition { 1.0f, 0.5f, 0.0f };
+    packData(descriptorSet, lightPointPosition);
 
     renderContext.setRenderMode(Temple::Bonfire::RenderMode::TRIANGLE);
     renderContext.setDescriptorSet(descriptorSet.data());
@@ -152,11 +166,35 @@ void draw(HWND hWnd) {
     });
     renderContext.setPixelShader([](void* renderContextRaw, const Temple::Base::vec4& inp, const void* perPixelData, const void* descriptorSet) {
         Temple::Bonfire::RenderContext* renderContextPtr = reinterpret_cast<Temple::Bonfire::RenderContext*>(renderContextRaw);
-        const Temple::Base::vec4* pixelColor = reinterpret_cast<const Temple::Base::vec4*>(perPixelData);
-        const Temple::Base::vec2* texPtr = reinterpret_cast<const Temple::Base::vec2*>(pixelColor + 1);
+        const Temple::Base::vec4* pixelColorPtr = reinterpret_cast<const Temple::Base::vec4*>(perPixelData);
+        const Temple::Base::vec2* texPtr = reinterpret_cast<const Temple::Base::vec2*>(pixelColorPtr + 1);
+        const Temple::Base::vec3* normalPtr = reinterpret_cast<const Temple::Base::vec3*>(texPtr + 1);
         // per-pixel
         const Temple::Base::vec4& texColor = Temple::Bonfire::TextureHolder::instance()->getPixel(0, texPtr->u, texPtr->v);
-        renderContextPtr->putPixel((int)inp.x, (int)inp.y, (*pixelColor) * texColor);
+        // illumination
+        const Temple::Base::vec3* cameraPositionPtr = reinterpret_cast<const Temple::Base::vec3*>((uint8_t*)descriptorSet + sizeof(Temple::Base::mat4));
+        const int* lightCountPtr = reinterpret_cast<const int*>(cameraPositionPtr + 1);
+        float illumination = 0.0f;
+        const int* lightTypePtr = lightCountPtr + 1;
+        Temple::Base::vec3 pixelPosition { inp.x, inp.y, inp.z };
+        for (int i = 0; i < *lightCountPtr; i++) {
+            const float* illuminationPtr = reinterpret_cast<const float*>(lightTypePtr + 1);
+            if ((*lightTypePtr) == 0) {
+                // ambient
+                illumination += *illuminationPtr;
+                lightTypePtr = reinterpret_cast<const int*>(illuminationPtr + 1);
+            }
+            else if ((*lightTypePtr) == 1) {
+                // point light
+                Temple::Base::vec3 v = (*cameraPositionPtr) - pixelPosition;
+                v = v.norm();
+                float vDotn = v.dot(*normalPtr);
+                if (vDotn > 0) {
+                    illumination += vDotn * (*illuminationPtr);
+                }
+            }
+        }
+        renderContextPtr->putPixel((int)inp.x, (int)inp.y, /*(*pixelColorPtr) **/ texColor * illumination);
     });
 
     renderContext.drawTriangles(g_modelVerts, g_modelInds, reinterpret_cast<const uint8_t*>(g_modelVertAttribs.data()), vf);
