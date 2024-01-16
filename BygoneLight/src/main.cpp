@@ -93,19 +93,25 @@ void draw(HWND hWnd) {
     Temple::Base::vec2 uv0 { 0.0f, 0.0f };
     Temple::Base::vec2 uv1 { 1.0f, 0.0f };
     Temple::Base::vec2 uv2 { 0.0f, 1.0f };
+    Temple::Base::vec3 normal { 0.0f, 0.0f, -1.0f };
     std::vector<Temple::Base::vec4> abc = { a, b, c };
     std::vector<uint8_t> abcTriangleAttribs;
     packData(abcTriangleAttribs, Temple::Bonfire::getFloatColor(red));
     packData(abcTriangleAttribs, uv0);
+    packData(abcTriangleAttribs, normal);
     packData(abcTriangleAttribs, Temple::Bonfire::getFloatColor(green));
     packData(abcTriangleAttribs, uv1);
+    packData(abcTriangleAttribs, normal);
     packData(abcTriangleAttribs, Temple::Bonfire::getFloatColor(blue));
     packData(abcTriangleAttribs, uv2);
+    packData(abcTriangleAttribs, normal);
 
     std::vector<int> abcLineIndices = { 0, 1, 1, 2, 2, 0 };
     std::vector<int> abcTriangleIndices = { 0, 1, 2 };
 
-    Temple::Bonfire::VertexFormat vf({ Temple::Bonfire::VertexAttribType::VEC4, Temple::Bonfire::VertexAttribType::VEC2 });
+    Temple::Bonfire::VertexFormat vf({ Temple::Bonfire::VertexAttribType::VEC4, 
+                                       Temple::Bonfire::VertexAttribType::VEC2,
+                                       Temple::Bonfire::VertexAttribType::VEC3 });
 
     auto curTime = std::chrono::high_resolution_clock::now();    
     auto duration = curTime.time_since_epoch();
@@ -131,8 +137,12 @@ void draw(HWND hWnd) {
     Temple::Base::mat4 mPerspective = Temple::Base::mat4::projection(90.0f, width / (float)height, 0.5f, 100.0f);
 
     Temple::Base::mat4 matrix = mPerspective * mTranslation * mRotation * mScale;
+
+    std::vector<uint8_t> descriptorSet;
+    packData(descriptorSet, matrix);
+
     renderContext.setRenderMode(Temple::Bonfire::RenderMode::TRIANGLE);
-    renderContext.setDescriptorSet(&matrix);
+    renderContext.setDescriptorSet(descriptorSet.data());
     renderContext.setVertexShader([](const Temple::Base::vec4& inp, Temple::Base::vec4* out, const void* data, const void* descriptorSet) { 
         const Temple::Base::mat4* mTransform = reinterpret_cast<const Temple::Base::mat4*>(descriptorSet);
         *out = (*mTransform) * inp;
@@ -190,11 +200,13 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         for (int j = 0; j < 3; j++) {
             int vertIdx = face.indices[j].position - 1;
             int uvIdx = face.indices[j].texture - 1;
+            int normalIdx = face.indices[j].normal - 1;
             Temple::Base::vec4 pos(objFile->coord[vertIdx], 1.0f);
             g_modelVerts.push_back(pos);
             g_modelInds.push_back(gidx++);
             packData(g_modelVertAttribs, colors[vertIdx]);
             packData(g_modelVertAttribs, objFile->uv[uvIdx]);
+            packData(g_modelVertAttribs, objFile->normal[normalIdx]);
         }
     }
     HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_BYGONE_LIGHT));
