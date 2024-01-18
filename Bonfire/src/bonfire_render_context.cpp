@@ -263,19 +263,20 @@ void Temple::Bonfire::RenderContext::drawLines(const std::vector<Base::vec4>& co
     for (int i = 0; i < indices.size(); i += 2) {
         const Base::vec4& va = coords[indices[i]];
         const Base::vec4& vb = coords[indices[i + 1]];
-        const uint8_t* aData = &vertexData[indices[i] * vf.size];
-        const uint8_t* bData = &vertexData[indices[i + 1] * vf.size];
+        const uint8_t* aData = &vertexData[indices[i] * vInFormat.size];
+        const uint8_t* bData = &vertexData[indices[i + 1] * vInFormat.size];
         // draw single line here
         Base::vec4 a, b;
-        this->m_vsf(va, &a, aData, this->m_descriptorSet);
-        this->m_vsf(vb, &b, bData, this->m_descriptorSet);
+        std::vector<uint8_t> aVertexOut(vOutFormat.size), bVertexOut(vOutFormat.size);
+        this->m_vsf(va, a, aVertexOut, aData, this->m_descriptorSet);
+        this->m_vsf(vb, b, bVertexOut, bData, this->m_descriptorSet);
         //
         a = processVertex(a);
         b = processVertex(b);
         // obtained vertex shader results and go to the pixel stage
         Base::vec4 a0(a);
         Base::vec4 b0(b);
-        const uint8_t *aData0 = aData, *bData0 = bData;
+        const uint8_t *aData0 = aVertexOut.data(), *bData0 = bVertexOut.data();
         if (a.y > b.y) {
             a0 = b;
             b0 = a;
@@ -292,13 +293,13 @@ void Temple::Bonfire::RenderContext::drawLines(const std::vector<Base::vec4>& co
         else {
             if (fabs(yDif) > fabs(xDif)) {
                 float slope = xDif / yDif;
-                std::vector<uint8_t> cOut(vf.size);
+                std::vector<uint8_t> cOut(vOutFormat.size);
                 Base::vec4 c;
                 for (c.y = a0.y; c.y < b0.y; c.y += 1.0f) {
                     c.x = a0.x + (c.y - a0.y) * slope;
                     float weight = (c.y - a0.y) / (b0.y - a0.y);
                     c.z = (b.z - a.z) * weight + a.z;
-                    interpolateAttributes(aData0, bData0, &cOut[0], weight, vf);
+                    interpolateAttributes(aData0, bData0, &cOut[0], weight, vOutFormat);
                     renderPixelDepthWise(c, cOut.data());
                 }
             }
@@ -312,13 +313,13 @@ void Temple::Bonfire::RenderContext::drawLines(const std::vector<Base::vec4>& co
                     bData0 = cData0;
                 }
                 float slope = yDif / xDif;
-                std::vector<uint8_t> cOut(vf.size);
+                std::vector<uint8_t> cOut(vOutFormat.size);
                 Base::vec4 c;
                 for (c.x = a0.x; c.x < b0.x; c.x += 1.0f) {
                     c.y = a0.y + (c.x - a0.x) * slope;
                     float weight = (c.x - a0.x) / (b0.x - a0.x);
                     c.z = (b.z - a.z) * weight + a.z;
-                    interpolateAttributes(aData0, bData0, &cOut[0], weight, vf);
+                    interpolateAttributes(aData0, bData0, &cOut[0], weight, vOutFormat);
                     renderPixelDepthWise(c, cOut.data());
                 }
             }
