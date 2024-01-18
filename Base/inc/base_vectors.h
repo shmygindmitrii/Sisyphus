@@ -303,6 +303,19 @@ namespace Temple {
                 l = 1.0f / l;
                 return vec4(x * l, y * l, z * l, w * l);
             }
+            inline vec4 clamp(float start, float end) {
+                vec4 r;
+                for (int i = 0; i < 4; i++) {
+                    r.data[i] = data[i];
+                    if (r.data[i] < start) {
+                        r.data[i] = start;
+                    }
+                    if (r.data[i] > end) {
+                        r.data[i] = end;
+                    }
+                }
+                return r;
+            }
         };
         inline vec4 operator -(const vec4& v) {
             return vec4(-v.x, -v.y, -v.z, -v.w);
