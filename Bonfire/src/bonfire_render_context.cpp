@@ -196,10 +196,11 @@ void Temple::Bonfire::RenderContext::putPixel(int x, int y, const Base::vec4& co
     if (x < 0 || x >= m_width || y < 0 || y >= m_height)
         return;
     int pixelIndex = y * m_width * m_bytesPerPixel + x * m_bytesPerPixel;
-    m_data[pixelIndex + 0] = (uint8_t)((color.b - floor(color.b)) * 255.0f);
-    m_data[pixelIndex + 1] = (uint8_t)((color.g - floor(color.g)) * 255.0f);
-    m_data[pixelIndex + 2] = (uint8_t)((color.r - floor(color.r)) * 255.0f);
-    m_data[pixelIndex + 3] = (uint8_t)((color.a - floor(color.a)) * 255.0f);
+    // please, take care about color content in advance - clamp if needed
+    m_data[pixelIndex + 0] = (uint8_t)(color.b * 255.0f);
+    m_data[pixelIndex + 1] = (uint8_t)(color.g * 255.0f);
+    m_data[pixelIndex + 2] = (uint8_t)(color.r * 255.0f);
+    m_data[pixelIndex + 3] = (uint8_t)(color.a * 255.0f);
 }
 
 void Temple::Bonfire::RenderContext::fill(const col4u& color) {

@@ -163,7 +163,7 @@ void draw(HWND hWnd) {
     packData(descriptorSet, ambientIllumination);
     packData(descriptorSet, lightPoint);
     packData(descriptorSet, pointIllumination);
-    Temple::Base::vec3 lightPointPosition { -1.0f, 0.5f, 0.0f };
+    Temple::Base::vec3 lightPointPosition { 0.0f, 0.0f, -1.0f };
     packData(descriptorSet, lightPointPosition);
 
     renderContext.setRenderMode(Temple::Bonfire::RenderMode::TRIANGLE);
@@ -194,8 +194,8 @@ void draw(HWND hWnd) {
         memcpy(perVertexOut.data() + offset, &normal, sizeof(Temple::Base::vec3));
         offset += sizeof(Temple::Base::vec3);
     });
-    renderContext.setPixelShader([](void* renderContextRaw, const Temple::Base::vec4& inp, const uint8_t* perPixelData, 
-                                    const std::vector<uint8_t>& descriptorSet) {
+    renderContext.setPixelShader([](void* renderContextRaw, const Temple::Base::vec4& inp, const uint8_t* perPixelData,
+        const std::vector<uint8_t>& descriptorSet) {
         Temple::Bonfire::RenderContext* renderContextPtr = reinterpret_cast<Temple::Bonfire::RenderContext*>(renderContextRaw);
         const Temple::Base::vec4* posPtr = reinterpret_cast<const Temple::Base::vec4*>(perPixelData);
         const Temple::Base::vec4* pixelColorPtr = reinterpret_cast<const Temple::Base::vec4*>(posPtr + 1);
@@ -204,16 +204,16 @@ void draw(HWND hWnd) {
         // per-pixel
         const Temple::Base::vec4& texColor = Temple::Bonfire::TextureHolder::instance()->getPixel(0, texPtr->u, texPtr->v);
         // illumination
-        const Temple::Base::vec3* cameraPositionPtr = reinterpret_cast<const Temple::Base::vec3*>(((uint8_t*)descriptorSet.data()) + 2 * sizeof(Temple::Base::mat4));
+        const Temple::Base::vec3* cameraPositionPtr = reinterpret_cast<const Temple::Base::vec3*>(descriptorSet.data() + 2 * sizeof(Temple::Base::mat4));
         const int* lightCountPtr = reinterpret_cast<const int*>(cameraPositionPtr + 1);
-        float illumination = 0.0f;
         const int* lightTypePtr = lightCountPtr + 1;
         Temple::Base::vec3 pixelPosition { posPtr->x, posPtr->y, posPtr->z };
+        float ambientIllumination = 0.0f, diffuseIllumination = 0.0f, specularIllumination = 0.0f;
         for (int i = 0; i < *lightCountPtr; i++) {
             const float* illuminationPtr = reinterpret_cast<const float*>(lightTypePtr + 1);
             if ((*lightTypePtr) == 0) {
                 // ambient
-                illumination += *illuminationPtr;
+                ambientIllumination += *illuminationPtr;
                 lightTypePtr = reinterpret_cast<const int*>(illuminationPtr + 1);
             }
             else if ((*lightTypePtr) == 1) {
@@ -221,9 +221,20 @@ void draw(HWND hWnd) {
                 const Temple::Base::vec3* lightPosPtr = reinterpret_cast<const Temple::Base::vec3*>(illuminationPtr + 1);
                 Temple::Base::vec3 v = (*lightPosPtr) - pixelPosition;
                 v = v.norm();
+                // diffuse
                 float vDotn = v.dot(*normalPtr);
                 if (vDotn > 0) {
-                    illumination += vDotn * (*illuminationPtr);
+                    diffuseIllumination += vDotn * (*illuminationPtr);
+                    // specular
+                    Temple::Base::vec3 vp = v - (*normalPtr) * v.dot(*normalPtr);
+                    Temple::Base::vec3 r = v - vp * 2.0f;
+                    r = r.norm();
+                    Temple::Base::vec3 d = (*cameraPositionPtr) - pixelPosition;
+                    d = d.norm();
+                    float dDotR = d.dot(r);
+                    if (dDotR > 0) {
+                        specularIllumination += pow(dDotR, 10.0f) * (*illuminationPtr);
+                    }
                 }
                 lightTypePtr = reinterpret_cast<const int*>(lightPosPtr + 1);
             }
@@ -231,11 +242,15 @@ void draw(HWND hWnd) {
                 // direct light
             }
         }
-        renderContextPtr->putPixel((int)inp.x, (int)inp.y, (*pixelColorPtr) * texColor * illumination);
+        float illumination = ambientIllumination + diffuseIllumination + specularIllumination;
+        Temple::Base::vec4 illuminationVec { illumination, illumination, illumination, 1.0f };
+        Temple::Base::vec4 finalColor = (*pixelColorPtr) * texColor * illuminationVec;
+        finalColor = finalColor.clamp(0.0f, 1.0f);
+        renderContextPtr->putPixel((int)inp.x, (int)inp.y, finalColor);
     });
 
     renderContext.drawTriangles(g_modelVerts, g_modelInds, reinterpret_cast<const uint8_t*>(g_modelVertAttribs.data()), vertexInputFormat, vertexOutputFormat);
-    //renderContext.drawLines(abc, abcLineIndices, abcTriangleAttribs.data(), vf);
+    //renderContext.drawLines(abc, abcLineIndices, abcTriangleAttribs.data(), vertexInputFormat, vertexOutputFormat);
     //renderContext.drawTriangles(abc, abcTriangleIndices, abcTriangleAttribs.data(), vf);
     // end of color buffer filling
     // Draw the buffer to the window
