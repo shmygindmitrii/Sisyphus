@@ -429,7 +429,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     case WM_PAINT:
     {
         // nothing to do
-        draw(hWnd);
+        //draw(hWnd);
     }
     break;
     case WM_DESTROY:
