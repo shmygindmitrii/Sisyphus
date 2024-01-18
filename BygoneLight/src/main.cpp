@@ -261,7 +261,7 @@ void draw(HWND hWnd) {
 
     renderContext.drawTriangles(g_modelVerts, g_modelInds, reinterpret_cast<const uint8_t*>(g_modelVertAttribs.data()), vertexInputFormat, vertexOutputFormat);
     //renderContext.drawLines(abc, abcLineIndices, abcTriangleAttribs.data(), vertexInputFormat, vertexOutputFormat);
-    //renderContext.drawTriangles(abc, abcTriangleIndices, abcTriangleAttribs.data(), vf);
+    //renderContext.drawTriangles(abc, abcTriangleIndices, abcTriangleAttribs.data(), vertexInputFormat, vertexOutputFormat);
     // end of color buffer filling
     // Draw the buffer to the window
     SetDIBitsToDevice(hdc, 0, 0, width, height, 0, 0, 0, height, (unsigned char*)renderContext.getFrame(), &bmi, DIB_RGB_COLORS);

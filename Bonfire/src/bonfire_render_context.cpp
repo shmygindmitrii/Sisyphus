@@ -258,6 +258,20 @@ void Temple::Bonfire::RenderContext::renderPixelDepthWise(const Base::vec4& p, c
     }
 }
 
+static inline float getWeightBetween(float x, float y, float x0, float y0, float x1, float y1) {
+    float dx = x1 - x0;
+    float dy = y1 - y0;
+    if (fabs(dx) < fabs(dy)) {
+        return (y - y0) / (y1 - y0);
+    }
+    else {
+        if (EQUAL_FLOATS(x0, x1)) {
+            return 0.0f;
+        }
+        return (x - x0) / (x1 - x0);
+    }
+}
+
 void Temple::Bonfire::RenderContext::drawLines(const std::vector<Base::vec4>& coords, const std::vector<int>& indices, 
     const uint8_t* vertexData, const VertexFormat& vInFormat, const VertexFormat& vOutFormat) {
     if (indices.size() == 0 || indices.size() % 2 != 0) return;
@@ -285,10 +299,8 @@ void Temple::Bonfire::RenderContext::drawLines(const std::vector<Base::vec4>& co
         //
         const uint8_t *aData0 = vDepthedAPtr, *bData0 = vDepthedBPtr;
         if (a.y > b.y) {
-            a0 = b;
-            b0 = a;
-            aData0 = bData;
-            bData0 = aData;
+            std::swap(a0, b0);
+            std::swap(aData0, bData0);
         }
         // a is bottom vertex and b is top vertex
         float yDif = b0.y - a0.y;
@@ -306,21 +318,18 @@ void Temple::Bonfire::RenderContext::drawLines(const std::vector<Base::vec4>& co
                 for (c.y = a0.y; c.y < b0.y; c.y += 1.0f) {
                     c.x = a0.x + (c.y - a0.y) * slope;
                     float weight = (c.y - a0.y) / (b0.y - a0.y);
-                    c.w = (b.w - a.w) * weight + a.w;
-                    c.z = 1.0f / c.w;
+                    c.w = (b0.w - a0.w) * weight + a0.w;
+                    float pzo = 1.0f / c.w;
+                    c.z = (b0.z - a0.z) * weight + a0.z;
                     interpolateAttributes(aData0, bData0, cOut.data(), weight, vOutFormat);
-                    multiplyAttributes(cOut.data(), pixelOut.data(), c.z, vOutFormat);
+                    multiplyAttributes(cOut.data(), pixelOut.data(), pzo, vOutFormat);
                     renderPixelDepthWise(c, pixelOut.data());
                 }
             }
             else {
                 if (a0.x > b0.x) {
-                    Base::vec4 c0 = a0;
-                    const uint8_t* cData0 = aData0;
-                    a0 = b0;
-                    b0 = c0;
-                    aData0 = bData0;
-                    bData0 = cData0;
+                    std::swap(a0, b0);
+                    std::swap(aData0, bData0);
                 }
                 float slope = yDif / xDif;
                 std::vector<uint8_t> cOut(vOutFormat.size);
@@ -328,28 +337,15 @@ void Temple::Bonfire::RenderContext::drawLines(const std::vector<Base::vec4>& co
                 for (c.x = a0.x; c.x < b0.x; c.x += 1.0f) {
                     c.y = a0.y + (c.x - a0.x) * slope;
                     float weight = (c.x - a0.x) / (b0.x - a0.x);
-                    c.w = (b.w - a.w) * weight + a.w;
-                    c.z = 1.0f / c.w;
+                    c.w = (b0.w - a0.w) * weight + a0.w;
+                    float pzo = 1.0f / c.w;
+                    c.z = (b0.z - a0.z) * weight + a0.z;
                     interpolateAttributes(aData0, bData0, cOut.data(), weight, vOutFormat);
-                    multiplyAttributes(cOut.data(), pixelOut.data(), c.z, vOutFormat);
+                    multiplyAttributes(cOut.data(), pixelOut.data(), pzo, vOutFormat);
                     renderPixelDepthWise(c, pixelOut.data());
                 }
             }
         }
-    }
-}
-
-static inline float getWeightBetween(float x, float y, float x0, float y0, float x1, float y1) {
-    float dx = x1 - x0;
-    float dy = y1 - y0;
-    if (fabs(dx) < fabs(dy)) {
-        return (y - y0) / (y1 - y0);
-    }
-    else {
-        if (EQUAL_FLOATS(x0, x1)) {
-            return 0.0f;
-        }
-        return (x - x0) / (x1 - x0);
     }
 }
 
