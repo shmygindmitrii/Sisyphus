@@ -153,18 +153,24 @@ void draw(HWND hWnd) {
     packData(descriptorSet, modelMatrix);
     Temple::Base::vec3 cameraPosition { 0.0f, 0.0f, 0.0f };
     packData(descriptorSet, cameraPosition);
-    int lightCount = 2;
+    int lightCount = 3;
     packData(descriptorSet, lightCount);
     int lightAmbient = 0;
     float ambientIllumination = 0.2f;
     int lightPoint = 1;
-    float pointIllumination = 0.8f;
+    float pointIllumination = 0.4f;
+    int lightDirected = 2;
+    float directIllumination = 0.4f;
     packData(descriptorSet, lightAmbient);
     packData(descriptorSet, ambientIllumination);
     packData(descriptorSet, lightPoint);
     packData(descriptorSet, pointIllumination);
-    Temple::Base::vec3 lightPointPosition { 0.0f, 0.0f, -1.0f };
+    Temple::Base::vec3 lightPointPosition { -2.0f, 0.0f, -1.0f };
     packData(descriptorSet, lightPointPosition);
+    packData(descriptorSet, lightDirected);
+    packData(descriptorSet, directIllumination);
+    Temple::Base::vec3 lightDirection { -1.0f, 0.0f, 1.0f };
+    packData(descriptorSet, lightDirection);
 
     renderContext.setRenderMode(Temple::Bonfire::RenderMode::TRIANGLE);
     renderContext.setDescriptorSet(descriptorSet);
@@ -192,7 +198,6 @@ void draw(HWND hWnd) {
         normal = (*modelMatrixPtr) * normal;
         normal = normal.norm();
         memcpy(perVertexOut.data() + offset, &normal, sizeof(Temple::Base::vec3));
-        offset += sizeof(Temple::Base::vec3);
     });
     renderContext.setPixelShader([](void* renderContextRaw, const Temple::Base::vec4& inp, const uint8_t* perPixelData,
         const std::vector<uint8_t>& descriptorSet) {
@@ -216,11 +221,19 @@ void draw(HWND hWnd) {
                 ambientIllumination += *illuminationPtr;
                 lightTypePtr = reinterpret_cast<const int*>(illuminationPtr + 1);
             }
-            else if ((*lightTypePtr) == 1) {
-                // point light
-                const Temple::Base::vec3* lightPosPtr = reinterpret_cast<const Temple::Base::vec3*>(illuminationPtr + 1);
-                Temple::Base::vec3 v = (*lightPosPtr) - pixelPosition;
-                v = v.norm();
+            else {
+                const Temple::Base::vec3* lightCrd = reinterpret_cast<const Temple::Base::vec3*>(illuminationPtr + 1);
+                Temple::Base::vec3 v;
+                if ((*lightTypePtr) == 1) {
+                    // point light
+                    v = (*lightCrd) - pixelPosition;
+                    v = v.norm();
+                }
+                else {
+                    // directed light
+                    v = -(*lightCrd);
+                    v /= v.magnitude();
+                }
                 // diffuse
                 float vDotn = v.dot(*normalPtr);
                 if (vDotn > 0) {
@@ -233,13 +246,10 @@ void draw(HWND hWnd) {
                     d = d.norm();
                     float dDotR = d.dot(r);
                     if (dDotR > 0) {
-                        specularIllumination += pow(dDotR, 10.0f) * (*illuminationPtr);
+                        specularIllumination += pow(dDotR, 16.0f) * (*illuminationPtr);
                     }
                 }
-                lightTypePtr = reinterpret_cast<const int*>(lightPosPtr + 1);
-            }
-            else if ((*lightTypePtr) == 2) {
-                // direct light
+                lightTypePtr = reinterpret_cast<const int*>(lightCrd + 1);
             }
         }
         float illumination = ambientIllumination + diffuseIllumination + specularIllumination;
