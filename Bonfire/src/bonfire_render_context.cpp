@@ -162,7 +162,7 @@ void Temple::Bonfire::RenderContext::setViewport(float xMin, float yMin, float z
     m_viewportMax.z = zMax;
 }
 
-void Temple::Bonfire::RenderContext::setDescriptorSet(const void* descriptorSet) {
+void Temple::Bonfire::RenderContext::setDescriptorSet(const std::vector<uint8_t>& descriptorSet) {
     m_descriptorSet = descriptorSet;
 }
 
@@ -238,7 +238,7 @@ void Temple::Bonfire::RenderContext::clearDepth(float val) {
     }
 }
 
-void Temple::Bonfire::RenderContext::renderPixelDepthWise(const Base::vec4& p, const void* data) {
+void Temple::Bonfire::RenderContext::renderPixelDepthWise(const Base::vec4& p, const uint8_t* data) {
     int pixFlatIdx = ((int)p.y) * m_width + (int)p.x;
     if (pixFlatIdx >= 0 && pixFlatIdx < m_width * m_height) {
         if (m_depthTest) {
@@ -257,7 +257,8 @@ void Temple::Bonfire::RenderContext::renderPixelDepthWise(const Base::vec4& p, c
     }
 }
 
-void Temple::Bonfire::RenderContext::drawLines(const std::vector<Base::vec4>& coords, const std::vector<int> indices, const uint8_t* vertexData, const VertexFormat& vf) {
+void Temple::Bonfire::RenderContext::drawLines(const std::vector<Base::vec4>& coords, const std::vector<int>& indices, 
+    const uint8_t* vertexData, const VertexFormat& vInFormat, const VertexFormat& vOutFormat) {
     if (indices.size() == 0 || indices.size() % 2 != 0) return;
     for (int i = 0; i < indices.size(); i += 2) {
         const Base::vec4& va = coords[indices[i]];
@@ -339,21 +340,26 @@ static inline float getWeightBetween(float x, float y, float x0, float y0, float
     }
 }
 
-void Temple::Bonfire::RenderContext::drawTriangles(const std::vector<Base::vec4>& coords, const std::vector<int> indices, 
-                                               const uint8_t* vertexData, const VertexFormat& vf) {
+void Temple::Bonfire::RenderContext::drawTriangles(const std::vector<Base::vec4>& coords, const std::vector<int>& indices, 
+                                                   const uint8_t* vertexData, const VertexFormat& vInFormat, const VertexFormat& vOutFormat) {
     if (indices.size() == 0 || indices.size() % 3 != 0) return;
     for (int i = 0; i < indices.size(); i += 3) {
         const Base::vec4& va(coords[indices[i]]);
         const Base::vec4& vb(coords[indices[i + 1]]);
         const Base::vec4& vc(coords[indices[i + 2]]);
-        const uint8_t* aData = &vertexData[indices[i] * vf.size];
-        const uint8_t* bData = &vertexData[indices[i + 1] * vf.size];
-        const uint8_t* cData = &vertexData[indices[i + 2] * vf.size];
+        const uint8_t* aData = &vertexData[indices[i] * vInFormat.size];
+        const uint8_t* bData = &vertexData[indices[i + 1] * vInFormat.size];
+        const uint8_t* cData = &vertexData[indices[i + 2] * vInFormat.size];
         //
         Base::vec4 a, b, c;
-        this->m_vsf(va, &a, aData, this->m_descriptorSet);
-        this->m_vsf(vb, &b, bData, this->m_descriptorSet);
-        this->m_vsf(vc, &c, cData, this->m_descriptorSet);
+        std::vector<uint8_t> aVertexOut(vOutFormat.size), bVertexOut(vOutFormat.size), cVertexOut(vOutFormat.size);
+        this->m_vsf(va, a, aVertexOut, aData, this->m_descriptorSet);
+        this->m_vsf(vb, b, bVertexOut, bData, this->m_descriptorSet);
+        this->m_vsf(vc, c, cVertexOut, cData, this->m_descriptorSet);
+        //
+        uint8_t* aVertexOutPtr = aVertexOut.data();
+        uint8_t* bVertexOutPtr = bVertexOut.data();
+        uint8_t* cVertexOutPtr = cVertexOut.data();
         //
         a = processVertex(a);
         b = processVertex(b);
@@ -362,15 +368,15 @@ void Temple::Bonfire::RenderContext::drawTriangles(const std::vector<Base::vec4>
         Base::vec4 sa = a, sb = b, sc = c;
         if (sa.y > sc.y) {
             std::swap(sa, sc);
-            std::swap(aData, cData);
+            std::swap(aVertexOutPtr, cVertexOutPtr);
         }
         if (sa.y > sb.y) {
             std::swap(sa, sb);
-            std::swap(aData, bData);
+            std::swap(aVertexOutPtr, bVertexOutPtr);
         }
         if (sb.y > sc.y) {
             std::swap(sb, sc);
-            std::swap(bData, cData);
+            std::swap(bVertexOutPtr, cVertexOutPtr);
         }
         // get interpolated values - line coordinates, only one component
         std::vector<float> xab = Base::interpolate(sa.y, sa.x, sb.y, sb.x);
@@ -396,12 +402,12 @@ void Temple::Bonfire::RenderContext::drawTriangles(const std::vector<Base::vec4>
         }
         float bottomy = sa.y;
         int idx = 0;
-        std::vector<uint8_t> vInterpolatedAC(vf.size), vInterpolatedAB(vf.size), vInterpolatedBC(vf.size), vInterpolatedLR(vf.size);
-        std::vector<uint8_t> vDepthedA(vf.size), vDepthedB(vf.size), vDepthedC(vf.size), vDepthedP(vf.size);
+        std::vector<uint8_t> vInterpolatedAC(vOutFormat.size), vInterpolatedAB(vOutFormat.size), vInterpolatedBC(vOutFormat.size), vInterpolatedLR(vOutFormat.size);
+        std::vector<uint8_t> vDepthedA(vOutFormat.size), vDepthedB(vOutFormat.size), vDepthedC(vOutFormat.size), vDepthedP(vOutFormat.size);
         // divide attributes by original z - lesser attributes, that are located further
-        multiplyAttributes(aData, vDepthedA.data(), sa.w, vf);
-        multiplyAttributes(bData, vDepthedB.data(), sb.w, vf);
-        multiplyAttributes(cData, vDepthedC.data(), sc.w, vf);
+        multiplyAttributes(aVertexOutPtr, vDepthedA.data(), sa.w, vOutFormat);
+        multiplyAttributes(bVertexOutPtr, vDepthedB.data(), sb.w, vOutFormat);
+        multiplyAttributes(cVertexOutPtr, vDepthedC.data(), sc.w, vOutFormat);
         //
         if (leftToRight) {
             Base::vec4 c;
@@ -410,22 +416,22 @@ void Temple::Bonfire::RenderContext::drawTriangles(const std::vector<Base::vec4>
                 float rightx = xac[idx];
                 float vWeightAB = getWeightBetween(leftx, bottomy, sa.x, sa.y, sb.x, sb.y);
                 float vWeightAC = getWeightBetween(rightx, bottomy, sa.x, sa.y, sc.x, sc.y);
-                interpolateAttributes(vDepthedA.data(), vDepthedB.data(), &vInterpolatedAB[0], vWeightAB, vf);
-                interpolateAttributes(vDepthedA.data(), vDepthedC.data(), &vInterpolatedAC[0], vWeightAC, vf);
+                interpolateAttributes(vDepthedA.data(), vDepthedB.data(), &vInterpolatedAB[0], vWeightAB, vOutFormat);
+                interpolateAttributes(vDepthedA.data(), vDepthedC.data(), &vInterpolatedAC[0], vWeightAC, vOutFormat);
                 float lz = sa.z + (sb.z - sa.z) * vWeightAB;
                 float rz = sa.z + (sc.z - sa.z) * vWeightAC;
                 float lwo = sa.w + (sb.w - sa.w) * vWeightAB;
                 float rwo = sa.w + (sc.w - sa.w) * vWeightAC;
                 while (leftx < rightx) {
                     float hWeight = (leftx - xab[idx]) / (xac[idx] - xab[idx]);
-                    interpolateAttributes(vInterpolatedAB.data(), vInterpolatedAC.data(), &vInterpolatedLR[0], hWeight, vf);
+                    interpolateAttributes(vInterpolatedAB.data(), vInterpolatedAC.data(), &vInterpolatedLR[0], hWeight, vOutFormat);
                     c.x = leftx;
                     c.y = bottomy;
                     c.z = lz + (rz - lz) * hWeight;
                     float pwo = lwo + (rwo - lwo) * hWeight;
                     float pzo = 1.0f / pwo;
                     c.w = pwo;
-                    multiplyAttributes(vInterpolatedLR.data(), vDepthedP.data(), pzo, vf);
+                    multiplyAttributes(vInterpolatedLR.data(), vDepthedP.data(), pzo, vOutFormat);
                     renderPixelDepthWise(c, vDepthedP.data());
                     leftx += 1.0f;
                 }
@@ -436,22 +442,22 @@ void Temple::Bonfire::RenderContext::drawTriangles(const std::vector<Base::vec4>
                 float rightx = xac[idx];
                 float vWeightBC = getWeightBetween(leftx, bottomy, sb.x, sb.y, sc.x, sc.y);
                 float vWeightAC = getWeightBetween(rightx, bottomy, sa.x, sa.y, sc.x, sc.y);
-                interpolateAttributes(vDepthedB.data(), vDepthedC.data(), &vInterpolatedBC[0], vWeightBC, vf);
-                interpolateAttributes(vDepthedA.data(), vDepthedC.data(), &vInterpolatedAC[0], vWeightAC, vf);
+                interpolateAttributes(vDepthedB.data(), vDepthedC.data(), &vInterpolatedBC[0], vWeightBC, vOutFormat);
+                interpolateAttributes(vDepthedA.data(), vDepthedC.data(), &vInterpolatedAC[0], vWeightAC, vOutFormat);
                 float lz = sb.z + (sc.z - sb.z) * vWeightBC;
                 float rz = sa.z + (sc.z - sa.z) * vWeightAC;
                 float lwo = sb.w + (sc.w - sb.w) * vWeightBC;
                 float rwo = sa.w + (sc.w - sa.w) * vWeightAC;
                 while (leftx < rightx) {
                     float hWeight = (leftx - xbc[idx - xab.size()]) / (xac[idx] - xbc[idx - xab.size()]);
-                    interpolateAttributes(vInterpolatedBC.data(), vInterpolatedAC.data(), &vInterpolatedLR[0], hWeight, vf);
+                    interpolateAttributes(vInterpolatedBC.data(), vInterpolatedAC.data(), &vInterpolatedLR[0], hWeight, vOutFormat);
                     c.x = leftx;
                     c.y = bottomy;
                     c.z = lz + (rz - lz) * hWeight;
                     float pwo = lwo + (rwo - lwo) * hWeight;
                     float pzo = 1.0f / pwo;
                     c.w = pwo;
-                    multiplyAttributes(vInterpolatedLR.data(), vDepthedP.data(), pzo, vf);
+                    multiplyAttributes(vInterpolatedLR.data(), vDepthedP.data(), pzo, vOutFormat);
                     renderPixelDepthWise(c, vDepthedP.data());
                     leftx += 1.0f;
                 }
@@ -465,22 +471,22 @@ void Temple::Bonfire::RenderContext::drawTriangles(const std::vector<Base::vec4>
                 float rightx = xab[idx];
                 float vWeightAC = getWeightBetween(leftx, bottomy, sa.x, sa.y, sc.x, sc.y);
                 float vWeightAB = getWeightBetween(rightx, bottomy, sa.x, sa.y, sb.x, sb.y);
-                interpolateAttributes(vDepthedA.data(), vDepthedB.data(), &vInterpolatedAB[0], vWeightAB, vf);
-                interpolateAttributes(vDepthedA.data(), vDepthedC.data(), &vInterpolatedAC[0], vWeightAC, vf);
+                interpolateAttributes(vDepthedA.data(), vDepthedB.data(), &vInterpolatedAB[0], vWeightAB, vOutFormat);
+                interpolateAttributes(vDepthedA.data(), vDepthedC.data(), &vInterpolatedAC[0], vWeightAC, vOutFormat);
                 float lz = sa.z + (sc.z - sa.z) * vWeightAC;
                 float rz = sa.z + (sb.z - sa.z) * vWeightAB;
                 float lwo = sa.w + (sc.w - sa.w) * vWeightAC;
                 float rwo = sa.w + (sb.w - sa.w) * vWeightAB;
                 while (leftx < rightx) {
                     float hWeight = (leftx - xac[idx]) / (xab[idx] - xac[idx]);
-                    interpolateAttributes(vInterpolatedAC.data(), vInterpolatedAB.data(), &vInterpolatedLR[0], hWeight, vf);
+                    interpolateAttributes(vInterpolatedAC.data(), vInterpolatedAB.data(), &vInterpolatedLR[0], hWeight, vOutFormat);
                     c.x = leftx;
                     c.y = bottomy;
                     c.z = lz + (rz - lz) * hWeight;
                     float pwo = lwo + (rwo - lwo) * hWeight;
                     float pzo = 1.0f / pwo;
                     c.w = pwo;
-                    multiplyAttributes(vInterpolatedLR.data(), vDepthedP.data(), pzo, vf);
+                    multiplyAttributes(vInterpolatedLR.data(), vDepthedP.data(), pzo, vOutFormat);
                     renderPixelDepthWise(c, vDepthedP.data());
                     leftx += 1.0f;
                 }
@@ -491,22 +497,22 @@ void Temple::Bonfire::RenderContext::drawTriangles(const std::vector<Base::vec4>
                 float rightx = xbc[idx - xab.size()];
                 float vWeightAC = getWeightBetween(leftx, bottomy, sa.x, sa.y, sc.x, sc.y);
                 float vWeightBC = getWeightBetween(rightx, bottomy, sb.x, sb.y, sc.x, sc.y);
-                interpolateAttributes(vDepthedB.data(), vDepthedC.data(), &vInterpolatedBC[0], vWeightBC, vf);
-                interpolateAttributes(vDepthedA.data(), vDepthedC.data(), &vInterpolatedAC[0], vWeightAC, vf);
+                interpolateAttributes(vDepthedB.data(), vDepthedC.data(), &vInterpolatedBC[0], vWeightBC, vOutFormat);
+                interpolateAttributes(vDepthedA.data(), vDepthedC.data(), &vInterpolatedAC[0], vWeightAC, vOutFormat);
                 float lz = sa.z + (sc.z - sa.z) * vWeightAC;
                 float rz = sb.z + (sc.z - sb.z) * vWeightBC;
                 float lwo = sa.w + (sc.w - sa.w) * vWeightAC;
                 float rwo = sb.w + (sc.w - sb.w) * vWeightBC;
                 while (leftx < rightx) {
                     float hWeight = (leftx - xac[idx]) / (xbc[idx - xab.size()] - xac[idx]);
-                    interpolateAttributes(vInterpolatedAC.data(), vInterpolatedBC.data(), &vInterpolatedLR[0], hWeight, vf);
+                    interpolateAttributes(vInterpolatedAC.data(), vInterpolatedBC.data(), &vInterpolatedLR[0], hWeight, vOutFormat);
                     c.x = leftx;
                     c.y = bottomy;
                     c.z = lz + (rz - lz) * hWeight;
                     float pwo = lwo + (rwo - lwo) * hWeight;
                     float pzo = 1.0f / pwo;
                     c.w = pwo;
-                    multiplyAttributes(vInterpolatedLR.data(), vDepthedP.data(), pzo, vf);
+                    multiplyAttributes(vInterpolatedLR.data(), vDepthedP.data(), pzo, vOutFormat);
                     renderPixelDepthWise(c, vDepthedP.data());
                     leftx += 1.0f;
                 }

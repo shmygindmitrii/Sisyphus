@@ -112,9 +112,15 @@ void draw(HWND hWnd) {
     std::vector<int> abcLineIndices = { 0, 1, 1, 2, 2, 0 };
     std::vector<int> abcTriangleIndices = { 0, 1, 2 };
 
-    Temple::Bonfire::VertexFormat vf({ Temple::Bonfire::VertexAttribType::VEC4, 
-                                       Temple::Bonfire::VertexAttribType::VEC2,
-                                       Temple::Bonfire::VertexAttribType::VEC3 });
+    Temple::Bonfire::VertexFormat vertexOutputFormat({ Temple::Bonfire::VertexAttribType::VEC4, // position
+                                                       Temple::Bonfire::VertexAttribType::VEC4, // color
+                                                       Temple::Bonfire::VertexAttribType::VEC2, // tex
+                                                       Temple::Bonfire::VertexAttribType::VEC3, // normal
+                                                     });
+    Temple::Bonfire::VertexFormat vertexInputFormat({  Temple::Bonfire::VertexAttribType::VEC4, // color
+                                                       Temple::Bonfire::VertexAttribType::VEC2, // tex
+                                                       Temple::Bonfire::VertexAttribType::VEC3, // normal
+                                                     });
 
     auto curTime = std::chrono::high_resolution_clock::now();    
     auto duration = curTime.time_since_epoch();
@@ -140,9 +146,11 @@ void draw(HWND hWnd) {
     Temple::Base::mat4 mPerspective = Temple::Base::mat4::projection(90.0f, width / (float)height, 0.5f, 100.0f);
 
     Temple::Base::mat4 matrix = mPerspective * mTranslation * mRotation * mScale;
+    Temple::Base::mat4 modelMatrix = mTranslation * mRotation * mScale;
 
     std::vector<uint8_t> descriptorSet;
     packData(descriptorSet, matrix);
+    packData(descriptorSet, modelMatrix);
     Temple::Base::vec3 cameraPosition { 0.0f, 0.0f, 0.0f };
     packData(descriptorSet, cameraPosition);
     int lightCount = 2;
@@ -155,28 +163,52 @@ void draw(HWND hWnd) {
     packData(descriptorSet, ambientIllumination);
     packData(descriptorSet, lightPoint);
     packData(descriptorSet, pointIllumination);
-    Temple::Base::vec3 lightPointPosition { 1.0f, 0.5f, 0.0f };
+    Temple::Base::vec3 lightPointPosition { -1.0f, 0.5f, 0.0f };
     packData(descriptorSet, lightPointPosition);
 
     renderContext.setRenderMode(Temple::Bonfire::RenderMode::TRIANGLE);
-    renderContext.setDescriptorSet(descriptorSet.data());
-    renderContext.setVertexShader([](const Temple::Base::vec4& inp, Temple::Base::vec4* out, const void* data, const void* descriptorSet) { 
-        const Temple::Base::mat4* mTransform = reinterpret_cast<const Temple::Base::mat4*>(descriptorSet);
-        *out = (*mTransform) * inp;
+    renderContext.setDescriptorSet(descriptorSet);
+    renderContext.setVertexShader([](const Temple::Base::vec4& inp, Temple::Base::vec4& out, std::vector<uint8_t>& perVertexOut, 
+                                     const uint8_t* perVertexData, const std::vector<uint8_t>& descriptorSet) {
+        const Temple::Base::mat4* mTransformPtr = reinterpret_cast<const Temple::Base::mat4*>(descriptorSet.data());
+        const Temple::Base::mat4* modelMatrixPtr = mTransformPtr + 1;
+        out = (*mTransformPtr) * inp;
+        // almost rasterized coord is found - need to divide by w and make x,y fit to viewport in another function
+        const Temple::Base::vec4* colorPtr = reinterpret_cast<const Temple::Base::vec4*>(perVertexData);
+        const Temple::Base::vec2* texPtr = reinterpret_cast<const Temple::Base::vec2*>(colorPtr + 1);
+        const Temple::Base::vec3* normalPtr = reinterpret_cast<const Temple::Base::vec3*>(texPtr + 1);
+        int offset = 0;
+        // rotate position
+        Temple::Base::vec4 pos = (*modelMatrixPtr) * inp;
+        memcpy(perVertexOut.data() + offset, &pos, sizeof(Temple::Base::vec4));
+        offset += sizeof(Temple::Base::vec4);
+        //
+        memcpy(perVertexOut.data() + offset, colorPtr, sizeof(Temple::Base::vec4));
+        offset += sizeof(Temple::Base::vec4);
+        memcpy(perVertexOut.data() + offset, texPtr, sizeof(Temple::Base::vec2));
+        offset += sizeof(Temple::Base::vec2);
+        // rotate normal
+        Temple::Base::vec4 normal { normalPtr->x, normalPtr->y, normalPtr->z, 0.0f };
+        normal = (*modelMatrixPtr) * normal;
+        normal = normal.norm();
+        memcpy(perVertexOut.data() + offset, &normal, sizeof(Temple::Base::vec3));
+        offset += sizeof(Temple::Base::vec3);
     });
-    renderContext.setPixelShader([](void* renderContextRaw, const Temple::Base::vec4& inp, const void* perPixelData, const void* descriptorSet) {
+    renderContext.setPixelShader([](void* renderContextRaw, const Temple::Base::vec4& inp, const uint8_t* perPixelData, 
+                                    const std::vector<uint8_t>& descriptorSet) {
         Temple::Bonfire::RenderContext* renderContextPtr = reinterpret_cast<Temple::Bonfire::RenderContext*>(renderContextRaw);
-        const Temple::Base::vec4* pixelColorPtr = reinterpret_cast<const Temple::Base::vec4*>(perPixelData);
+        const Temple::Base::vec4* posPtr = reinterpret_cast<const Temple::Base::vec4*>(perPixelData);
+        const Temple::Base::vec4* pixelColorPtr = reinterpret_cast<const Temple::Base::vec4*>(posPtr + 1);
         const Temple::Base::vec2* texPtr = reinterpret_cast<const Temple::Base::vec2*>(pixelColorPtr + 1);
         const Temple::Base::vec3* normalPtr = reinterpret_cast<const Temple::Base::vec3*>(texPtr + 1);
         // per-pixel
         const Temple::Base::vec4& texColor = Temple::Bonfire::TextureHolder::instance()->getPixel(0, texPtr->u, texPtr->v);
         // illumination
-        const Temple::Base::vec3* cameraPositionPtr = reinterpret_cast<const Temple::Base::vec3*>((uint8_t*)descriptorSet + sizeof(Temple::Base::mat4));
+        const Temple::Base::vec3* cameraPositionPtr = reinterpret_cast<const Temple::Base::vec3*>(((uint8_t*)descriptorSet.data()) + 2 * sizeof(Temple::Base::mat4));
         const int* lightCountPtr = reinterpret_cast<const int*>(cameraPositionPtr + 1);
         float illumination = 0.0f;
         const int* lightTypePtr = lightCountPtr + 1;
-        Temple::Base::vec3 pixelPosition { inp.x, inp.y, inp.z };
+        Temple::Base::vec3 pixelPosition { posPtr->x, posPtr->y, posPtr->z };
         for (int i = 0; i < *lightCountPtr; i++) {
             const float* illuminationPtr = reinterpret_cast<const float*>(lightTypePtr + 1);
             if ((*lightTypePtr) == 0) {
@@ -186,18 +218,23 @@ void draw(HWND hWnd) {
             }
             else if ((*lightTypePtr) == 1) {
                 // point light
-                Temple::Base::vec3 v = (*cameraPositionPtr) - pixelPosition;
+                const Temple::Base::vec3* lightPosPtr = reinterpret_cast<const Temple::Base::vec3*>(illuminationPtr + 1);
+                Temple::Base::vec3 v = (*lightPosPtr) - pixelPosition;
                 v = v.norm();
                 float vDotn = v.dot(*normalPtr);
                 if (vDotn > 0) {
                     illumination += vDotn * (*illuminationPtr);
                 }
+                lightTypePtr = reinterpret_cast<const int*>(lightPosPtr + 1);
+            }
+            else if ((*lightTypePtr) == 2) {
+                // direct light
             }
         }
-        renderContextPtr->putPixel((int)inp.x, (int)inp.y, /*(*pixelColorPtr) **/ texColor * illumination);
+        renderContextPtr->putPixel((int)inp.x, (int)inp.y, (*pixelColorPtr) * texColor * illumination);
     });
 
-    renderContext.drawTriangles(g_modelVerts, g_modelInds, reinterpret_cast<const uint8_t*>(g_modelVertAttribs.data()), vf);
+    renderContext.drawTriangles(g_modelVerts, g_modelInds, reinterpret_cast<const uint8_t*>(g_modelVertAttribs.data()), vertexInputFormat, vertexOutputFormat);
     //renderContext.drawLines(abc, abcLineIndices, abcTriangleAttribs.data(), vf);
     //renderContext.drawTriangles(abc, abcTriangleIndices, abcTriangleAttribs.data(), vf);
     // end of color buffer filling

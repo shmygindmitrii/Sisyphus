@@ -50,8 +50,12 @@ namespace Temple {
         };
         void interpolateAttributes(const uint8_t* aIn, const uint8_t* bIn, uint8_t* cOut, float weight, const VertexFormat& vf);
         void multiplyAttributes(const uint8_t* aIn, uint8_t* cOut, float mult, const VertexFormat& vf);
-        using vertexShaderFunc = void(*)(const Base::vec4& input, Base::vec4* output, const void* data, const void* descriptorSet); // over single vertex
-        using pixelShaderFunc = void(*)(void* canvasRaw, const Base::vec4& input, const void* data, const void* descriptorSet); // over single pixel
+        // perVertexData use only inside vertex shader; do not pass further and no need to interpolate
+        // everything needed for pixel shader put to perVertexOut - this data will be interpolated
+        using vertexShaderFunc = void(*)(const Base::vec4& input, Base::vec4& output, std::vector<uint8_t>& perVertexOut, 
+            const uint8_t* perVertexData, const std::vector<uint8_t>& descriptorSet); // over single vertex
+        using pixelShaderFunc = void(*)(void* canvasRaw, const Base::vec4& input, const uint8_t* perPixelInp, 
+            const std::vector<uint8_t>& descriptorSet); // over single pixel
         class RenderContext {
         private:
             uint8_t* m_data = nullptr;
@@ -61,7 +65,7 @@ namespace Temple {
             int m_bytesPerPixel = 0;
             Base::vec3 m_viewportMin, m_viewportMax;
             RenderMode m_renderMode;
-            const void* m_descriptorSet = nullptr;
+            std::vector<uint8_t> m_descriptorSet;
             vertexShaderFunc m_vsf = nullptr;
             pixelShaderFunc m_psf = nullptr;
             bool m_depthWrite = true;
@@ -71,21 +75,21 @@ namespace Temple {
             const uint8_t* getFrame() const;
             void resize(int width, int height, int bytesPerPixel);
             void setViewport(float xMin, float yMin, float zMin, float xMax, float yMax, float zMax);
-            void setDescriptorSet(const void* descriptorSet);
+            void setDescriptorSet(const std::vector<uint8_t>& descriptorSet);
             void setRenderMode(RenderMode m);
             void setVertexShader(vertexShaderFunc vsf);
             void setPixelShader(pixelShaderFunc psf);
             void putPixel(int x, int y, const col4u& color);
             void putPixel(int x, int y, const Base::vec4& color);
-            void renderPixelDepthWise(const Base::vec4& p, const void* data);
+            void renderPixelDepthWise(const Base::vec4& p, const uint8_t* data);
             Base::vec4 processVertex(const Base::vec4& v);
             void fill(const col4u& color);
             //
             void setDepthTest(bool flag);
             void setDepthWrite(bool flag);
             void clearDepth(float val);
-            void drawLines(const std::vector<Base::vec4>& coords, const std::vector<int> indices, const uint8_t* vertexData, const VertexFormat& vf);
-            void drawTriangles(const std::vector<Base::vec4>& coords, const std::vector<int> indices, const uint8_t* vertexData, const VertexFormat& vf);
+            void drawLines(const std::vector<Base::vec4>& coords, const std::vector<int>& indices, const uint8_t* vertexData, const VertexFormat& vInFormat, const VertexFormat& vOutFormat);
+            void drawTriangles(const std::vector<Base::vec4>& coords, const std::vector<int>& indices, const uint8_t* vertexData, const VertexFormat& vInFormat, const VertexFormat& vOutFormat);
             //
             ~RenderContext();
         };
