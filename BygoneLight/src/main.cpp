@@ -77,7 +77,6 @@ void draw(HWND hWnd) {
     bmi.bmiHeader.biHeight = -height;  // Top-down
     renderContext.resize(width, height, 4);
 
-    PAINTSTRUCT ps;
     HDC hdc = GetDC(hWnd);
 
     renderContext.setViewport(0, 0, 0, width, height, 1);
@@ -86,7 +85,6 @@ void draw(HWND hWnd) {
     // begin straight filling of color buffer
     renderContext.clearDepth(0.0f);
     renderContext.fill(bgColor); // fill background and also clear screen
-
     Temple::Base::vec4 a{ -0.0f, -0.0f, +0.0f, +1.0f };
     Temple::Base::vec4 b{ -0.7f, -0.7f, +0.0f, +1.0f };
     Temple::Base::vec4 c{ +0.7f, -0.7f, +0.0f, +1.0f };
@@ -269,6 +267,7 @@ void draw(HWND hWnd) {
     if (FAILED(hr)) {
         // Handle the error. For example, DWM might not be enabled or available.
     }
+    ReleaseDC(hWnd, hdc);
 }
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
