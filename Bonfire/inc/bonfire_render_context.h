@@ -43,6 +43,11 @@ namespace Temple {
             VEC4,
             UV,
         };
+        enum class CullingMode {
+            None,
+            ClockWise,
+            CounterClockWise
+        };
         struct VertexFormat {
             size_t size;
             std::vector<VertexAttribType> attributes; // position is always in the beginning
@@ -70,6 +75,7 @@ namespace Temple {
             pixelShaderFunc m_psf = nullptr;
             bool m_depthWrite = true;
             bool m_depthTest = true;
+            CullingMode m_backFaceCulling = CullingMode::None;
         public:
             RenderContext(int width, int height, int bytesPerPixel);
             const uint8_t* getFrame() const;
@@ -87,6 +93,7 @@ namespace Temple {
             //
             void setDepthTest(bool flag);
             void setDepthWrite(bool flag);
+            void setBackfaceCulling(CullingMode mode);
             void clearDepth(float val);
             void drawLines(const std::vector<Base::vec4>& coords, const std::vector<int>& indices, const uint8_t* vertexData, const VertexFormat& vInFormat, const VertexFormat& vOutFormat);
             void drawTriangles(const std::vector<Base::vec4>& coords, const std::vector<int>& indices, const uint8_t* vertexData, const VertexFormat& vInFormat, const VertexFormat& vOutFormat);

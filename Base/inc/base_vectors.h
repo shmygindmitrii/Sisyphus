@@ -183,6 +183,11 @@ namespace Temple {
             inline float dot(const vec3& v) {
                 return x * v.x + y * v.y + z * v.z;
             }
+            inline vec3 cross(const vec3& v) {
+                return vec3(y * v.z - z * v.y, 
+                            z * v.x - x * v.z,
+                            x * v.y - y * v.x);
+            }
         };
         inline vec3 operator -(const vec3& v) {
             return vec3(-v.x, -v.y, -v.z);
@@ -315,6 +320,12 @@ namespace Temple {
                     }
                 }
                 return r;
+            }
+            inline vec4 cross(const vec4& v) {
+                return vec4(y * v.z - z * v.y,
+                            z * v.x - x * v.z,
+                            x * v.y - y * v.x,
+                            0.0f);
             }
         };
         inline vec4 operator -(const vec4& v) {

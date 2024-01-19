@@ -233,6 +233,10 @@ void Temple::Bonfire::RenderContext::setDepthWrite(bool flag) {
     m_depthWrite = flag;
 }
 
+void Temple::Bonfire::RenderContext::setBackfaceCulling(CullingMode mode) {
+    m_backFaceCulling = mode;
+}
+
 void Temple::Bonfire::RenderContext::clearDepth(float val) {
     for (int i = 0; i < m_width * m_height; i++) {
         m_depth[i] = val;
@@ -373,6 +377,27 @@ void Temple::Bonfire::RenderContext::drawTriangles(const std::vector<Base::vec4>
         a = processVertex(a);
         b = processVertex(b);
         c = processVertex(c);
+        // WIP backface culling
+#if 0
+        // WRONG
+        // I need coordinates of vertices after View * Model transformation, before Perspective and processVertex rasterizing
+        if (m_backFaceCulling != CullingMode::None) {
+            Temple::Base::vec4 side0, side1, outsideNormal;
+            switch (m_backFaceCulling) {
+            case CullingMode::ClockWise:
+                side0 = c - a;
+                side1 = b - c;
+                outsideNormal = side0.cross(side1);
+                break;
+            case CullingMode::CounterClockWise:
+            default:
+                side0 = b - a;
+                side1 = c - b;
+                outsideNormal = side0.cross(side1);
+                break;
+            }
+        }
+#endif
         //
         Base::vec4 sa = a, sb = b, sc = c;
         if (sa.y > sc.y) {
