@@ -61,6 +61,8 @@ namespace Temple {
             const uint8_t* perVertexData, const std::vector<uint8_t>& builtins, const std::vector<uint8_t>& descriptorSet); // over single vertex
         using pixelShaderFunc = Base::vec4 (*)(const Base::vec4& input, const uint8_t* perPixelInp, const std::vector<uint8_t>& builtins,
             const std::vector<uint8_t>& descriptorSet); // over single pixel
+        //
+        using logFunc = void(*)(const char* msg, size_t msgLength);
         class RenderContext {
         private:
             uint8_t* m_data = nullptr;
@@ -82,6 +84,8 @@ namespace Temple {
             Base::mat4 m_modelViewMatrix = Base::mat4::identity();
             Base::mat4 m_transformMatrix = Base::mat4::identity();
             std::vector<uint8_t> m_builtins; // default matrices - immediate mode
+            //
+            logFunc m_log = nullptr;
         public:
             RenderContext(int width, int height, int bytesPerPixel);
             const uint8_t* getFrame() const;
@@ -104,6 +108,8 @@ namespace Temple {
             void clearDepth(float val);
             void drawLines(const std::vector<Base::vec4>& coords, const std::vector<int>& indices, const uint8_t* vertexData, const VertexFormat& vInFormat, const VertexFormat& vOutFormat);
             void drawTriangles(const std::vector<Base::vec4>& coords, const std::vector<int>& indices, const uint8_t* vertexData, const VertexFormat& vInFormat, const VertexFormat& vOutFormat);
+            //
+            void setLogFunc(logFunc log);
             //
             ~RenderContext();
         };

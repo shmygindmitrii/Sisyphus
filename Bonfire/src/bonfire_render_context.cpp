@@ -366,6 +366,7 @@ void Temple::Bonfire::RenderContext::drawLines(const std::vector<Base::vec4>& co
 void Temple::Bonfire::RenderContext::drawTriangles(const std::vector<Base::vec4>& coords, const std::vector<int>& indices, 
                                                    const uint8_t* vertexData, const VertexFormat& vInFormat, const VertexFormat& vOutFormat) {
     if (indices.size() == 0 || indices.size() % 3 != 0) return;
+    int fragments = 0;
     for (int i = 0; i < indices.size(); i += 3) {
         const Base::vec4& va(coords[indices[i]]);
         const Base::vec4& vb(coords[indices[i + 1]]);
@@ -563,7 +564,17 @@ void Temple::Bonfire::RenderContext::drawTriangles(const std::vector<Base::vec4>
                 bottomy += 1.0f;
             }
         }
+        fragments++;
     }
+    if (m_log != nullptr) {
+        static char msg[128];
+        int iwr = snprintf(msg, 128, "triangles drawn: %d \n", fragments);
+        m_log(msg, iwr);
+    }
+}
+
+void Temple::Bonfire::RenderContext::setLogFunc(logFunc log) {
+    m_log = log;
 }
 
 Temple::Bonfire::RenderContext::~RenderContext() {

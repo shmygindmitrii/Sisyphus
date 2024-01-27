@@ -49,9 +49,22 @@ static std::vector<Temple::Base::vec4> defaultColors = { Temple::Bonfire::getFlo
 static Temple::Bonfire::col4u bgColor{ 15, 15, 35, 255 };
 static Temple::Bonfire::col4u lineColor{ 0, 150, 0, 255 };
 
+static HANDLE s_hWinConsoleOutput = 0;
+
+static void PrintToWinConsole(const char* pMessage, size_t zSize)
+{
+    DWORD iCharsWritten = 0;
+    WriteConsoleA(s_hWinConsoleOutput, pMessage, zSize, &iCharsWritten, NULL);
+}
+
 void draw(HWND hWnd) {
     RECT rect;
     static Temple::Bonfire::RenderContext renderContext(1, 1, 4);
+    static bool _logInited = false;
+    if (!_logInited) {
+        _logInited = true;
+        renderContext.setLogFunc(PrintToWinConsole);
+    }
 
     // Prepare BITMAPINFO
     BITMAPINFO bmi;
@@ -366,6 +379,7 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
 //        In this function, we save the instance handle in a global variable and
 //        create and display the main program window.
 //
+
 BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 {
     hInst = hInstance; // Store instance handle in our global variable
@@ -377,6 +391,10 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
     {
         return FALSE;
     }
+
+    BOOL bRes = AllocConsole();
+    assert(bRes);
+    s_hWinConsoleOutput = GetStdHandle(STD_OUTPUT_HANDLE);
 
     ShowWindow(hWnd, nCmdShow);
     UpdateWindow(hWnd);
