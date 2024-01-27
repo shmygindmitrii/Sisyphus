@@ -388,27 +388,34 @@ void Temple::Bonfire::RenderContext::drawTriangles(const std::vector<Base::vec4>
         a = processVertex(a);
         b = processVertex(b);
         c = processVertex(c);
-        // WIP backface culling
-#if 0
-        // WRONG
-        // I need coordinates of vertices after View * Model transformation, before Perspective and processVertex rasterizing
+        
+        // backface culling
+        Base::vec4 aWorld = m_modelViewMatrix * va;
+        Base::vec4 bWorld = m_modelViewMatrix * vb;
+        Base::vec4 cWorld = m_modelViewMatrix * vc;
+
         if (m_backFaceCulling != CullingMode::None) {
             Temple::Base::vec4 side0, side1, outsideNormal;
             switch (m_backFaceCulling) {
             case CullingMode::ClockWise:
-                side0 = c - a;
-                side1 = b - c;
+                side0 = cWorld - aWorld;
+                side1 = bWorld - cWorld;
                 outsideNormal = side0.cross(side1);
                 break;
             case CullingMode::CounterClockWise:
             default:
-                side0 = b - a;
-                side1 = c - b;
+                side0 = bWorld - aWorld;
+                side1 = cWorld - bWorld;
                 outsideNormal = side0.cross(side1);
                 break;
             }
+            Base::vec3 z { 0.0f, 0.0f, 1.0f };
+            Base::vec3 n { outsideNormal.x, outsideNormal.y, outsideNormal.z };
+            n = n.norm();
+            if (z.dot(n) > 0.0f) {
+                continue;
+            }
         }
-#endif
         //
         Base::vec4 sa = a, sb = b, sc = c;
         if (sa.y > sc.y) {

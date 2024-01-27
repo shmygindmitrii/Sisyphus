@@ -154,6 +154,7 @@ void draw(HWND hWnd) {
     renderContext.setModelMatrix(mTranslation * mRotation * mScale);
     renderContext.setViewMatrix(Temple::Base::mat4::identity()); // not really used yet
     renderContext.setPerspectiveMatrix(mPerspective);
+    renderContext.setBackfaceCulling(Temple::Bonfire::CullingMode::CounterClockWise);
 
     std::vector<uint8_t> descriptorSet;
     Temple::Base::vec3 cameraPosition { 0.0f, 0.0f, 0.0f };
