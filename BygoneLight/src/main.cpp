@@ -196,9 +196,8 @@ void draw(HWND hWnd) {
         normal = normal.norm();
         memcpy(perVertexOut.data() + offset, &normal, sizeof(Temple::Base::vec3));
     });
-    renderContext.setPixelShader([](void* renderContextRaw, const Temple::Base::vec4& inp, const uint8_t* perPixelData,
-        const std::vector<uint8_t>& descriptorSet) {
-        Temple::Bonfire::RenderContext* renderContextPtr = reinterpret_cast<Temple::Bonfire::RenderContext*>(renderContextRaw);
+    renderContext.setPixelShader([](const Temple::Base::vec4& inp, const uint8_t* perPixelData,
+        const std::vector<uint8_t>& descriptorSet) -> Temple::Base::vec4 {
         const Temple::Base::vec4* posPtr = reinterpret_cast<const Temple::Base::vec4*>(perPixelData);
         const Temple::Base::vec4* pixelColorPtr = reinterpret_cast<const Temple::Base::vec4*>(posPtr + 1);
         const Temple::Base::vec2* texPtr = reinterpret_cast<const Temple::Base::vec2*>(pixelColorPtr + 1);
@@ -253,7 +252,7 @@ void draw(HWND hWnd) {
         Temple::Base::vec4 illuminationVec { illumination, illumination, illumination, 1.0f };
         Temple::Base::vec4 finalColor = (*pixelColorPtr) * texColor * illuminationVec;
         finalColor = finalColor.clamp(0.0f, 1.0f);
-        renderContextPtr->putPixel((int)inp.x, (int)inp.y, finalColor);
+        return finalColor;
     });
 
     renderContext.drawTriangles(g_modelVerts, g_modelInds, reinterpret_cast<const uint8_t*>(g_modelVertAttribs.data()), vertexInputFormat, vertexOutputFormat);

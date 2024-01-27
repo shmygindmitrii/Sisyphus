@@ -59,7 +59,7 @@ namespace Temple {
         // everything needed for pixel shader put to perVertexOut - this data will be interpolated
         using vertexShaderFunc = void(*)(const Base::vec4& input, Base::vec4& output, std::vector<uint8_t>& perVertexOut, 
             const uint8_t* perVertexData, const std::vector<uint8_t>& descriptorSet); // over single vertex
-        using pixelShaderFunc = void(*)(void* canvasRaw, const Base::vec4& input, const uint8_t* perPixelInp, 
+        using pixelShaderFunc = Base::vec4 (*)(const Base::vec4& input, const uint8_t* perPixelInp, 
             const std::vector<uint8_t>& descriptorSet); // over single pixel
         class RenderContext {
         private:

@@ -231,11 +231,11 @@ void Temple::Bonfire::RenderContext::renderPixelDepthWise(const Base::vec4& p, c
     if (pixFlatIdx >= 0 && pixFlatIdx < m_width * m_height) {
         if (m_depthTest) {
             if (p.z > m_depth[pixFlatIdx]) {
-                this->m_psf(this, p, data, this->m_descriptorSet);
+                this->putPixel(p.x, p.y, this->m_psf(p, data, this->m_descriptorSet));
             }
         }
         else {
-            this->m_psf(this, p, data, this->m_descriptorSet);
+            this->putPixel(p.x, p.y, this->m_psf(p, data, this->m_descriptorSet));
         }
         if (m_depthWrite) {
             if (p.z > m_depth[pixFlatIdx]) {
