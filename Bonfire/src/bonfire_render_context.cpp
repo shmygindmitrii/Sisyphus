@@ -166,29 +166,12 @@ void Temple::Bonfire::RenderContext::setDescriptorSet(const std::vector<uint8_t>
     m_descriptorSet = descriptorSet;
 }
 
-void Temple::Bonfire::RenderContext::setRenderMode(RenderMode m) {
-    m_renderMode = m;
-}
-
 void Temple::Bonfire::RenderContext::setVertexShader(Temple::Bonfire::vertexShaderFunc vsf) {
     m_vsf = vsf;
 }
 
 void Temple::Bonfire::RenderContext::setPixelShader(Temple::Bonfire::pixelShaderFunc psf) {
     m_psf = psf;
-}
-
-void Temple::Bonfire::RenderContext::putPixel(int x, int y, const col4u& color) {
-    if (x < 0 || x >= m_width || y < 0 || y >= m_height)
-        return;
-    // coordinates 
-    // x : 0 to w (left to right)
-    // y : 0 to h (top to bottom)
-    int pixelIndex = y * m_width * m_bytesPerPixel + x * m_bytesPerPixel;
-    m_data[pixelIndex + 0] = color.b;
-    m_data[pixelIndex + 1] = color.g;
-    m_data[pixelIndex + 2] = color.r;
-    m_data[pixelIndex + 3] = color.a;
 }
 
 void Temple::Bonfire::RenderContext::putPixel(int x, int y, const Base::vec4& color) {

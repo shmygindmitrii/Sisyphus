@@ -170,7 +170,6 @@ void draw(HWND hWnd) {
     Temple::Base::vec3 lightDirection { -1.0f, 0.0f, 1.0f };
     packData(descriptorSet, lightDirection);
 
-    renderContext.setRenderMode(Temple::Bonfire::RenderMode::TRIANGLE);
     renderContext.setDescriptorSet(descriptorSet);
     renderContext.setVertexShader([](const Temple::Base::vec4& inp, Temple::Base::vec4& out, std::vector<uint8_t>& perVertexOut, 
                                      const uint8_t* perVertexData, const std::vector<uint8_t>& descriptorSet) {

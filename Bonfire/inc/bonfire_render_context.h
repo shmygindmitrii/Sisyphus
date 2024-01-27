@@ -82,10 +82,8 @@ namespace Temple {
             void resize(int width, int height, int bytesPerPixel);
             void setViewport(float xMin, float yMin, float zMin, float xMax, float yMax, float zMax);
             void setDescriptorSet(const std::vector<uint8_t>& descriptorSet);
-            void setRenderMode(RenderMode m);
             void setVertexShader(vertexShaderFunc vsf);
             void setPixelShader(pixelShaderFunc psf);
-            void putPixel(int x, int y, const col4u& color);
             void putPixel(int x, int y, const Base::vec4& color);
             void renderPixelDepthWise(const Base::vec4& p, const uint8_t* data);
             Base::vec4 processVertex(const Base::vec4& v);
