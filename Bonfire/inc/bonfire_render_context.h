@@ -3,7 +3,7 @@
 #include <cstdint>
 #include "bonfire_color.h"
 #include "base_vectors.h"
-#include <tuple>
+#include "base_matrices.h"
 
 /*
 void ps()
@@ -58,8 +58,8 @@ namespace Temple {
         // perVertexData use only inside vertex shader; do not pass further and no need to interpolate
         // everything needed for pixel shader put to perVertexOut - this data will be interpolated
         using vertexShaderFunc = void(*)(const Base::vec4& input, Base::vec4& output, std::vector<uint8_t>& perVertexOut, 
-            const uint8_t* perVertexData, const std::vector<uint8_t>& descriptorSet); // over single vertex
-        using pixelShaderFunc = Base::vec4 (*)(const Base::vec4& input, const uint8_t* perPixelInp, 
+            const uint8_t* perVertexData, const std::vector<uint8_t>& builtins, const std::vector<uint8_t>& descriptorSet); // over single vertex
+        using pixelShaderFunc = Base::vec4 (*)(const Base::vec4& input, const uint8_t* perPixelInp, const std::vector<uint8_t>& builtins,
             const std::vector<uint8_t>& descriptorSet); // over single pixel
         class RenderContext {
         private:
@@ -76,6 +76,12 @@ namespace Temple {
             bool m_depthWrite = true;
             bool m_depthTest = true;
             CullingMode m_backFaceCulling = CullingMode::None;
+            Base::mat4 m_modelMatrix = Base::mat4::identity();
+            Base::mat4 m_viewMatrix = Base::mat4::identity();
+            Base::mat4 m_perspectiveMatrix = Base::mat4::identity();
+            Base::mat4 m_modelViewMatrix = Base::mat4::identity();
+            Base::mat4 m_transformMatrix = Base::mat4::identity();
+            std::vector<uint8_t> m_builtins; // default matrices - immediate mode
         public:
             RenderContext(int width, int height, int bytesPerPixel);
             const uint8_t* getFrame() const;
@@ -84,6 +90,9 @@ namespace Temple {
             void setDescriptorSet(const std::vector<uint8_t>& descriptorSet);
             void setVertexShader(vertexShaderFunc vsf);
             void setPixelShader(pixelShaderFunc psf);
+            void setModelMatrix(const Base::mat4& m);
+            void setViewMatrix(const Base::mat4& m);
+            void setPerspectiveMatrix(const Base::mat4& m);
             void putPixel(int x, int y, const Base::vec4& color);
             void renderPixelDepthWise(const Base::vec4& p, const uint8_t* data);
             Base::vec4 processVertex(const Base::vec4& v);

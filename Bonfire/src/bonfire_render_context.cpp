@@ -1,4 +1,5 @@
 #include "bonfire_render_context.h"
+#include "base_utils.h"
 
 #include <cstdint>
 #include <cstring>
@@ -116,6 +117,7 @@ Temple::Bonfire::RenderContext::RenderContext(int width, int height, int bytesPe
     m_data = new uint8_t[fullSize];
     m_depth = new float[m_width * m_height];
     m_renderMode = RenderMode::WIREFRAME;
+    m_builtins.resize(sizeof(Base::mat4) * 5);
 }
 
 const uint8_t* Temple::Bonfire::RenderContext::getFrame() const {
@@ -172,6 +174,31 @@ void Temple::Bonfire::RenderContext::setVertexShader(Temple::Bonfire::vertexShad
 
 void Temple::Bonfire::RenderContext::setPixelShader(Temple::Bonfire::pixelShaderFunc psf) {
     m_psf = psf;
+}
+
+void Temple::Bonfire::RenderContext::setModelMatrix(const Base::mat4& m) {
+    m_modelMatrix = m;
+    m_modelViewMatrix = m_viewMatrix * m_modelMatrix;
+    m_transformMatrix = m_perspectiveMatrix * m_modelViewMatrix;
+    Base::replaceData(m_builtins, m_modelViewMatrix, 0);
+    Base::replaceData(m_builtins, m_modelViewMatrix, sizeof(Base::mat4) * 3);
+    Base::replaceData(m_builtins, m_transformMatrix, sizeof(Base::mat4) * 4);
+}
+
+void Temple::Bonfire::RenderContext::setViewMatrix(const Base::mat4& m) {
+    m_viewMatrix = m;
+    m_modelViewMatrix = m_viewMatrix * m_modelMatrix;
+    m_transformMatrix = m_perspectiveMatrix * m_modelViewMatrix;
+    Base::replaceData(m_builtins, m_viewMatrix, sizeof(Base::mat4));
+    Base::replaceData(m_builtins, m_modelViewMatrix, sizeof(Base::mat4) * 3);
+    Base::replaceData(m_builtins, m_transformMatrix, sizeof(Base::mat4) * 4);
+}
+
+void Temple::Bonfire::RenderContext::setPerspectiveMatrix(const Base::mat4& m) {
+    m_perspectiveMatrix = m;
+    m_transformMatrix = m_perspectiveMatrix * m_modelViewMatrix;
+    Base::replaceData(m_builtins, m_perspectiveMatrix, sizeof(Base::mat4) * 2);
+    Base::replaceData(m_builtins, m_transformMatrix, sizeof(Base::mat4) * 4);
 }
 
 void Temple::Bonfire::RenderContext::putPixel(int x, int y, const Base::vec4& color) {
@@ -231,11 +258,11 @@ void Temple::Bonfire::RenderContext::renderPixelDepthWise(const Base::vec4& p, c
     if (pixFlatIdx >= 0 && pixFlatIdx < m_width * m_height) {
         if (m_depthTest) {
             if (p.z > m_depth[pixFlatIdx]) {
-                this->putPixel(p.x, p.y, this->m_psf(p, data, this->m_descriptorSet));
+                this->putPixel(p.x, p.y, this->m_psf(p, data, this->m_builtins, this->m_descriptorSet));
             }
         }
         else {
-            this->putPixel(p.x, p.y, this->m_psf(p, data, this->m_descriptorSet));
+            this->putPixel(p.x, p.y, this->m_psf(p, data, this->m_builtins, this->m_descriptorSet));
         }
         if (m_depthWrite) {
             if (p.z > m_depth[pixFlatIdx]) {
@@ -270,8 +297,8 @@ void Temple::Bonfire::RenderContext::drawLines(const std::vector<Base::vec4>& co
         // draw single line here
         Base::vec4 a, b;
         std::vector<uint8_t> aVertexOut(vOutFormat.size), bVertexOut(vOutFormat.size);
-        this->m_vsf(va, a, aVertexOut, aData, this->m_descriptorSet);
-        this->m_vsf(vb, b, bVertexOut, bData, this->m_descriptorSet);
+        this->m_vsf(va, a, aVertexOut, aData, this->m_builtins, this->m_descriptorSet);
+        this->m_vsf(vb, b, bVertexOut, bData, this->m_builtins, this->m_descriptorSet);
         //
         a = processVertex(a);
         b = processVertex(b);
@@ -349,9 +376,9 @@ void Temple::Bonfire::RenderContext::drawTriangles(const std::vector<Base::vec4>
         //
         Base::vec4 a, b, c;
         std::vector<uint8_t> aVertexOut(vOutFormat.size), bVertexOut(vOutFormat.size), cVertexOut(vOutFormat.size);
-        this->m_vsf(va, a, aVertexOut, aData, this->m_descriptorSet);
-        this->m_vsf(vb, b, bVertexOut, bData, this->m_descriptorSet);
-        this->m_vsf(vc, c, cVertexOut, cData, this->m_descriptorSet);
+        this->m_vsf(va, a, aVertexOut, aData, this->m_builtins, this->m_descriptorSet);
+        this->m_vsf(vb, b, bVertexOut, bData, this->m_builtins, this->m_descriptorSet);
+        this->m_vsf(vc, c, cVertexOut, cData, this->m_builtins, this->m_descriptorSet);
         //
         uint8_t* aVertexOutPtr = aVertexOut.data();
         uint8_t* bVertexOutPtr = bVertexOut.data();
