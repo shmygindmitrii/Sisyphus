@@ -390,11 +390,10 @@ void Temple::Bonfire::RenderContext::drawTriangles(const std::vector<Base::vec4>
         c = processVertex(c);
         
         // backface culling
-        Base::vec4 aWorld = m_modelViewMatrix * va;
-        Base::vec4 bWorld = m_modelViewMatrix * vb;
-        Base::vec4 cWorld = m_modelViewMatrix * vc;
-
         if (m_backFaceCulling != CullingMode::None) {
+            Base::vec4 aWorld = m_modelViewMatrix * va;
+            Base::vec4 bWorld = m_modelViewMatrix * vb;
+            Base::vec4 cWorld = m_modelViewMatrix * vc;
             Temple::Base::vec4 side0, side1, outsideNormal;
             switch (m_backFaceCulling) {
             case CullingMode::ClockWise:
