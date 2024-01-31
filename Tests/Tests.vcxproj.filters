@@ -15,13 +15,13 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="tests_run.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\tests_matrices.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\tests_vectors.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\tests_run.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -130,8 +130,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\tests_matrices.cpp" />
+    <ClCompile Include="src\tests_run.cpp" />
     <ClCompile Include="src\tests_vectors.cpp" />
-    <ClCompile Include="tests_run.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Base\Base.vcxproj">
