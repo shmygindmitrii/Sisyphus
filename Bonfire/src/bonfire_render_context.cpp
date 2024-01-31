@@ -116,7 +116,6 @@ Temple::Bonfire::RenderContext::RenderContext(int width, int height, int bytesPe
     assert(fullSize > 0);
     m_data = new uint8_t[fullSize];
     m_depth = new float[m_width * m_height];
-    m_renderMode = RenderMode::WIREFRAME;
     m_builtins.resize(sizeof(Base::mat4) * 5);
 }
 

@@ -26,10 +26,6 @@ void ps()
 
 namespace Temple {
     namespace Bonfire {
-        enum class RenderMode {
-            WIREFRAME,
-            TRIANGLE,
-        };
         enum class PrimitiveType {
             LINE,
             TRIANGLE,
@@ -71,7 +67,6 @@ namespace Temple {
             int m_height = 0;
             int m_bytesPerPixel = 0;
             Base::vec3 m_viewportMin, m_viewportMax;
-            RenderMode m_renderMode;
             std::vector<uint8_t> m_descriptorSet;
             vertexShaderFunc m_vsf = nullptr;
             pixelShaderFunc m_psf = nullptr;
