@@ -7,6 +7,16 @@ function concat_tables(t1, t2)
    return t1
 end
 
+function get_default_sources(project_name) 
+    local proj_files = {
+            "../Source/" .. project_name .. "/src/*.c",
+            "../Source/" .. project_name .. "/src/*.cpp",
+            "../Source/" .. project_name .. "/inc/*.h",
+            "../Source/" .. project_name .. "/inc/*.hpp",
+        }
+    return proj_files
+end
+
 -- lib section
 
 function create_lib(project_name, lib_type, include_dirs)
@@ -15,13 +25,8 @@ function create_lib(project_name, lib_type, include_dirs)
     project(platfromed_project_name)
         kind(lib_type)
         targetname(platfromed_project_name)
-        files {
-            "../" .. project_name .. "/src/*.c",
-            "../" .. project_name .. "/src/*.cpp",
-            "../" .. project_name .. "/inc/*.h",
-            "../" .. project_name .. "/inc/*.hpp",
-        }
-        includedirs(concat_tables({ "../" .. project_name .. "/inc" }, include_dirs))
+        files(get_default_sources(project_name))
+        includedirs(concat_tables({ "../Source/" .. project_name .. "/inc" }, include_dirs))
         location(TEMPLE.output_directory)
         targetdir(TEMPLE.target_directory .. "/" .. project_name)
         objdir(TEMPLE.intermediate_directory .. "/" .. project_name)
@@ -46,12 +51,7 @@ function create_binary(project_name, binary_type, include_dirs, link_projs, reso
     project(platfromed_project_name)
         kind(binary_type)
         targetname(platfromed_project_name)
-        local proj_files = {
-            "../" .. project_name .. "/src/*.c",
-            "../" .. project_name .. "/src/*.cpp",
-            "../" .. project_name .. "/inc/*.h",
-            "../" .. project_name .. "/inc/*.hpp",
-        }
+        local proj_files = get_default_sources(project_name)
         if #resource_files > 0 then
             proj_files = concat_tables(proj_files, resource_files)
         end
@@ -59,7 +59,7 @@ function create_binary(project_name, binary_type, include_dirs, link_projs, reso
         location(TEMPLE.output_directory)
         targetdir(TEMPLE.target_directory .. "/" .. project_name)
         objdir(TEMPLE.intermediate_directory .. "/" .. project_name)
-        includedirs(concat_tables({ "../" .. project_name .. "/inc" }, include_dirs))
+        includedirs(concat_tables({ "../Source/" .. project_name .. "/inc" }, include_dirs))
         links(link_projs)
     project "*"
     return platfromed_project_name
