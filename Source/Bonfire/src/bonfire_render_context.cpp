@@ -110,6 +110,18 @@ void Temple::Bonfire::multiplyAttributes(const uint8_t* aIn, uint8_t* cOut, floa
     }
 }
 
+Temple::Bonfire::Plane::Plane() : normal(Base::vec4(0.0f, 0.0f, 1.0f, 0.0f)), offset(0.0f) {
+
+}
+
+Temple::Bonfire::Plane::Plane(const Base::vec4& _normal, float _offset) : normal(_normal), offset(_offset) {
+
+}
+
+Temple::Bonfire::Frustum::Frustum(float _fov, float _aspect, float _znear, float _zfar) : fov(_fov), aspect(_aspect), znear(_znear), zfar(_zfar) {
+
+}
+
 Temple::Bonfire::RenderContext::RenderContext(int width, int height, int bytesPerPixel) : m_width(width), m_height(height), m_bytesPerPixel(bytesPerPixel),
                                                                                   m_depthWrite(true), m_depthTest(true) {
     size_t fullSize = m_width * m_height * (size_t)m_bytesPerPixel;
@@ -198,6 +210,18 @@ void Temple::Bonfire::RenderContext::setPerspectiveMatrix(const Base::mat4& m) {
     m_transformMatrix = m_perspectiveMatrix * m_modelViewMatrix;
     Base::replaceData(m_builtins, m_perspectiveMatrix, sizeof(Base::mat4) * 2);
     Base::replaceData(m_builtins, m_transformMatrix, sizeof(Base::mat4) * 4);
+}
+
+void Temple::Bonfire::RenderContext::setViewFrustum(float fov, float aspect, float znear, float zfar) {
+
+}
+
+bool Temple::Bonfire::RenderContext::outOfSight(const Base::vec4& a, const Base::vec4& b, const Base::vec4& c, float znear, float zfar, float aspect) {
+    if ((a.z > zfar && b.z > zfar && c.z > zfar) || (a.z < znear && b.z < znear && c.z < znear)) {
+        // whole triangle is too close or too far
+        return true;
+    }
+    return false;
 }
 
 void Temple::Bonfire::RenderContext::putPixel(int x, int y, const Base::vec4& color) {
@@ -402,6 +426,12 @@ void Temple::Bonfire::RenderContext::drawTriangles(const std::vector<Base::vec4>
                 continue;
             }
         }
+        // occlussion culling
+        /*
+        if (outOfSight(aWorld, bWorld, cWorld, )) {
+            continue;
+        }
+        */
         //
         Base::vec4 a, b, c;
         std::vector<uint8_t> aVertexOut(vOutFormat.size), bVertexOut(vOutFormat.size), cVertexOut(vOutFormat.size);

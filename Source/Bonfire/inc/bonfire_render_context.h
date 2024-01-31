@@ -59,6 +59,19 @@ namespace Temple {
             const std::vector<uint8_t>& descriptorSet); // over single pixel
         //
         using logFunc = void(*)(const char* msg, size_t msgLength);
+        //
+        struct Plane {
+            Base::vec4 normal;
+            float offset;
+            Plane();
+            Plane(const Base::vec4& _normal, float _offset);
+        };
+        //
+        struct Frustum {
+            float fov, aspect, znear, zfar;
+            Plane normals[6];
+            Frustum(float _fov, float _aspect, float _znear, float _zfar);
+        };
         class RenderContext {
         private:
             uint8_t* m_data = nullptr;
@@ -92,6 +105,8 @@ namespace Temple {
             void setModelMatrix(const Base::mat4& m);
             void setViewMatrix(const Base::mat4& m);
             void setPerspectiveMatrix(const Base::mat4& m);
+            void setViewFrustum(float fov, float aspect, float znear, float zfar);
+            bool outOfSight(const Base::vec4& a, const Base::vec4& b, const Base::vec4& c, float znear, float zfar, float aspect);
             void putPixel(int x, int y, const Base::vec4& color);
             void renderPixelDepthWise(const Base::vec4& p, const uint8_t* data);
             Base::vec4 processVertex(const Base::vec4& v);
