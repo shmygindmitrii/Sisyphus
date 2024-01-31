@@ -375,9 +375,9 @@ void Temple::Bonfire::RenderContext::drawTriangles(const std::vector<Base::vec4>
         const uint8_t* cData = &vertexData[indices[i + 2] * vInFormat.size];
         
         // find transformed world coords, need them twice
-            Base::vec4 aWorld = m_modelViewMatrix * va;
-            Base::vec4 bWorld = m_modelViewMatrix * vb;
-            Base::vec4 cWorld = m_modelViewMatrix * vc;
+        Base::vec4 aWorld = m_modelViewMatrix * va;
+        Base::vec4 bWorld = m_modelViewMatrix * vb;
+        Base::vec4 cWorld = m_modelViewMatrix * vc;
 
         // backface culling
         if (m_backFaceCulling != CullingMode::None) {
