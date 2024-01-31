@@ -294,8 +294,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         return FALSE;
     }
     
-    mosaicTexture = loadTexture("D:\\Own\\CPP\\Temple\\Resources\\side_colored.png");
-    std::shared_ptr<Temple::Barn::ObjFile> objFile = Temple::Barn::ReadObj("D:\\Own\\CPP\\Temple\\Resources\\cube_sided.obj");
+    char texPath[128], objPath[128];
+    snprintf(texPath, 128, "%s/side_colored.png", TEMPLE_RESOURCES_FOLDER);
+    snprintf(objPath, 128, "%s/cube_sided.obj", TEMPLE_RESOURCES_FOLDER);
+    mosaicTexture = loadTexture(texPath);
+    std::shared_ptr<Temple::Barn::ObjFile> objFile = Temple::Barn::ReadObj(objPath);
 
     std::vector<Temple::Base::vec4> colors;
     for (int vertIdx = 0; vertIdx < objFile->coord.size(); vertIdx++) {
