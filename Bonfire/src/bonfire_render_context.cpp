@@ -373,26 +373,14 @@ void Temple::Bonfire::RenderContext::drawTriangles(const std::vector<Base::vec4>
         const uint8_t* aData = &vertexData[indices[i] * vInFormat.size];
         const uint8_t* bData = &vertexData[indices[i + 1] * vInFormat.size];
         const uint8_t* cData = &vertexData[indices[i + 2] * vInFormat.size];
-        //
-        Base::vec4 a, b, c;
-        std::vector<uint8_t> aVertexOut(vOutFormat.size), bVertexOut(vOutFormat.size), cVertexOut(vOutFormat.size);
-        this->m_vsf(va, a, aVertexOut, aData, this->m_builtins, this->m_descriptorSet);
-        this->m_vsf(vb, b, bVertexOut, bData, this->m_builtins, this->m_descriptorSet);
-        this->m_vsf(vc, c, cVertexOut, cData, this->m_builtins, this->m_descriptorSet);
-        //
-        uint8_t* aVertexOutPtr = aVertexOut.data();
-        uint8_t* bVertexOutPtr = bVertexOut.data();
-        uint8_t* cVertexOutPtr = cVertexOut.data();
-        //
-        a = processVertex(a);
-        b = processVertex(b);
-        c = processVertex(c);
         
-        // backface culling
-        if (m_backFaceCulling != CullingMode::None) {
+        // find transformed world coords, need them twice
             Base::vec4 aWorld = m_modelViewMatrix * va;
             Base::vec4 bWorld = m_modelViewMatrix * vb;
             Base::vec4 cWorld = m_modelViewMatrix * vc;
+
+        // backface culling
+        if (m_backFaceCulling != CullingMode::None) {
             Temple::Base::vec4 side0, side1, outsideNormal;
             switch (m_backFaceCulling) {
             case CullingMode::ClockWise:
@@ -414,6 +402,20 @@ void Temple::Bonfire::RenderContext::drawTriangles(const std::vector<Base::vec4>
                 continue;
             }
         }
+        //
+        Base::vec4 a, b, c;
+        std::vector<uint8_t> aVertexOut(vOutFormat.size), bVertexOut(vOutFormat.size), cVertexOut(vOutFormat.size);
+        this->m_vsf(va, a, aVertexOut, aData, this->m_builtins, this->m_descriptorSet);
+        this->m_vsf(vb, b, bVertexOut, bData, this->m_builtins, this->m_descriptorSet);
+        this->m_vsf(vc, c, cVertexOut, cData, this->m_builtins, this->m_descriptorSet);
+        //
+        uint8_t* aVertexOutPtr = aVertexOut.data();
+        uint8_t* bVertexOutPtr = bVertexOut.data();
+        uint8_t* cVertexOutPtr = cVertexOut.data();
+        //
+        a = processVertex(a);
+        b = processVertex(b);
+        c = processVertex(c);
         //
         Base::vec4 sa = a, sb = b, sc = c;
         if (sa.y > sc.y) {
