@@ -217,11 +217,12 @@ void Temple::Bonfire::RenderContext::setPerspective(float fov, float aspect, flo
 void Temple::Bonfire::RenderContext::setFrustum(float fov, float aspect, float znear, float zfar) {
     // create 6 planes that forms frustum in view coordinates
     // znear plane
+
     Base::vec3& znerNormal = m_frustum.bounds[0].normal;
     znerNormal.x = 0.0f;
     znerNormal.y = 0.0f;
     znerNormal.z = -1.0f;
-    m_frustum.bounds[0].offset = znear;
+    m_frustum.bounds[0].offset = -znear;
 
     // zfar plane
     Base::vec3& zfarNormal = m_frustum.bounds[1].normal;
@@ -359,12 +360,6 @@ static float
 segmentPlaneIntersection(const Temple::Base::vec3& a, const Temple::Base::vec3& b, const Temple::Bonfire::Plane& p) {
   const Temple::Base::vec3 ab = b - a;
   float k = (-p.normal.dot(a) - p.offset) / p.normal.dot(ab);
-  if (fabs(k) < 0.0001f) {
-    return 0.0f;
-  }
-  if (fabs(k) - 1.0f < 0.0001f) {
-    return 1.0f;
-  }
   return k;
 }
 
@@ -571,7 +566,7 @@ Temple::Bonfire::RenderContext::cullTriangleByFrustum(const Base::vec4& a, const
   std::vector<uint8_t>* pDataPassedFront = &dataPassedFront;
   std::vector<uint8_t>* pDataPassedBack = &dataPassedBack;
 
-  for (int i = 0; i < 1; i++) {
+  for (int i = 0; i < 6; i++) {
     const Bonfire::Plane& p = this->m_frustum.bounds[i];
     pVertexPassedBack->clear();
     pDataPassedBack->clear();
@@ -706,16 +701,11 @@ void Temple::Bonfire::RenderContext::drawTriangles(const std::vector<Base::vec4>
         }
         // frustum culling 
         std::vector<uint8_t> viewPassedVertexData = {};
-        Base::appendData(viewPassedVertexData, aVertexOut.data(), vOutFormat.size, 0);
-        Base::appendData(viewPassedVertexData, bVertexOut.data(), vOutFormat.size, 0);
-        Base::appendData(viewPassedVertexData, cVertexOut.data(), vOutFormat.size, 0);
-        std::vector<Base::vec4> viewPassedVertexCoords = { aWorld, bWorld, cWorld };
-        /*
+        std::vector<Base::vec4> viewPassedVertexCoords = {};
         this->cullTriangleByFrustum(aWorld, bWorld, cWorld,
                                     aVertexOut.data(), bVertexOut.data(), cVertexOut.data(),
                                     vOutFormat,
                                     viewPassedVertexCoords, viewPassedVertexData);
-        */
         // rasterization
         for (int j = 0; j < viewPassedVertexCoords.size(); j += 3) {
             const Base::vec4& aVisible(viewPassedVertexCoords[j]);

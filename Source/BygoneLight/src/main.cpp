@@ -91,9 +91,9 @@ void draw(HWND hWnd) {
     // begin straight filling of color buffer
     renderContext.clearDepth(0.0f);
     renderContext.fill(bgColor); // fill background and also clear screen
-    Temple::Base::vec4 a{ -0.0f, -0.0f, +0.0f, +1.0f };
-    Temple::Base::vec4 b{ -0.7f, -0.7f, +0.0f, +1.0f };
-    Temple::Base::vec4 c{ +0.7f, -0.7f, +0.0f, +1.0f };
+    Temple::Base::vec4 a{ -0.0f, -0.0f, +0.2f, +1.0f };
+    Temple::Base::vec4 b{ -0.7f, -0.7f, +0.2f, +1.0f };
+    Temple::Base::vec4 c{ +0.7f, -0.7f, +0.2f, +1.0f };
     Temple::Base::vec2 uv0 { 0.0f, 0.0f };
     Temple::Base::vec2 uv1 { 1.0f, 0.0f };
     Temple::Base::vec2 uv2 { 0.0f, 1.0f };
@@ -114,7 +114,7 @@ void draw(HWND hWnd) {
     Temple::Base::appendData(abcTriangleAttribs, normal);
 
     std::vector<int> abcLineIndices = { 0, 1, 1, 2, 2, 0 };
-    std::vector<int> abcTriangleIndices = { 0, 1, 2 };
+    std::vector<int> abcTriangleIndices = { 2, 1, 0 };
 
     Temple::Bonfire::VertexFormat vertexOutputFormat({ Temple::Bonfire::VertexAttribType::VEC4, // position
                                                        Temple::Bonfire::VertexAttribType::VEC4, // color
@@ -145,7 +145,7 @@ void draw(HWND hWnd) {
     mScale.r2.z = 0.5f;
 
     Temple::Base::mat4 mTranslation = Temple::Base::mat4::identity();
-    mTranslation.r2.w = 0.7f; // z-shift
+    mTranslation.r2.w = 0.45f; // z-shift
     
     renderContext.setModelMatrix(mTranslation * mRotation * mScale);
     renderContext.setViewMatrix(Temple::Base::mat4::identity()); // not really used yet
