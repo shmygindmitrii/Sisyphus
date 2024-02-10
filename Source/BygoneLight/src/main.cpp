@@ -147,13 +147,9 @@ void draw(HWND hWnd) {
     Temple::Base::mat4 mTranslation = Temple::Base::mat4::identity();
     mTranslation.r2.w = 0.7f; // z-shift
     
-    Temple::Base::mat4 mPerspective = Temple::Base::mat4::projection(90.0f, width / (float)height, 0.5f, 100.0f);
-
-    Temple::Base::mat4 matrix = mPerspective * mTranslation * mRotation * mScale;
-
     renderContext.setModelMatrix(mTranslation * mRotation * mScale);
     renderContext.setViewMatrix(Temple::Base::mat4::identity()); // not really used yet
-    renderContext.setPerspectiveMatrix(mPerspective);
+    renderContext.setPerspective(90.0f, width / (float)height, 0.5f, 100.0f);
     renderContext.setBackfaceCulling(Temple::Bonfire::CullingMode::CounterClockWise);
 
     std::vector<uint8_t> descriptorSet;
@@ -181,16 +177,16 @@ void draw(HWND hWnd) {
     renderContext.setDescriptorSet(descriptorSet);
     renderContext.setVertexShader([](const Temple::Base::vec4& inp, Temple::Base::vec4& out, std::vector<uint8_t>& perVertexOut, 
                                      const uint8_t* perVertexData, const std::vector<uint8_t>& builtins, const std::vector<uint8_t>& descriptorSet) {
-        const Temple::Base::mat4* modelMatrixPtr = reinterpret_cast<const Temple::Base::mat4*>(builtins.data());
-        const Temple::Base::mat4* mTransformPtr = modelMatrixPtr + 4;
-        out = (*mTransformPtr) * inp;
+        const Temple::Base::mat4* modelViewMatrixPtr = reinterpret_cast<const Temple::Base::mat4*>(builtins.data());
+        const Temple::Base::mat4* mTransformPtr = modelViewMatrixPtr + 4;
+        out = (*modelViewMatrixPtr) * inp;
         // almost rasterized coord is found - need to divide by w and make x,y fit to viewport in another function
         const Temple::Base::vec4* colorPtr = reinterpret_cast<const Temple::Base::vec4*>(perVertexData);
         const Temple::Base::vec2* texPtr = reinterpret_cast<const Temple::Base::vec2*>(colorPtr + 1);
         const Temple::Base::vec3* normalPtr = reinterpret_cast<const Temple::Base::vec3*>(texPtr + 1);
         int offset = 0;
         // rotate position
-        Temple::Base::vec4 pos = (*modelMatrixPtr) * inp;
+        Temple::Base::vec4 pos = out;
         memcpy(perVertexOut.data() + offset, &pos, sizeof(Temple::Base::vec4));
         offset += sizeof(Temple::Base::vec4);
         //
@@ -200,7 +196,7 @@ void draw(HWND hWnd) {
         offset += sizeof(Temple::Base::vec2);
         // rotate normal
         Temple::Base::vec4 normal { normalPtr->x, normalPtr->y, normalPtr->z, 0.0f };
-        normal = (*modelMatrixPtr) * normal;
+        normal = (*modelViewMatrixPtr) * normal;
         normal = normal.norm();
         memcpy(perVertexOut.data() + offset, &normal, sizeof(Temple::Base::vec3));
     });

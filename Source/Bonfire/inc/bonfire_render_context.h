@@ -105,7 +105,8 @@ namespace Temple {
             void setModelMatrix(const Base::mat4& m);
             void setViewMatrix(const Base::mat4& m);
             void setPerspectiveMatrix(const Base::mat4& m);
-            void setViewFrustum(float fov, float aspect, float znear, float zfar);
+            void setPerspective(float fov, float aspect, float znear, float zfar);
+            void setFrustum(float fov, float aspect, float znear, float zfar);
             bool outOfSight(const Base::vec4& a, const Base::vec4& b, const Base::vec4& c, float znear, float zfar, float aspect);
             void putPixel(int x, int y, const Base::vec4& color);
             void renderPixelDepthWise(const Base::vec4& p, const uint8_t* data);

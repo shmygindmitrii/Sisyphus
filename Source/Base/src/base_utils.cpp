@@ -17,3 +17,20 @@ std::vector<float> Temple::Base::interpolate(float x0, float y0, float x1, float
     }
     return vals;
 }
+
+void 
+Temple::Base::appendData(std::vector<uint8_t>& v, const uint8_t* pData, 
+                         const int srcSize, const int srcOffset) {
+    int oldSize = v.size();
+    v.resize(oldSize + srcSize);
+    memcpy(&v[oldSize], pData + srcOffset, srcSize);
+}
+
+void
+Temple::Base::replaceData(std::vector<uint8_t>& v, const uint8_t* pData,
+                          const int destOffset,
+                          const int srcSize, const int srcOffset) {
+    assert(destOffset + srcSize <= v.size());
+    memcpy(&v[destOffset], pData + srcOffset, srcSize);
+}
+

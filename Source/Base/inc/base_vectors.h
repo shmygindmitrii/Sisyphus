@@ -238,6 +238,10 @@ namespace Temple {
                 struct {
                     float r, g, b, a;
                 };
+                struct {
+                    vec3 xyz;
+                    float w;
+                };
                 float data[4];
             };
             vec4();

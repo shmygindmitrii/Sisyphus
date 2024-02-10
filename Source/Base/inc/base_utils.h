@@ -21,5 +21,7 @@ namespace Temple {
             assert(offset + sizeof(T) <= v.size());
             memcpy(&v[offset], (void*)&data, sizeof(T));
         }
+        void appendData(std::vector<uint8_t>& v, const uint8_t* pData, const int srcSize, const int srcOffset);
+        void replaceData(std::vector<uint8_t>& v, const uint8_t* pData, const int destOffset, const int srcSize, const int srcOffset);
     }
 }

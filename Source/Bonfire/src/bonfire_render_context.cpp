@@ -110,15 +110,11 @@ void Temple::Bonfire::multiplyAttributes(const uint8_t* aIn, uint8_t* cOut, floa
     }
 }
 
-Temple::Bonfire::Plane::Plane() : normal(Base::vec4(0.0f, 0.0f, 1.0f, 0.0f)), offset(0.0f) {
+Temple::Bonfire::Plane::Plane() : normal(Base::vec3(0.0f, 0.0f, 1.0f)), offset(0.0f) {
 
 }
 
-Temple::Bonfire::Plane::Plane(const Base::vec4& _normal, float _offset) : normal(_normal), offset(_offset) {
-
-}
-
-Temple::Bonfire::Frustum::Frustum(float _fov, float _aspect, float _znear, float _zfar) : fov(_fov), aspect(_aspect), znear(_znear), zfar(_zfar) {
+Temple::Bonfire::Plane::Plane(const Base::vec3& _normal, float _offset) : normal(_normal), offset(_offset) {
 
 }
 
@@ -191,7 +187,7 @@ void Temple::Bonfire::RenderContext::setModelMatrix(const Base::mat4& m) {
     m_modelMatrix = m;
     m_modelViewMatrix = m_viewMatrix * m_modelMatrix;
     m_transformMatrix = m_perspectiveMatrix * m_modelViewMatrix;
-    Base::replaceData(m_builtins, m_modelViewMatrix, 0);
+    Base::replaceData(m_builtins, m_modelMatrix, 0);
     Base::replaceData(m_builtins, m_modelViewMatrix, sizeof(Base::mat4) * 3);
     Base::replaceData(m_builtins, m_transformMatrix, sizeof(Base::mat4) * 4);
 }
@@ -212,8 +208,57 @@ void Temple::Bonfire::RenderContext::setPerspectiveMatrix(const Base::mat4& m) {
     Base::replaceData(m_builtins, m_transformMatrix, sizeof(Base::mat4) * 4);
 }
 
-void Temple::Bonfire::RenderContext::setViewFrustum(float fov, float aspect, float znear, float zfar) {
+void Temple::Bonfire::RenderContext::setPerspective(float fov, float aspect, float znear, float zfar) {
+    Base::mat4 perspectiveMatrix = Base::mat4::projection(fov, aspect, znear, zfar);
+    this->setFrustum(fov, aspect, znear, zfar);
+    this->setPerspectiveMatrix(perspectiveMatrix);
+}
 
+void Temple::Bonfire::RenderContext::setFrustum(float fov, float aspect, float znear, float zfar) {
+    // create 6 planes that forms frustum in view coordinates
+    // znear plane
+    Base::vec3& znerNormal = m_frustum.bounds[0].normal;
+    znerNormal.x = 0.0f;
+    znerNormal.y = 0.0f;
+    znerNormal.z = -1.0f;
+    m_frustum.bounds[0].offset = znear;
+
+    // zfar plane
+    Base::vec3& zfarNormal = m_frustum.bounds[1].normal;
+    zfarNormal.x = 0.0f;
+    zfarNormal.y = 0.0f;
+    zfarNormal.z = 1.0f;
+    m_frustum.bounds[1].offset = -zfar;
+    // points on planes - here we have world coordinates where y is going from up to down
+    Base::vec3 b { 0.0f, znear * tanf(0.5f * fov), 0.0f };
+    Base::vec3 r { znear * tanf(0.5f * fov) * aspect, 0.0f, 0.0f };
+    Base::vec3 t { 0.0f, -b.y, 0.0f };
+    Base::vec3 l { -r.x, 0.0f, 0.0f };
+    // top plane
+    Base::vec3& topNormal = m_frustum.bounds[2].normal;
+    topNormal.x = 0.0f;
+    topNormal.y = -sinf(0.5f * fov);
+    topNormal.z = -cosf(0.5f * fov);
+    m_frustum.bounds[2].offset = -topNormal.dot(t);
+    // bottom plane
+    Base::vec3& bottomNormal = m_frustum.bounds[3].normal;
+    bottomNormal.x = 0.0f;
+    bottomNormal.y = -topNormal.y;
+    bottomNormal.z = topNormal.z;
+    m_frustum.bounds[3].offset = -bottomNormal.dot(b);
+    // left plane
+    float horHalfAngle = atanf(aspect * b.y / znear);
+    Base::vec3& leftNormal = m_frustum.bounds[4].normal;
+    leftNormal.x = -cosf(horHalfAngle);
+    leftNormal.y = 0.0f;
+    leftNormal.z = -sinf(horHalfAngle);
+    m_frustum.bounds[4].offset = -leftNormal.dot(l);
+    // right plane
+    Base::vec3& rightNormal = m_frustum.bounds[5].normal;
+    rightNormal.x = -leftNormal.x;
+    rightNormal.y = 0.0f;
+    rightNormal.z = leftNormal.z;
+    m_frustum.bounds[5].offset = -rightNormal.dot(r);
 }
 
 bool Temple::Bonfire::RenderContext::outOfSight(const Base::vec4& a, const Base::vec4& b, const Base::vec4& c, float znear, float zfar, float aspect) {
@@ -247,7 +292,8 @@ void Temple::Bonfire::RenderContext::fill(const col4u& color) {
 }
 
 Temple::Base::vec4 Temple::Bonfire::RenderContext::processVertex(const Base::vec4& v) {
-    Base::vec4 c(v);
+    Base::vec4 c = m_perspectiveMatrix * v;
+
     float w = c.w;
     c.w = 1.0f;
     c = c / w;
