@@ -61,17 +61,15 @@ namespace Temple {
         using logFunc = void(*)(const char* msg, size_t msgLength);
         //
         struct Plane {
-            Base::vec4 normal;
+            Base::vec3 normal;
             float offset;
             Plane();
-            Plane(const Base::vec4& _normal, float _offset);
+            Plane(const Base::vec3& _normal, float _offset);
+        };
+        struct Frustum {
+            Plane bounds[6];
         };
         //
-        struct Frustum {
-            float fov, aspect, znear, zfar;
-            Plane normals[6];
-            Frustum(float _fov, float _aspect, float _znear, float _zfar);
-        };
         class RenderContext {
         private:
             uint8_t* m_data = nullptr;
@@ -93,6 +91,8 @@ namespace Temple {
             Base::mat4 m_transformMatrix = Base::mat4::identity();
             std::vector<uint8_t> m_builtins; // default matrices - immediate mode
             //
+            Frustum m_frustum;
+            //
             logFunc m_log = nullptr;
         public:
             RenderContext(int width, int height, int bytesPerPixel);
@@ -112,7 +112,10 @@ namespace Temple {
             void renderPixelDepthWise(const Base::vec4& p, const uint8_t* data);
             Base::vec4 processVertex(const Base::vec4& v);
             void fill(const col4u& color);
-            //
+            void cullTriangleByFrustum(const Base::vec4& a, const Base::vec4& b, const Base::vec4& c, 
+                                       const uint8_t* aData, const uint8_t* bData, const uint8_t* cData, 
+                                       const VertexFormat& vf, 
+                                       std::vector<Base::vec4>& passedVertexCoords, std::vector<uint8_t>& passedVertexData);
             void setDepthTest(bool flag);
             void setDepthWrite(bool flag);
             void setBackfaceCulling(CullingMode mode);

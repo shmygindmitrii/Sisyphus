@@ -355,6 +355,236 @@ static inline float getWeightBetween(float x, float y, float x0, float y0, float
     }
 }
 
+static float 
+segmentPlaneIntersection(const Temple::Base::vec3& a, const Temple::Base::vec3& b, const Temple::Bonfire::Plane& p) {
+  const Temple::Base::vec3 ab = b - a;
+  float k = (-p.normal.dot(a) - p.offset) / p.normal.dot(ab);
+  if (fabs(k) < 0.0001f) {
+    return 0.0f;
+  }
+  if (fabs(k) - 1.0f < 0.0001f) {
+    return 1.0f;
+  }
+  return k;
+}
+
+static inline float
+pointPlaneSide(const Temple::Base::vec3& a, const Temple::Bonfire::Plane& p) {
+    // -value - under
+    // 0 - on
+    // +value - above
+    // literally put this into the plane equation
+    return p.normal.dot(a) + p.offset;
+}
+
+static void 
+cullTriangleTwoPointOutside(const Temple::Base::vec4& a, const Temple::Base::vec4& b, const Temple::Base::vec4& c, 
+                            const uint8_t* pDataA, const uint8_t* pDataB, const uint8_t* pDataC,
+                            const Temple::Bonfire::VertexFormat& vf, const Temple::Bonfire::Plane& p,
+                            std::vector<Temple::Base::vec4>& passedVertexCoords, std::vector<uint8_t>& passedVertexData) {
+    // a and b are outside
+    float cSide = pointPlaneSide(c.xyz, p);
+    if (fabs(cSide) <= Temple::Base::EPS) {
+        // c is on the plane, discard
+    }
+    else {
+        // two outside and one point is inside
+        float kA = segmentPlaneIntersection(c.xyz, a.xyz, p);
+        float kB = segmentPlaneIntersection(c.xyz, b.xyz, p);
+        std::vector<uint8_t> dataAK = {};
+        std::vector<uint8_t> dataBK = {};
+        dataAK.resize(vf.size);
+        dataBK.resize(vf.size);
+        Temple::Bonfire::interpolateAttributes(pDataC, pDataA, dataAK.data(), kA, vf);
+        Temple::Bonfire::interpolateAttributes(pDataC, pDataB, dataBK.data(), kB, vf);
+        Temple::Base::vec4 ak = (a - c) * kA + c;
+        ak.w = c.w;
+        Temple::Base::vec4 bk = (b - c) * kB + c;
+        bk.w = b.w;
+        //
+        passedVertexCoords.emplace_back(c);
+        passedVertexCoords.emplace_back(ak);
+        passedVertexCoords.emplace_back(bk);
+        Temple::Base::appendData(passedVertexData, pDataC, vf.size, 0);
+        Temple::Base::appendData(passedVertexData, dataAK.data(), vf.size, 0);
+        Temple::Base::appendData(passedVertexData, dataBK.data(), vf.size, 0);
+    }
+}
+
+static void 
+cullTriangleOnePointOutsideOneOn(const Temple::Base::vec4& a, const Temple::Base::vec4& b, const Temple::Base::vec4& c,
+                                 const uint8_t* pDataA, const uint8_t* pDataB, const uint8_t* pDataC,
+                                 const Temple::Bonfire::VertexFormat& vf, const Temple::Bonfire::Plane& p,
+                                 std::vector<Temple::Base::vec4>& passedVertexCoords, std::vector<uint8_t>& passedVertexData) {
+    // a is outside and b is on the plane
+    float cSide = pointPlaneSide(c.xyz, p);
+    if (fabs(cSide) <= Temple::Base::EPS) {
+        // only segment is on the plane, we can discard it
+    }
+    else {
+        // a is outside, b is on the plane, c is inside
+        float kA = segmentPlaneIntersection(c.xyz, a.xyz, p);
+        std::vector<uint8_t> dataCK = {};
+        dataCK.resize(vf.size);
+        Temple::Bonfire::interpolateAttributes(pDataC, pDataA, dataCK.data(), kA, vf);
+        Temple::Base::vec4 ck = (a - c) * kA + c;
+        ck.w = c.w;
+        //
+        passedVertexCoords.emplace_back(b);
+        passedVertexCoords.emplace_back(c);
+        passedVertexCoords.emplace_back(ck);
+        Temple::Base::appendData(passedVertexData, pDataB, vf.size, 0);
+        Temple::Base::appendData(passedVertexData, pDataC, vf.size, 0);
+        Temple::Base::appendData(passedVertexData, dataCK.data(), vf.size, 0);
+    }
+}
+
+static void 
+cullTriangleOnePointOutside(const Temple::Base::vec4& a, const Temple::Base::vec4& b, const Temple::Base::vec4& c, 
+                            const uint8_t* pDataA, const uint8_t* pDataB, const uint8_t* pDataC,
+                            const Temple::Bonfire::VertexFormat& vf, const Temple::Bonfire::Plane& p,
+                            std::vector<Temple::Base::vec4>& passedVertexCoords, std::vector<uint8_t>& passedVertexData) {
+    // a-point is outside
+    float bSide = pointPlaneSide(b.xyz, p);
+    float cSide = pointPlaneSide(c.xyz, p);
+    if (bSide > 0.0f) {
+        // a and b are outside
+        cullTriangleTwoPointOutside(a, b, c, pDataA, pDataB, pDataC, vf, p, passedVertexCoords, passedVertexData);
+    }
+    else {
+        if (cSide > 0.0f) {
+            // a and c are outside
+            cullTriangleTwoPointOutside(a, c, b, pDataA, pDataC, pDataB, vf, p, passedVertexCoords, passedVertexData);
+        }
+        else {
+            // only one point is really outside
+            if (fabs(bSide) < Temple::Base::EPS) {
+                // b is on the plane
+                cullTriangleOnePointOutsideOneOn(a, b, c, pDataA, pDataB, pDataC, vf, p, passedVertexCoords, passedVertexData);
+            }
+            else if (fabs(cSide) < Temple::Base::EPS) {
+                // c is on the plane
+                cullTriangleOnePointOutsideOneOn(a, c, b, pDataA, pDataC, pDataB, vf, p, passedVertexCoords, passedVertexData);
+            }
+            else {
+                // no point is on the plane, just one outside and two inside
+                float kB = segmentPlaneIntersection(b.xyz, a.xyz, p);
+                float kC = segmentPlaneIntersection(c.xyz, a.xyz, p);
+                std::vector<uint8_t> dataBK = {};
+                std::vector<uint8_t> dataCK = {};
+                dataBK.resize(vf.size);
+                dataCK.resize(vf.size);
+                Temple::Bonfire::interpolateAttributes(pDataB, pDataA, dataBK.data(), kB, vf);
+                Temple::Bonfire::interpolateAttributes(pDataC, pDataA, dataCK.data(), kC, vf);
+                Temple::Base::vec4 bk = (a - b) * kB + b;
+                bk.w = b.w;
+                Temple::Base::vec4 ck = (a - c) * kC + c;
+                ck.w = c.w;
+                //
+                passedVertexCoords.emplace_back(b);
+                passedVertexCoords.emplace_back(c);
+                passedVertexCoords.emplace_back(bk);
+                Temple::Base::appendData(passedVertexData, pDataB, vf.size, 0);
+                Temple::Base::appendData(passedVertexData, pDataC, vf.size, 0);
+                Temple::Base::appendData(passedVertexData, dataBK.data(), vf.size, 0);
+                //
+                passedVertexCoords.emplace_back(c);
+                passedVertexCoords.emplace_back(ck);
+                passedVertexCoords.emplace_back(bk);
+                Temple::Base::appendData(passedVertexData, pDataC, vf.size, 0);
+                Temple::Base::appendData(passedVertexData, dataCK.data(), vf.size, 0);
+                Temple::Base::appendData(passedVertexData, dataBK.data(), vf.size, 0);
+            }
+        }
+    }
+}
+
+static void
+cullTriangleByPlane( const Temple::Base::vec4& a, const Temple::Base::vec4& b, const Temple::Base::vec4& c,
+                     const uint8_t* pDataA, const uint8_t* pDataB, const uint8_t* pDataC,
+                     const Temple::Bonfire::VertexFormat& vf, const Temple::Bonfire::Plane& p,
+                     std::vector<Temple::Base::vec4>& passedVertexCoords, std::vector<uint8_t>& passedVertexData) {
+    float aSide = pointPlaneSide(a.xyz, p);
+    float bSide = pointPlaneSide(b.xyz, p);
+    float cSide = pointPlaneSide(c.xyz, p);
+    // here we have many possible cases
+    if (aSide <= 0.0f && bSide <= 0.0f && cSide <= 0.0f) {
+        // everything is under the plane, add whole triangle
+        passedVertexCoords.emplace_back(a);
+        passedVertexCoords.emplace_back(b);
+        passedVertexCoords.emplace_back(c);
+        Temple::Base::appendData(passedVertexData, pDataA, vf.size, 0);
+        Temple::Base::appendData(passedVertexData, pDataB, vf.size, 0);
+        Temple::Base::appendData(passedVertexData, pDataC, vf.size, 0);
+    }
+    else if (aSide > 0.0f && bSide > 0.0f && cSide > 0.0f) {
+        // skip, whole triangle is above
+    }
+    else {
+        // here is intersection
+        if (aSide > 0.0f) {
+            cullTriangleOnePointOutside(a, b, c, pDataA, pDataB, pDataC, vf, p, passedVertexCoords, passedVertexData);
+        }
+        else if (bSide > 0.0f) {
+            cullTriangleOnePointOutside(b, a, c, pDataB, pDataA, pDataC, vf, p, passedVertexCoords, passedVertexData);
+        }
+        else if (cSide > 0.0f) {
+            cullTriangleOnePointOutside(c, a, b, pDataC, pDataA, pDataB, vf, p, passedVertexCoords, passedVertexData);
+        }
+        else {
+            // impossible to reach, at least one point should be outside
+            assert(false);
+        }
+    }
+}
+
+static void 
+cullTrianglesByPlane(std::vector<Temple::Base::vec4>& inputVertexCoords, const uint8_t* pData, 
+                     const Temple::Bonfire::VertexFormat& vf, const Temple::Bonfire::Plane& p,
+                     std::vector<Temple::Base::vec4>& passedVertexCoords, std::vector<uint8_t>& passedVertexData) {
+    for (int i = 0; i < inputVertexCoords.size(); i += 3) {
+        const Temple::Base::vec4& a = inputVertexCoords[i];
+        const Temple::Base::vec4& b = inputVertexCoords[i + 1];
+        const Temple::Base::vec4& c = inputVertexCoords[i + 2];
+        const uint8_t* pDataA = pData + i * vf.size;
+        const uint8_t* pDataB = pData + (i + 1) * vf.size;
+        const uint8_t* pDataC = pData + (i + 2) * vf.size;
+        cullTriangleByPlane(a, b, c, pDataA, pDataB, pDataC, vf, p, passedVertexCoords, passedVertexData);
+    }
+}
+
+void 
+Temple::Bonfire::RenderContext::cullTriangleByFrustum(const Base::vec4& a, const Base::vec4& b, const Base::vec4& c,
+                                                      const uint8_t* aData, const uint8_t* bData, const uint8_t* cData, 
+                                                      const VertexFormat& vf, 
+                                                      std::vector<Base::vec4>& passedVertexCoords, std::vector<uint8_t>& passedVertexData) {
+  std::vector<Base::vec4> vertexPassedFront = { a, b, c };
+  std::vector<uint8_t> dataPassedFront = {};
+  Base::appendData(dataPassedFront, aData, vf.size, 0);
+  Base::appendData(dataPassedFront, bData, vf.size, 0);
+  Base::appendData(dataPassedFront, cData, vf.size, 0);
+  std::vector<Base::vec4> vertexPassedBack = {};
+  std::vector<uint8_t> dataPassedBack = {};
+  
+  std::vector<Base::vec4>* pVertexPassedFront = &vertexPassedFront;
+  std::vector<Base::vec4>* pVertexPassedBack = &vertexPassedBack;
+  std::vector<uint8_t>* pDataPassedFront = &dataPassedFront;
+  std::vector<uint8_t>* pDataPassedBack = &dataPassedBack;
+
+  for (int i = 0; i < 1; i++) {
+    const Bonfire::Plane& p = this->m_frustum.bounds[i];
+    pVertexPassedBack->clear();
+    pDataPassedBack->clear();
+    cullTrianglesByPlane(*pVertexPassedFront, pDataPassedFront->data(), vf, p, *pVertexPassedBack, *pDataPassedBack);
+    std::swap(pVertexPassedFront, pVertexPassedBack);
+    std::swap(pDataPassedFront, pDataPassedBack);
+  }
+  for (int i = 0; i < pVertexPassedFront->size(); i++) {
+      passedVertexCoords.emplace_back((*pVertexPassedFront)[i]);
+      Temple::Base::appendData(passedVertexData, pDataPassedFront->data() + (vf.size * i), vf.size, 0);
+  }
+}
+
 void Temple::Bonfire::RenderContext::drawLines(const std::vector<Base::vec4>& coords, const std::vector<int>& indices, 
     const uint8_t* vertexData, const VertexFormat& vInFormat, const VertexFormat& vOutFormat) {
     if (indices.size() == 0 || indices.size() % 2 != 0) return;
@@ -443,11 +673,13 @@ void Temple::Bonfire::RenderContext::drawTriangles(const std::vector<Base::vec4>
         const uint8_t* aData = &vertexData[indices[i] * vInFormat.size];
         const uint8_t* bData = &vertexData[indices[i + 1] * vInFormat.size];
         const uint8_t* cData = &vertexData[indices[i + 2] * vInFormat.size];
-        
-        // find transformed world coords, need them twice
-        Base::vec4 aWorld = m_modelViewMatrix * va;
-        Base::vec4 bWorld = m_modelViewMatrix * vb;
-        Base::vec4 cWorld = m_modelViewMatrix * vc;
+        //
+        Base::vec4 aWorld, bWorld, cWorld;
+        std::vector<uint8_t> aVertexOut(vOutFormat.size), bVertexOut(vOutFormat.size), cVertexOut(vOutFormat.size);
+
+        this->m_vsf(va, aWorld, aVertexOut, aData, this->m_builtins, this->m_descriptorSet);
+        this->m_vsf(vb, bWorld, bVertexOut, bData, this->m_builtins, this->m_descriptorSet);
+        this->m_vsf(vc, cWorld, cVertexOut, cData, this->m_builtins, this->m_descriptorSet);
 
         // backface culling
         if (m_backFaceCulling != CullingMode::None) {
@@ -472,182 +704,189 @@ void Temple::Bonfire::RenderContext::drawTriangles(const std::vector<Base::vec4>
                 continue;
             }
         }
-        // occlussion culling
+        // frustum culling 
+        std::vector<uint8_t> viewPassedVertexData = {};
+        Base::appendData(viewPassedVertexData, aVertexOut.data(), vOutFormat.size, 0);
+        Base::appendData(viewPassedVertexData, bVertexOut.data(), vOutFormat.size, 0);
+        Base::appendData(viewPassedVertexData, cVertexOut.data(), vOutFormat.size, 0);
+        std::vector<Base::vec4> viewPassedVertexCoords = { aWorld, bWorld, cWorld };
         /*
-        if (outOfSight(aWorld, bWorld, cWorld, )) {
-            continue;
-        }
+        this->cullTriangleByFrustum(aWorld, bWorld, cWorld,
+                                    aVertexOut.data(), bVertexOut.data(), cVertexOut.data(),
+                                    vOutFormat,
+                                    viewPassedVertexCoords, viewPassedVertexData);
         */
-        //
-        Base::vec4 a, b, c;
-        std::vector<uint8_t> aVertexOut(vOutFormat.size), bVertexOut(vOutFormat.size), cVertexOut(vOutFormat.size);
-        this->m_vsf(va, a, aVertexOut, aData, this->m_builtins, this->m_descriptorSet);
-        this->m_vsf(vb, b, bVertexOut, bData, this->m_builtins, this->m_descriptorSet);
-        this->m_vsf(vc, c, cVertexOut, cData, this->m_builtins, this->m_descriptorSet);
-        //
-        uint8_t* aVertexOutPtr = aVertexOut.data();
-        uint8_t* bVertexOutPtr = bVertexOut.data();
-        uint8_t* cVertexOutPtr = cVertexOut.data();
-        //
-        a = processVertex(a);
-        b = processVertex(b);
-        c = processVertex(c);
-        //
-        Base::vec4 sa = a, sb = b, sc = c;
-        if (sa.y > sc.y) {
-            std::swap(sa, sc);
-            std::swap(aVertexOutPtr, cVertexOutPtr);
-        }
-        if (sa.y > sb.y) {
-            std::swap(sa, sb);
-            std::swap(aVertexOutPtr, bVertexOutPtr);
-        }
-        if (sb.y > sc.y) {
-            std::swap(sb, sc);
-            std::swap(bVertexOutPtr, cVertexOutPtr);
-        }
-        // get interpolated values - line coordinates, only one component
-        std::vector<float> xab = Base::interpolate(sa.y, sa.x, sb.y, sb.x);
-        std::vector<float> xbc = Base::interpolate(sb.y, sb.x, sc.y, sc.x);
-        std::vector<float> xac = Base::interpolate(sa.y, sa.x, sc.y, sc.x); // long side x
-        int nzeros = (int)(xab.size() == 0) + (int)(xbc.size() == 0) + (int)(xac.size() == 0);
-        if (nzeros > 1) {
-            return;
-        }
-        // here is the diffrence - we don't want to merge xab and xbc
-        int n = std::min(xac.size(), xab.size() + xbc.size());
-        int middle = n / 2;
-        bool leftToRight = true;
-        if (middle >= xab.size()) {
-            if (xac[middle] < xbc[middle - xab.size()]) {
-                leftToRight = false;
+        // rasterization
+        for (int j = 0; j < viewPassedVertexCoords.size(); j += 3) {
+            const Base::vec4& aVisible(viewPassedVertexCoords[j]);
+            const Base::vec4& bVisible(viewPassedVertexCoords[j + 1]);
+            const Base::vec4& cVisible(viewPassedVertexCoords[j + 2]);
+            //
+            uint8_t* aVertexOutPtr = &viewPassedVertexData[j * vOutFormat.size];
+            uint8_t* bVertexOutPtr = &viewPassedVertexData[(j + 1) * vOutFormat.size];
+            uint8_t* cVertexOutPtr = &viewPassedVertexData[(j + 2) * vOutFormat.size];
+            //
+            Base::vec4 a, b, c;
+            a = processVertex(aVisible);
+            b = processVertex(bVisible);
+            c = processVertex(cVisible);
+            //
+            Base::vec4 sa = a, sb = b, sc = c;
+            if (sa.y > sc.y) {
+                std::swap(sa, sc);
+                std::swap(aVertexOutPtr, cVertexOutPtr);
             }
-        }
-        else {
-            if (xac[middle] < xab[middle]) {
-                leftToRight = false;
+            if (sa.y > sb.y) {
+                std::swap(sa, sb);
+                std::swap(aVertexOutPtr, bVertexOutPtr);
             }
-        }
-        float bottomy = sa.y;
-        int idx = 0;
-        std::vector<uint8_t> vInterpolatedAC(vOutFormat.size), vInterpolatedAB(vOutFormat.size), vInterpolatedBC(vOutFormat.size), vInterpolatedLR(vOutFormat.size);
-        std::vector<uint8_t> vDepthedA(vOutFormat.size), vDepthedB(vOutFormat.size), vDepthedC(vOutFormat.size), vDepthedP(vOutFormat.size);
-        // divide attributes by original z - lesser attributes, that are located further
-        multiplyAttributes(aVertexOutPtr, vDepthedA.data(), sa.w, vOutFormat);
-        multiplyAttributes(bVertexOutPtr, vDepthedB.data(), sb.w, vOutFormat);
-        multiplyAttributes(cVertexOutPtr, vDepthedC.data(), sc.w, vOutFormat);
-        //
-        if (leftToRight) {
-            Base::vec4 c;
-            for (idx = 0; idx < xab.size() % (n + 1); idx++) {
-                float leftx = xab[idx];
-                float rightx = xac[idx];
-                float vWeightAB = getWeightBetween(leftx, bottomy, sa.x, sa.y, sb.x, sb.y);
-                float vWeightAC = getWeightBetween(rightx, bottomy, sa.x, sa.y, sc.x, sc.y);
-                interpolateAttributes(vDepthedA.data(), vDepthedB.data(), &vInterpolatedAB[0], vWeightAB, vOutFormat);
-                interpolateAttributes(vDepthedA.data(), vDepthedC.data(), &vInterpolatedAC[0], vWeightAC, vOutFormat);
-                float lz = sa.z + (sb.z - sa.z) * vWeightAB;
-                float rz = sa.z + (sc.z - sa.z) * vWeightAC;
-                float lwo = sa.w + (sb.w - sa.w) * vWeightAB;
-                float rwo = sa.w + (sc.w - sa.w) * vWeightAC;
-                while (leftx < rightx) {
-                    float hWeight = (leftx - xab[idx]) / (xac[idx] - xab[idx]);
-                    interpolateAttributes(vInterpolatedAB.data(), vInterpolatedAC.data(), &vInterpolatedLR[0], hWeight, vOutFormat);
-                    c.x = leftx;
-                    c.y = bottomy;
-                    c.z = lz + (rz - lz) * hWeight;
-                    float pwo = lwo + (rwo - lwo) * hWeight;
-                    float pzo = 1.0f / pwo;
-                    c.w = pwo;
-                    multiplyAttributes(vInterpolatedLR.data(), vDepthedP.data(), pzo, vOutFormat);
-                    renderPixelDepthWise(c, vDepthedP.data());
-                    leftx += 1.0f;
+            if (sb.y > sc.y) {
+                std::swap(sb, sc);
+                std::swap(bVertexOutPtr, cVertexOutPtr);
+            }
+            // get interpolated values - line coordinates, only one component
+            std::vector<float> xab = Base::interpolate(sa.y, sa.x, sb.y, sb.x);
+            std::vector<float> xbc = Base::interpolate(sb.y, sb.x, sc.y, sc.x);
+            std::vector<float> xac = Base::interpolate(sa.y, sa.x, sc.y, sc.x); // long side x
+            int nzeros = (int)(xab.size() == 0) + (int)(xbc.size() == 0) + (int)(xac.size() == 0);
+            if (nzeros > 1) {
+                return;
+            }
+            // here is the diffrence - we don't want to merge xab and xbc
+            int n = std::min(xac.size(), xab.size() + xbc.size());
+            int middle = n / 2;
+            bool leftToRight = true;
+            if (middle >= xab.size()) {
+                if (xac[middle] < xbc[middle - xab.size()]) {
+                    leftToRight = false;
                 }
-                bottomy += 1.0f;
             }
-            for (; idx < n; idx++) {
-                float leftx = xbc[idx - xab.size()];
-                float rightx = xac[idx];
-                float vWeightBC = getWeightBetween(leftx, bottomy, sb.x, sb.y, sc.x, sc.y);
-                float vWeightAC = getWeightBetween(rightx, bottomy, sa.x, sa.y, sc.x, sc.y);
-                interpolateAttributes(vDepthedB.data(), vDepthedC.data(), &vInterpolatedBC[0], vWeightBC, vOutFormat);
-                interpolateAttributes(vDepthedA.data(), vDepthedC.data(), &vInterpolatedAC[0], vWeightAC, vOutFormat);
-                float lz = sb.z + (sc.z - sb.z) * vWeightBC;
-                float rz = sa.z + (sc.z - sa.z) * vWeightAC;
-                float lwo = sb.w + (sc.w - sb.w) * vWeightBC;
-                float rwo = sa.w + (sc.w - sa.w) * vWeightAC;
-                while (leftx < rightx) {
-                    float hWeight = (leftx - xbc[idx - xab.size()]) / (xac[idx] - xbc[idx - xab.size()]);
-                    interpolateAttributes(vInterpolatedBC.data(), vInterpolatedAC.data(), &vInterpolatedLR[0], hWeight, vOutFormat);
-                    c.x = leftx;
-                    c.y = bottomy;
-                    c.z = lz + (rz - lz) * hWeight;
-                    float pwo = lwo + (rwo - lwo) * hWeight;
-                    float pzo = 1.0f / pwo;
-                    c.w = pwo;
-                    multiplyAttributes(vInterpolatedLR.data(), vDepthedP.data(), pzo, vOutFormat);
-                    renderPixelDepthWise(c, vDepthedP.data());
-                    leftx += 1.0f;
+            else {
+                if (xac[middle] < xab[middle]) {
+                    leftToRight = false;
                 }
-                bottomy += 1.0f;
             }
+            float bottomy = sa.y;
+            int idx = 0;
+            std::vector<uint8_t> vInterpolatedAC(vOutFormat.size), vInterpolatedAB(vOutFormat.size), vInterpolatedBC(vOutFormat.size), vInterpolatedLR(vOutFormat.size);
+            std::vector<uint8_t> vDepthedA(vOutFormat.size), vDepthedB(vOutFormat.size), vDepthedC(vOutFormat.size), vDepthedP(vOutFormat.size);
+            // divide attributes by original z - lesser attributes, that are located further
+            multiplyAttributes(aVertexOutPtr, vDepthedA.data(), sa.w, vOutFormat);
+            multiplyAttributes(bVertexOutPtr, vDepthedB.data(), sb.w, vOutFormat);
+            multiplyAttributes(cVertexOutPtr, vDepthedC.data(), sc.w, vOutFormat);
+            //
+            if (leftToRight) {
+                Base::vec4 c;
+                for (idx = 0; idx < xab.size() % (n + 1); idx++) {
+                    float leftx = xab[idx];
+                    float rightx = xac[idx];
+                    float vWeightAB = getWeightBetween(leftx, bottomy, sa.x, sa.y, sb.x, sb.y);
+                    float vWeightAC = getWeightBetween(rightx, bottomy, sa.x, sa.y, sc.x, sc.y);
+                    interpolateAttributes(vDepthedA.data(), vDepthedB.data(), vInterpolatedAB.data(), vWeightAB, vOutFormat);
+                    interpolateAttributes(vDepthedA.data(), vDepthedC.data(), vInterpolatedAC.data(), vWeightAC, vOutFormat);
+                    float lz = sa.z + (sb.z - sa.z) * vWeightAB;
+                    float rz = sa.z + (sc.z - sa.z) * vWeightAC;
+                    float lwo = sa.w + (sb.w - sa.w) * vWeightAB;
+                    float rwo = sa.w + (sc.w - sa.w) * vWeightAC;
+                    while (leftx < rightx) {
+                        float hWeight = (leftx - xab[idx]) / (xac[idx] - xab[idx]);
+                        interpolateAttributes(vInterpolatedAB.data(), vInterpolatedAC.data(), vInterpolatedLR.data(), hWeight, vOutFormat);
+                        c.x = leftx;
+                        c.y = bottomy;
+                        c.z = lz + (rz - lz) * hWeight;
+                        float pwo = lwo + (rwo - lwo) * hWeight;
+                        float pzo = 1.0f / pwo;
+                        c.w = pwo;
+                        multiplyAttributes(vInterpolatedLR.data(), vDepthedP.data(), pzo, vOutFormat);
+                        renderPixelDepthWise(c, vDepthedP.data());
+                        leftx += 1.0f;
+                    }
+                    bottomy += 1.0f;
+                }
+                for (; idx < n; idx++) {
+                    float leftx = xbc[idx - xab.size()];
+                    float rightx = xac[idx];
+                    float vWeightBC = getWeightBetween(leftx, bottomy, sb.x, sb.y, sc.x, sc.y);
+                    float vWeightAC = getWeightBetween(rightx, bottomy, sa.x, sa.y, sc.x, sc.y);
+                    interpolateAttributes(vDepthedB.data(), vDepthedC.data(), vInterpolatedBC.data(), vWeightBC, vOutFormat);
+                    interpolateAttributes(vDepthedA.data(), vDepthedC.data(), vInterpolatedAC.data(), vWeightAC, vOutFormat);
+                    float lz = sb.z + (sc.z - sb.z) * vWeightBC;
+                    float rz = sa.z + (sc.z - sa.z) * vWeightAC;
+                    float lwo = sb.w + (sc.w - sb.w) * vWeightBC;
+                    float rwo = sa.w + (sc.w - sa.w) * vWeightAC;
+                    while (leftx < rightx) {
+                        float hWeight = (leftx - xbc[idx - xab.size()]) / (xac[idx] - xbc[idx - xab.size()]);
+                        interpolateAttributes(vInterpolatedBC.data(), vInterpolatedAC.data(), vInterpolatedLR.data(), hWeight, vOutFormat);
+                        c.x = leftx;
+                        c.y = bottomy;
+                        c.z = lz + (rz - lz) * hWeight;
+                        float pwo = lwo + (rwo - lwo) * hWeight;
+                        float pzo = 1.0f / pwo;
+                        c.w = pwo;
+                        multiplyAttributes(vInterpolatedLR.data(), vDepthedP.data(), pzo, vOutFormat);
+                        renderPixelDepthWise(c, vDepthedP.data());
+                        leftx += 1.0f;
+                    }
+                    bottomy += 1.0f;
+                }
+            }
+            else {
+                Base::vec4 c;
+                for (idx = 0; idx < xab.size() % (n + 1); idx++) {
+                    float leftx = xac[idx];
+                    float rightx = xab[idx];
+                    float vWeightAC = getWeightBetween(leftx, bottomy, sa.x, sa.y, sc.x, sc.y);
+                    float vWeightAB = getWeightBetween(rightx, bottomy, sa.x, sa.y, sb.x, sb.y);
+                    interpolateAttributes(vDepthedA.data(), vDepthedB.data(), vInterpolatedAB.data(), vWeightAB, vOutFormat);
+                    interpolateAttributes(vDepthedA.data(), vDepthedC.data(), vInterpolatedAC.data(), vWeightAC, vOutFormat);
+                    float lz = sa.z + (sc.z - sa.z) * vWeightAC;
+                    float rz = sa.z + (sb.z - sa.z) * vWeightAB;
+                    float lwo = sa.w + (sc.w - sa.w) * vWeightAC;
+                    float rwo = sa.w + (sb.w - sa.w) * vWeightAB;
+                    while (leftx < rightx) {
+                        float hWeight = (leftx - xac[idx]) / (xab[idx] - xac[idx]);
+                        interpolateAttributes(vInterpolatedAC.data(), vInterpolatedAB.data(), vInterpolatedLR.data(), hWeight, vOutFormat);
+                        c.x = leftx;
+                        c.y = bottomy;
+                        c.z = lz + (rz - lz) * hWeight;
+                        float pwo = lwo + (rwo - lwo) * hWeight;
+                        float pzo = 1.0f / pwo;
+                        c.w = pwo;
+                        multiplyAttributes(vInterpolatedLR.data(), vDepthedP.data(), pzo, vOutFormat);
+                        renderPixelDepthWise(c, vDepthedP.data());
+                        leftx += 1.0f;
+                    }
+                    bottomy += 1.0f;
+                }
+                for (; idx < n; idx++) {
+                    float leftx = xac[idx];
+                    float rightx = xbc[idx - xab.size()];
+                    float vWeightAC = getWeightBetween(leftx, bottomy, sa.x, sa.y, sc.x, sc.y);
+                    float vWeightBC = getWeightBetween(rightx, bottomy, sb.x, sb.y, sc.x, sc.y);
+                    interpolateAttributes(vDepthedB.data(), vDepthedC.data(), vInterpolatedBC.data(), vWeightBC, vOutFormat);
+                    interpolateAttributes(vDepthedA.data(), vDepthedC.data(), vInterpolatedAC.data(), vWeightAC, vOutFormat);
+                    float lz = sa.z + (sc.z - sa.z) * vWeightAC;
+                    float rz = sb.z + (sc.z - sb.z) * vWeightBC;
+                    float lwo = sa.w + (sc.w - sa.w) * vWeightAC;
+                    float rwo = sb.w + (sc.w - sb.w) * vWeightBC;
+                    while (leftx < rightx) {
+                        float hWeight = (leftx - xac[idx]) / (xbc[idx - xab.size()] - xac[idx]);
+                        interpolateAttributes(vInterpolatedAC.data(), vInterpolatedBC.data(), vInterpolatedLR.data(), hWeight, vOutFormat);
+                        c.x = leftx;
+                        c.y = bottomy;
+                        c.z = lz + (rz - lz) * hWeight;
+                        float pwo = lwo + (rwo - lwo) * hWeight;
+                        float pzo = 1.0f / pwo;
+                        c.w = pwo;
+                        multiplyAttributes(vInterpolatedLR.data(), vDepthedP.data(), pzo, vOutFormat);
+                        renderPixelDepthWise(c, vDepthedP.data());
+                        leftx += 1.0f;
+                    }
+                    bottomy += 1.0f;
+                }
+            }
+            fragments++;
         }
-        else {
-            Base::vec4 c;
-            for (idx = 0; idx < xab.size() % (n + 1); idx++) {
-                float leftx = xac[idx];
-                float rightx = xab[idx];
-                float vWeightAC = getWeightBetween(leftx, bottomy, sa.x, sa.y, sc.x, sc.y);
-                float vWeightAB = getWeightBetween(rightx, bottomy, sa.x, sa.y, sb.x, sb.y);
-                interpolateAttributes(vDepthedA.data(), vDepthedB.data(), &vInterpolatedAB[0], vWeightAB, vOutFormat);
-                interpolateAttributes(vDepthedA.data(), vDepthedC.data(), &vInterpolatedAC[0], vWeightAC, vOutFormat);
-                float lz = sa.z + (sc.z - sa.z) * vWeightAC;
-                float rz = sa.z + (sb.z - sa.z) * vWeightAB;
-                float lwo = sa.w + (sc.w - sa.w) * vWeightAC;
-                float rwo = sa.w + (sb.w - sa.w) * vWeightAB;
-                while (leftx < rightx) {
-                    float hWeight = (leftx - xac[idx]) / (xab[idx] - xac[idx]);
-                    interpolateAttributes(vInterpolatedAC.data(), vInterpolatedAB.data(), &vInterpolatedLR[0], hWeight, vOutFormat);
-                    c.x = leftx;
-                    c.y = bottomy;
-                    c.z = lz + (rz - lz) * hWeight;
-                    float pwo = lwo + (rwo - lwo) * hWeight;
-                    float pzo = 1.0f / pwo;
-                    c.w = pwo;
-                    multiplyAttributes(vInterpolatedLR.data(), vDepthedP.data(), pzo, vOutFormat);
-                    renderPixelDepthWise(c, vDepthedP.data());
-                    leftx += 1.0f;
-                }
-                bottomy += 1.0f;
-            }
-            for (; idx < n; idx++) {
-                float leftx = xac[idx];
-                float rightx = xbc[idx - xab.size()];
-                float vWeightAC = getWeightBetween(leftx, bottomy, sa.x, sa.y, sc.x, sc.y);
-                float vWeightBC = getWeightBetween(rightx, bottomy, sb.x, sb.y, sc.x, sc.y);
-                interpolateAttributes(vDepthedB.data(), vDepthedC.data(), &vInterpolatedBC[0], vWeightBC, vOutFormat);
-                interpolateAttributes(vDepthedA.data(), vDepthedC.data(), &vInterpolatedAC[0], vWeightAC, vOutFormat);
-                float lz = sa.z + (sc.z - sa.z) * vWeightAC;
-                float rz = sb.z + (sc.z - sb.z) * vWeightBC;
-                float lwo = sa.w + (sc.w - sa.w) * vWeightAC;
-                float rwo = sb.w + (sc.w - sb.w) * vWeightBC;
-                while (leftx < rightx) {
-                    float hWeight = (leftx - xac[idx]) / (xbc[idx - xab.size()] - xac[idx]);
-                    interpolateAttributes(vInterpolatedAC.data(), vInterpolatedBC.data(), &vInterpolatedLR[0], hWeight, vOutFormat);
-                    c.x = leftx;
-                    c.y = bottomy;
-                    c.z = lz + (rz - lz) * hWeight;
-                    float pwo = lwo + (rwo - lwo) * hWeight;
-                    float pzo = 1.0f / pwo;
-                    c.w = pwo;
-                    multiplyAttributes(vInterpolatedLR.data(), vDepthedP.data(), pzo, vOutFormat);
-                    renderPixelDepthWise(c, vDepthedP.data());
-                    leftx += 1.0f;
-                }
-                bottomy += 1.0f;
-            }
-        }
-        fragments++;
     }
     if (m_log != nullptr) {
         static char msg[128];
