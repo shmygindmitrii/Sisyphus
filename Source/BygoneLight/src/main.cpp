@@ -145,6 +145,7 @@ void draw(HWND hWnd) {
     mScale.r2.z = 0.5f;
 
     Temple::Base::mat4 mTranslation = Temple::Base::mat4::identity();
+    mTranslation.r1.w = 0.3f; // y-shift
     mTranslation.r2.w = 0.7f; // z-shift
     
     renderContext.setModelMatrix(mTranslation * mRotation * mScale);
