@@ -722,7 +722,7 @@ Temple::Base::mat4 Temple::Base::mat4::projection(float fov, float aspect, float
     mat4 m = identity();
     // take aspect into account + fov
     // only fov in range of somewhat 45<fov<180 is described correctly - right limit is crucial, ctg of 90 is zero, nothing is seen.
-    fov *= Temple::Base::PI / 360.0f; // fov / 2 in radians
+    // fov / 2 in radians
     m.r1.y = cosf(fov) / sinf(fov); // ctg(fov), use vertical field of view. In case of 90 degrees it is just 1 as it was before fov addition
     m.r0.x = m.r1.y / aspect;
     // compress x and y according to perspective positions during canonical transformation (dividing by w) 
