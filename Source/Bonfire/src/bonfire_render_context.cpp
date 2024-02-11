@@ -209,7 +209,7 @@ void Temple::Bonfire::RenderContext::setPerspectiveMatrix(const Base::mat4& m) {
 }
 
 void Temple::Bonfire::RenderContext::setPerspective(float fov, float aspect, float znear, float zfar) {
-    fov = fov * Temple::Base::PI / 360.0f;
+    fov = fov * Temple::Base::PI / 180.0f;
     Base::mat4 perspectiveMatrix = Base::mat4::projection(fov, aspect, znear, zfar);
     this->setFrustum(fov, aspect, znear, zfar);
     this->setPerspectiveMatrix(perspectiveMatrix);
@@ -230,10 +230,10 @@ void Temple::Bonfire::RenderContext::setFrustum(float fov, float aspect, float z
     zfarNormal.z = 1.0f;
     m_frustum.bounds[1].offset = -zfar;
     // points on planes - here we have world coordinates where y is going from up to down
-    Base::vec3 b { 0.0f, znear * tanf(0.5f * fov), 0.0f };
-    Base::vec3 r { znear * tanf(0.5f * fov) * aspect, 0.0f, 0.0f };
-    Base::vec3 t { 0.0f, -b.y, 0.0f };
-    Base::vec3 l { -r.x, 0.0f, 0.0f };
+    Base::vec3 b { 0.0f, znear * tanf(0.5f * fov), znear };
+    Base::vec3 r { znear * tanf(0.5f * fov) * aspect, 0.0f, znear };
+    Base::vec3 t { 0.0f, -b.y, znear };
+    Base::vec3 l { -r.x, 0.0f, znear };
     // top plane
     Base::vec3& topNormal = m_frustum.bounds[2].normal;
     topNormal.x = 0.0f;
