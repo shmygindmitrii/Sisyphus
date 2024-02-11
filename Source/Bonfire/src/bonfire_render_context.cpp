@@ -691,10 +691,15 @@ void Temple::Bonfire::RenderContext::drawTriangles(const std::vector<Base::vec4>
                 outsideNormal = side0.cross(side1);
                 break;
             }
-            const Base::vec3 z { 0.0f, 0.0f, 1.0f };
+            Base::vec4 z = aWorld + bWorld + cWorld;
+            float zlength = z.magnitude();
+            if (zlength < Temple::Base::EPS) {
+                continue;
+            }
+            z = z * (1.0f / zlength);
             Base::vec3 n { outsideNormal.x, outsideNormal.y, outsideNormal.z };
             n = n.norm();
-            if (z.dot(n) > 0.1f) {
+            if (z.xyz.dot(n) > 0.0f) {
                 continue;
             }
         }
