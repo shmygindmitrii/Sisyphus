@@ -145,11 +145,11 @@ void draw(HWND hWnd) {
     mScale.r2.z = 0.5f;
 
     Temple::Base::mat4 mTranslation = Temple::Base::mat4::identity();
-    mTranslation.r2.w = 0.45f; // z-shift
+    mTranslation.r2.w = 0.7f; // z-shift
     
     renderContext.setModelMatrix(mTranslation * mRotation * mScale);
     renderContext.setViewMatrix(Temple::Base::mat4::identity()); // not really used yet
-    renderContext.setPerspective(90.0f, width / (float)height, 0.5f, 100.0f);
+    renderContext.setPerspective(90.0f, width / (float)height, 0.4f, 100.0f);
     renderContext.setBackfaceCulling(Temple::Bonfire::CullingMode::CounterClockWise);
 
     std::vector<uint8_t> descriptorSet;

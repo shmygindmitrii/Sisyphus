@@ -217,13 +217,11 @@ void Temple::Bonfire::RenderContext::setPerspective(float fov, float aspect, flo
 void Temple::Bonfire::RenderContext::setFrustum(float fov, float aspect, float znear, float zfar) {
     // create 6 planes that forms frustum in view coordinates
     // znear plane
-
     Base::vec3& znerNormal = m_frustum.bounds[0].normal;
     znerNormal.x = 0.0f;
     znerNormal.y = 0.0f;
     znerNormal.z = -1.0f;
-    m_frustum.bounds[0].offset = -znear;
-
+    m_frustum.bounds[0].offset = znear; // depends on direction of normal
     // zfar plane
     Base::vec3& zfarNormal = m_frustum.bounds[1].normal;
     zfarNormal.x = 0.0f;
@@ -238,8 +236,8 @@ void Temple::Bonfire::RenderContext::setFrustum(float fov, float aspect, float z
     // top plane
     Base::vec3& topNormal = m_frustum.bounds[2].normal;
     topNormal.x = 0.0f;
-    topNormal.y = -sinf(0.5f * fov);
-    topNormal.z = -cosf(0.5f * fov);
+    topNormal.y = -cosf(0.5f * fov);
+    topNormal.z = -sinf(0.5f * fov);
     m_frustum.bounds[2].offset = -topNormal.dot(t);
     // bottom plane
     Base::vec3& bottomNormal = m_frustum.bounds[3].normal;
