@@ -28,11 +28,11 @@ namespace Temple
 {
 namespace Bonfire
 {
-  enum class PrimitiveType {
+  enum class EPrimitiveType {
     LINE,
     TRIANGLE,
   };
-  enum class VertexAttribType {
+  enum class EVertexAttribType {
     FLOAT32,
     INT32,
     UINT8,
@@ -41,16 +41,16 @@ namespace Bonfire
     VEC4,
     UV,
   };
-  enum class CullingMode {
+  enum class ECullingMode {
     None,
     ClockWise,
     CounterClockWise
   };
   struct VertexFormat {
     size_t size;
-    std::vector<VertexAttribType>
+    std::vector<EVertexAttribType>
       attributes; // position is always in the beginning
-    VertexFormat(const std::vector<VertexAttribType>& attribs);
+    VertexFormat(const std::vector<EVertexAttribType>& attribs);
   };
   void
   interpolateAttributes(
@@ -106,7 +106,7 @@ namespace Bonfire
     pixelShaderFunc      m_psf = nullptr;
     bool                 m_depthWrite = true;
     bool                 m_depthTest = true;
-    CullingMode          m_backFaceCulling = CullingMode::None;
+    ECullingMode          m_backFaceCulling = ECullingMode::None;
     Base::mat4           m_modelMatrix = Base::mat4::identity();
     Base::mat4           m_viewMatrix = Base::mat4::identity();
     Base::mat4           m_perspectiveMatrix = Base::mat4::identity();
@@ -180,7 +180,7 @@ namespace Bonfire
     void
     setDepthWrite(bool flag);
     void
-    setBackfaceCulling(CullingMode mode);
+    setBackfaceCulling(ECullingMode mode);
     void
     clearDepth(float val);
     void

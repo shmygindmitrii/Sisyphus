@@ -402,7 +402,7 @@ wWinMain(
       int                vertIdx = face.indices[j].position - 1;
       int                uvIdx = face.indices[j].texture - 1;
       int                normalIdx = face.indices[j].normal - 1;
-      Temple::Base::vec4 pos(objFile->coord[vertIdx], 1.0f);
+      Temple::Base::vec4 pos{ objFile->coord[vertIdx].x, objFile->coord[vertIdx].y, objFile->coord[vertIdx].z, 1.0f };
       g_modelVerts.push_back(pos);
       g_modelInds.push_back(gidx++);
       Temple::Base::appendData(g_modelVertAttribs, colors[vertIdx]);

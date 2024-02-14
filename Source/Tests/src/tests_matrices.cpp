@@ -27,9 +27,9 @@ TEST_CASE("Temple::Base::mat3 tests", "[Base::mat3]")
   }
   SECTION("mat3 constructor with 3 vec3 (rows)")
   {
-    Temple::Base::vec3 a(1.0f, 2.0f, 3.0f);
-    Temple::Base::vec3 b(4.0f, 5.0f, 6.0f);
-    Temple::Base::vec3 c(7.0f, 8.0f, 9.0f);
+    Temple::Base::vec3 a{ 1.0f, 2.0f, 3.0f };
+    Temple::Base::vec3 b{ 4.0f, 5.0f, 6.0f };
+    Temple::Base::vec3 c{ 7.0f, 8.0f, 9.0f };
     Temple::Base::mat3 M(a, b, c);
     REQUIRE(M == defaultMatrix);
   }
@@ -101,18 +101,18 @@ TEST_CASE("Temple::Base::mat3 tests", "[Base::mat3]")
     SECTION("  Example 3")
     {
       Temple::Base::mat3 A(2, -1, 3, 0, 1, -2, -1, 2, 1);
-      Temple::Base::vec3 v(3, -1, 2);
+      Temple::Base::vec3 v{ 3, -1, 2 };
       Temple::Base::vec3 result = A * v;
-      Temple::Base::vec3 expected(13, -5, -3);
+      Temple::Base::vec3 expected{ 13, -5, -3 };
       REQUIRE(result == expected);
     }
 
     SECTION("  Example 4")
     {
-      Temple::Base::mat3 B(-1, 2, 0, 3, -1, -2, 1, 0, 2);
-      Temple::Base::vec3 w(-2, 1, 3);
+      Temple::Base::mat3 B{ -1, 2, 0, 3, -1, -2, 1, 0, 2 };
+      Temple::Base::vec3 w{ -2, 1, 3 };
       Temple::Base::vec3 result = B * w;
-      Temple::Base::vec3 expected(4, -13, 4);
+      Temple::Base::vec3 expected{4, -13, 4};
       REQUIRE(result == expected);
     }
   }
@@ -120,7 +120,7 @@ TEST_CASE("Temple::Base::mat3 tests", "[Base::mat3]")
   {
     SECTION("  Example 1")
     {
-      Temple::Base::vec3 n(1.0f, 2.0f, 3.0f);
+      Temple::Base::vec3 n{1.0f, 2.0f, 3.0f};
       n = n / n.magnitude();
       Temple::Base::mat3 mrot =
         Temple::Base::mat3::rot(n, 1.0f); // angle in radians
@@ -139,7 +139,7 @@ TEST_CASE("Temple::Base::mat3 tests", "[Base::mat3]")
 
     SECTION("  Example 2")
     {
-      Temple::Base::vec3 n(-0.5f, 5.0f, 0.31f);
+      Temple::Base::vec3 n{ -0.5f, 5.0f, 0.31f };
       n = n / n.magnitude(); // should be unit-vector
       Temple::Base::mat3 mrot =
         Temple::Base::mat3::rot(n, 1.0f); // angle in radians
@@ -158,9 +158,9 @@ TEST_CASE("Temple::Base::mat3 tests", "[Base::mat3]")
 
     SECTION("  Example 3")
     {
-      Temple::Base::vec3 i(1.0f, 0.0f, 0.0f);
-      Temple::Base::vec3 j(0.0f, 1.0f, 0.0f);
-      Temple::Base::vec3 k(0.0f, 0.0f, 1.0f);
+      Temple::Base::vec3 i{ 1.0f, 0.0f, 0.0f };
+      Temple::Base::vec3 j{ 0.0f, 1.0f, 0.0f };
+      Temple::Base::vec3 k{ 0.0f, 0.0f, 1.0f };
       float              angle = 3.14 * 0.5f;
       Temple::Base::mat3 mi = Temple::Base::mat3::rot(i, angle);
       Temple::Base::mat3 mj = Temple::Base::mat3::rot(j, angle);
@@ -236,10 +236,10 @@ TEST_CASE("Temple::Base::mat4 tests", "[Base::mat4]")
   }
   SECTION("mat4 constructor with 4 vec4 (rows)")
   {
-    Temple::Base::vec4 a(1.0f, 2.0f, 3.0f, 4.0f);
-    Temple::Base::vec4 b(5.0f, 6.0f, 7.0f, 8.0f);
-    Temple::Base::vec4 c(9.0f, 10.0f, 11.0f, 12.0f);
-    Temple::Base::vec4 d(13.0f, 14.0f, 15.0f, 16.0f);
+    Temple::Base::vec4 a{ 1.0f, 2.0f, 3.0f, 4.0f };
+    Temple::Base::vec4 b{ 5.0f, 6.0f, 7.0f, 8.0f };
+    Temple::Base::vec4 c{ 9.0f, 10.0f, 11.0f, 12.0f };
+    Temple::Base::vec4 d{ 13.0f, 14.0f, 15.0f, 16.0f };
     Temple::Base::mat4 M(a, b, c, d);
     REQUIRE(M == defaultMatrix);
   }
@@ -393,9 +393,9 @@ TEST_CASE("Temple::Base::mat4 tests", "[Base::mat4]")
         1.79f,
         6.11f,
         5.74f);
-      Temple::Base::vec4 v(4.7f, 10.81f, 8.3f, 9.42f);
+      Temple::Base::vec4 v{ 4.7f, 10.81f, 8.3f, 9.42f };
       Temple::Base::vec4 result = A * v;
-      Temple::Base::vec4 expected(174.3411f, 178.5901f, 183.2458f, 130.1967f);
+      Temple::Base::vec4 expected{ 174.3411f, 178.5901f, 183.2458f, 130.1967f };
       REQUIRE(result == expected);
     }
 
@@ -418,9 +418,9 @@ TEST_CASE("Temple::Base::mat4 tests", "[Base::mat4]")
         -1.79f,
         6.11f,
         5.74f);
-      Temple::Base::vec4 w(4.7f, 10.81f, 8.3f, 9.42f);
+      Temple::Base::vec4 w{ 4.7f, 10.81f, 8.3f, 9.42f };
       Temple::Base::vec4 result = B * w;
-      Temple::Base::vec4 expected(57.1709f, 114.8111f, 143.4058f, 91.4969f);
+      Temple::Base::vec4 expected{ 57.1709f, 114.8111f, 143.4058f, 91.4969f };
       REQUIRE(result == expected);
     }
   }
@@ -429,7 +429,7 @@ TEST_CASE("Temple::Base::mat4 tests", "[Base::mat4]")
   {
     SECTION("  Example 1")
     {
-      Temple::Base::vec4 n(1.0f, 2.0f, 3.0f, 0.0f);
+      Temple::Base::vec4 n{ 1.0f, 2.0f, 3.0f, 0.0f };
       n = n / n.magnitude();
       Temple::Base::mat4 mrot =
         Temple::Base::mat4::rot(n, 1.0f); // angle in radians
@@ -455,7 +455,7 @@ TEST_CASE("Temple::Base::mat4 tests", "[Base::mat4]")
 
     SECTION("  Example 2")
     {
-      Temple::Base::vec4 n(-0.5f, 5.0f, 0.31f, 0.0f);
+      Temple::Base::vec4 n{ -0.5f, 5.0f, 0.31f, 0.0f };
       n = n / n.magnitude(); // should be unit-vector
       Temple::Base::mat4 mrot =
         Temple::Base::mat4::rot(n, 1.0f); // angle in radians
@@ -481,9 +481,9 @@ TEST_CASE("Temple::Base::mat4 tests", "[Base::mat4]")
 
     SECTION("  Example 3")
     {
-      Temple::Base::vec4 i(1.0f, 0.0f, 0.0f, 0.0f);
-      Temple::Base::vec4 j(0.0f, 1.0f, 0.0f, 0.0f);
-      Temple::Base::vec4 k(0.0f, 0.0f, 1.0f, 0.0f);
+      Temple::Base::vec4 i{ 1.0f, 0.0f, 0.0f, 0.0f };
+      Temple::Base::vec4 j{ 0.0f, 1.0f, 0.0f, 0.0f };
+      Temple::Base::vec4 k{ 0.0f, 0.0f, 1.0f, 0.0f };
       float              angle = 3.14 * 0.5f;
       Temple::Base::mat4 mi = Temple::Base::mat4::rot(i, angle);
       Temple::Base::mat4 mj = Temple::Base::mat4::rot(j, angle);
@@ -507,8 +507,8 @@ TEST_CASE("Temple::Base::mat4 tests", "[Base::mat4]")
         1.0f,
         zNear,
         zFar);
-      Temple::Base::vec4 pNear(0.0f, 0.0f, zNear, 1.0f);
-      Temple::Base::vec4 pFar(0.0f, 0.0f, zFar, 1.0f);
+      Temple::Base::vec4 pNear{ 0.0f, 0.0f, zNear, 1.0f };
+      Temple::Base::vec4 pFar{ 0.0f, 0.0f, zFar, 1.0f };
       Temple::Base::vec4 pNearProjected = proj * pNear;
       Temple::Base::vec4 pFarProjected = proj * pFar;
       REQUIRE(

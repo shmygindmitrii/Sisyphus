@@ -140,7 +140,7 @@ Temple::Bonfire::multiplyAttributes(
 }
 
 Temple::Bonfire::Plane::Plane()
-    : normal(Base::vec3(0.0f, 0.0f, 1.0f))
+  : normal(Base::vec3{ 0.0f, 0.0f, 1.0f })
     , offset(0.0f)
 {}
 
@@ -406,7 +406,7 @@ Temple::Bonfire::RenderContext::processVertex(const Base::vec4& v)
   Base::vec3 crd {c.x, -c.y, c.z};
   crd = (crd + 1.0f) * 0.5f * (m_viewportMax - m_viewportMin) + m_viewportMin;
 
-  return Base::vec4(crd, c.w);
+  return Base::vec4{ crd.x, crd.y, crd.z, c.w };
 }
 
 void

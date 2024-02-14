@@ -20,14 +20,6 @@ namespace Base
       };
       float data[2];
     };
-    vec2();
-    vec2(float a, float b);
-    vec2(const vec2& a);
-    vec2(vec2&& a);
-    vec2&
-    operator=(const vec2& a);
-    vec2&
-    operator=(vec2&& a) noexcept;
     inline const float&
     operator[](int i) const
     {
@@ -48,7 +40,7 @@ namespace Base
     inline vec2
     operator*(float s)
     {
-      return vec2(x * s, y * s);
+      return vec2 { x * s, y * s };
     }
     inline vec2&
     operator/=(float s)
@@ -62,7 +54,7 @@ namespace Base
     operator/(float s)
     {
       s = 1.0f / s;
-      return vec2(x * s, y * s);
+      return vec2{ x * s, y * s };
     }
     inline vec2&
     operator+=(const vec2& v)
@@ -99,49 +91,49 @@ namespace Base
     {
       float l = magnitude();
       l = 1.0f / l;
-      return vec2(x * l, y * l);
+      return vec2{ x * l, y * l };
     }
   };
   inline vec2
   operator-(const vec2& v)
   {
-    return vec2(-v.x, -v.y);
+    return vec2{ -v.x, -v.y };
   }
   inline vec2
   operator*(const vec2& v, float s)
   {
-    return vec2(v.x * s, v.y * s);
+    return vec2{v.x * s, v.y * s};
   }
   inline vec2
   operator*(const vec2& v, const vec2& u)
   {
-    return vec2(v.x * u.x, v.y * u.y);
+    return vec2{v.x * u.x, v.y * u.y};
   }
   inline vec2
   operator/(const vec2& v, float s)
   {
     s = 1.0f / s;
-    return vec2(v.x * s, v.y * s);
+    return vec2{ v.x * s, v.y * s };
   }
   inline vec2
   operator+(const vec2& v, const vec2& u)
   {
-    return vec2(v.x + u.x, v.y + u.y);
+    return vec2{v.x + u.x, v.y + u.y};
   }
   inline vec2
   operator+(const vec2& v, float s)
   {
-    return vec2(v.x + s, v.y + s);
+    return vec2{v.x + s, v.y + s};
   }
   inline vec2
   operator-(const vec2& v, const vec2& u)
   {
-    return vec2(v.x - u.x, v.y - u.y);
+    return vec2{v.x - u.x, v.y - u.y};
   }
   inline vec2
   operator-(const vec2& v, float s)
   {
-    return vec2(v.x - s, v.y - s);
+    return vec2{ v.x - s, v.y - s };
   }
   std::ostream&
   operator<<(std::ostream& os, const vec2& v);
@@ -156,14 +148,6 @@ namespace Base
       };
       float data[3];
     };
-    vec3();
-    vec3(float a, float b, float c);
-    vec3(const vec3& a);
-    vec3(vec3&& a);
-    vec3&
-    operator=(const vec3& a);
-    vec3&
-    operator=(vec3&& a) noexcept;
     inline const float&
     operator[](int i) const
     {
@@ -185,7 +169,7 @@ namespace Base
     inline vec3
     operator*(float s)
     {
-      return vec3(x * s, y * s, z * s);
+      return vec3{ x * s, y * s, z * s };
     }
     inline vec3&
     operator/=(float s)
@@ -200,7 +184,7 @@ namespace Base
     operator/(float s)
     {
       s = 1.0f / s;
-      return vec3(x * s, y * s, z * s);
+      return vec3{ x * s, y * s, z * s };
     }
     inline vec3&
     operator+=(const vec3& v)
@@ -240,7 +224,7 @@ namespace Base
     {
       float l = magnitude();
       l = 1.0f / l;
-      return vec3(x * l, y * l, z * l);
+      return vec3{ x * l, y * l, z * l };
     }
     inline float
     dot(const vec3& v) const
@@ -250,49 +234,49 @@ namespace Base
     inline vec3
     cross(const vec3& v) const
     {
-      return vec3(y * v.z - z * v.y, z * v.x - x * v.z, x * v.y - y * v.x);
+      return vec3{ y * v.z - z * v.y, z * v.x - x * v.z, x * v.y - y * v.x };
     }
   };
   inline vec3
   operator-(const vec3& v)
   {
-    return vec3(-v.x, -v.y, -v.z);
+    return vec3{ -v.x, -v.y, -v.z };
   }
   inline vec3
   operator*(const vec3& v, float s)
   {
-    return vec3(v.x * s, v.y * s, v.z * s);
+    return vec3{ v.x * s, v.y * s, v.z * s };
   }
   inline vec3
   operator*(const vec3& v, const vec3& u)
   {
-    return vec3(v.x * u.x, v.y * u.y, v.z * u.z);
+    return vec3{ v.x * u.x, v.y * u.y, v.z * u.z };
   }
   inline vec3
   operator/(const vec3& v, float s)
   {
     s = 1.0f / s;
-    return vec3(v.x * s, v.y * s, v.z * s);
+    return vec3{ v.x * s, v.y * s, v.z * s };
   }
   inline vec3
   operator+(const vec3& v, const vec3& u)
   {
-    return vec3(v.x + u.x, v.y + u.y, v.z + u.z);
+    return vec3{ v.x + u.x, v.y + u.y, v.z + u.z };
   }
   inline vec3
   operator+(const vec3& v, float s)
   {
-    return vec3(v.x + s, v.y + s, v.z + s);
+    return vec3{ v.x + s, v.y + s, v.z + s };
   }
   inline vec3
   operator-(const vec3& v, const vec3& u)
   {
-    return vec3(v.x - u.x, v.y - u.y, v.z - u.z);
+    return vec3{ v.x - u.x, v.y - u.y, v.z - u.z };
   }
   inline vec3
   operator-(const vec3& v, float s)
   {
-    return vec3(v.x - s, v.y - s, v.z - s);
+    return vec3{ v.x - s, v.y - s, v.z - s };
   }
   std::ostream&
   operator<<(std::ostream& os, const vec3& v);
@@ -311,16 +295,6 @@ namespace Base
       };
       float data[4];
     };
-    vec4();
-    vec4(float a, float b, float c, float d);
-    vec4(float a, float b, float c);
-    vec4(const vec3& v, float w);
-    vec4(const vec4& a);
-    vec4(vec4&& a);
-    vec4&
-    operator=(const vec4& a);
-    vec4&
-    operator=(vec4&& a) noexcept;
     inline const float&
     operator[](int i) const
     {
@@ -343,7 +317,7 @@ namespace Base
     inline vec4
     operator*(float s)
     {
-      return vec4(x * s, y * s, z * s, w * s);
+      return vec4{ x * s, y * s, z * s, w * s };
     }
     inline vec4&
     operator/=(float s)
@@ -359,7 +333,7 @@ namespace Base
     operator/(float s)
     {
       s = 1.0f / s;
-      return vec4(x * s, y * s, z * s, w * s);
+      return vec4{ x * s, y * s, z * s, w * s };
     }
     inline vec4&
     operator+=(const vec4& v)
@@ -402,7 +376,7 @@ namespace Base
     {
       float l = magnitude();
       l = 1.0f / l;
-      return vec4(x * l, y * l, z * l, w * l);
+      return vec4{ x * l, y * l, z * l, w * l };
     }
     inline vec4
     clamp(float start, float end)
@@ -425,53 +399,53 @@ namespace Base
     inline vec4
     cross(const vec4& v)
     {
-      return vec4(
+      return vec4{
         y * v.z - z * v.y,
         z * v.x - x * v.z,
         x * v.y - y * v.x,
-        0.0f);
+        0.0f };
     }
   };
   inline vec4
   operator-(const vec4& v)
   {
-    return vec4(-v.x, -v.y, -v.z, -v.w);
+    return vec4{ -v.x, -v.y, -v.z, -v.w };
   }
   inline vec4
   operator*(const vec4& v, float s)
   {
-    return vec4(v.x * s, v.y * s, v.z * s, v.w * s);
+    return vec4{ v.x * s, v.y * s, v.z * s, v.w * s };
   }
   inline vec4
   operator*(const vec4& v, const vec4& u)
   {
-    return vec4(v.x * u.x, v.y * u.y, v.z * u.z, v.w * u.w);
+    return vec4{ v.x * u.x, v.y * u.y, v.z * u.z, v.w * u.w };
   }
   inline vec4
   operator/(const vec4& v, float s)
   {
     s = 1.0f / s;
-    return vec4(v.x * s, v.y * s, v.z * s, v.w * s);
+    return vec4{ v.x * s, v.y * s, v.z * s, v.w * s };
   }
   inline vec4
   operator+(const vec4& v, const vec4& u)
   {
-    return vec4(v.x + u.x, v.y + u.y, v.z + u.z, v.w + u.w);
+    return vec4{ v.x + u.x, v.y + u.y, v.z + u.z, v.w + u.w };
   }
   inline vec4
   operator+(const vec4& v, float s)
   {
-    return vec4(v.x + s, v.y + s, v.z + s, v.w + s);
+    return vec4{ v.x + s, v.y + s, v.z + s, v.w + s };
   }
   inline vec4
   operator-(const vec4& v, const vec4& u)
   {
-    return vec4(v.x - u.x, v.y - u.y, v.z - u.z, v.w - u.w);
+    return vec4{ v.x - u.x, v.y - u.y, v.z - u.z, v.w - u.w };
   }
   inline vec4
   operator-(const vec4& v, float s)
   {
-    return vec4(v.x - s, v.y - s, v.z - s, v.w - s);
+    return vec4{ v.x - s, v.y - s, v.z - s, v.w - s };
   }
   std::ostream&
   operator<<(std::ostream& os, const vec4& v);
