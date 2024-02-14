@@ -10,7 +10,7 @@ namespace Temple
 {
 namespace Base
 {
-  struct vec2 {
+  struct vec2_t {
     union {
       struct {
         float x, y;
@@ -30,19 +30,19 @@ namespace Base
     {
       return (&x)[i];
     }
-    inline vec2&
+    inline vec2_t&
     operator*=(float s)
     {
       x *= s;
       y *= s;
       return *this;
     }
-    inline vec2
+    inline vec2_t
     operator*(float s)
     {
-      return vec2 { x * s, y * s };
+      return vec2_t { x * s, y * s };
     }
-    inline vec2&
+    inline vec2_t&
     operator/=(float s)
     {
       s = 1.0f / s;
@@ -50,34 +50,34 @@ namespace Base
       y *= s;
       return *this;
     }
-    inline vec2
+    inline vec2_t
     operator/(float s)
     {
       s = 1.0f / s;
-      return vec2{ x * s, y * s };
+      return vec2_t{ x * s, y * s };
     }
-    inline vec2&
-    operator+=(const vec2& v)
+    inline vec2_t&
+    operator+=(const vec2_t& v)
     {
       x += v.x;
       y += v.y;
       return *this;
     }
-    inline vec2&
-    operator-=(const vec2& v)
+    inline vec2_t&
+    operator-=(const vec2_t& v)
     {
       x -= v.x;
       y -= v.y;
       return *this;
     }
     inline const bool
-    operator==(const vec2& v) const
+    operator==(const vec2_t& v) const
     {
       float l = (x - v.x) * (x - v.x) + (y - v.y) * (y - v.y);
       return l < EPS;
     }
     inline const bool
-    operator!=(const vec2& v) const
+    operator!=(const vec2_t& v) const
     {
       return !(v == (*this));
     }
@@ -86,59 +86,59 @@ namespace Base
     {
       return sqrt(x * x + y * y);
     }
-    inline vec2
+    inline vec2_t
     norm()
     {
       float l = magnitude();
       l = 1.0f / l;
-      return vec2{ x * l, y * l };
+      return vec2_t{ x * l, y * l };
     }
   };
-  inline vec2
-  operator-(const vec2& v)
+  inline vec2_t
+  operator-(const vec2_t& v)
   {
-    return vec2{ -v.x, -v.y };
+    return vec2_t{ -v.x, -v.y };
   }
-  inline vec2
-  operator*(const vec2& v, float s)
+  inline vec2_t
+  operator*(const vec2_t& v, float s)
   {
-    return vec2{v.x * s, v.y * s};
+    return vec2_t{v.x * s, v.y * s};
   }
-  inline vec2
-  operator*(const vec2& v, const vec2& u)
+  inline vec2_t
+  operator*(const vec2_t& v, const vec2_t& u)
   {
-    return vec2{v.x * u.x, v.y * u.y};
+    return vec2_t{v.x * u.x, v.y * u.y};
   }
-  inline vec2
-  operator/(const vec2& v, float s)
+  inline vec2_t
+  operator/(const vec2_t& v, float s)
   {
     s = 1.0f / s;
-    return vec2{ v.x * s, v.y * s };
+    return vec2_t{ v.x * s, v.y * s };
   }
-  inline vec2
-  operator+(const vec2& v, const vec2& u)
+  inline vec2_t
+  operator+(const vec2_t& v, const vec2_t& u)
   {
-    return vec2{v.x + u.x, v.y + u.y};
+    return vec2_t{v.x + u.x, v.y + u.y};
   }
-  inline vec2
-  operator+(const vec2& v, float s)
+  inline vec2_t
+  operator+(const vec2_t& v, float s)
   {
-    return vec2{v.x + s, v.y + s};
+    return vec2_t{v.x + s, v.y + s};
   }
-  inline vec2
-  operator-(const vec2& v, const vec2& u)
+  inline vec2_t
+  operator-(const vec2_t& v, const vec2_t& u)
   {
-    return vec2{v.x - u.x, v.y - u.y};
+    return vec2_t{v.x - u.x, v.y - u.y};
   }
-  inline vec2
-  operator-(const vec2& v, float s)
+  inline vec2_t
+  operator-(const vec2_t& v, float s)
   {
-    return vec2{ v.x - s, v.y - s };
+    return vec2_t{ v.x - s, v.y - s };
   }
   std::ostream&
-  operator<<(std::ostream& os, const vec2& v);
+  operator<<(std::ostream& os, const vec2_t& v);
 
-  struct vec3 {
+  struct vec3_t {
     union {
       struct {
         float x, y, z;
@@ -158,7 +158,7 @@ namespace Base
     {
       return (&x)[i];
     }
-    inline vec3&
+    inline vec3_t&
     operator*=(float s)
     {
       x *= s;
@@ -166,12 +166,12 @@ namespace Base
       z *= s;
       return *this;
     }
-    inline vec3
+    inline vec3_t
     operator*(float s)
     {
-      return vec3{ x * s, y * s, z * s };
+      return vec3_t{ x * s, y * s, z * s };
     }
-    inline vec3&
+    inline vec3_t&
     operator/=(float s)
     {
       s = 1.0f / s;
@@ -180,22 +180,22 @@ namespace Base
       z *= s;
       return *this;
     }
-    inline vec3
+    inline vec3_t
     operator/(float s)
     {
       s = 1.0f / s;
-      return vec3{ x * s, y * s, z * s };
+      return vec3_t{ x * s, y * s, z * s };
     }
-    inline vec3&
-    operator+=(const vec3& v)
+    inline vec3_t&
+    operator+=(const vec3_t& v)
     {
       x += v.x;
       y += v.y;
       z += v.z;
       return *this;
     }
-    inline vec3&
-    operator-=(const vec3& v)
+    inline vec3_t&
+    operator-=(const vec3_t& v)
     {
       x -= v.x;
       y -= v.y;
@@ -203,14 +203,14 @@ namespace Base
       return *this;
     }
     inline const bool
-    operator==(const vec3& v) const
+    operator==(const vec3_t& v) const
     {
       float l = sqrt(
         (x - v.x) * (x - v.x) + (y - v.y) * (y - v.y) + (z - v.z) * (z - v.z));
       return l < EPS;
     }
     inline const bool
-    operator!=(const vec3& v) const
+    operator!=(const vec3_t& v) const
     {
       return !(v == (*this));
     }
@@ -219,69 +219,69 @@ namespace Base
     {
       return sqrt(x * x + y * y + z * z);
     }
-    inline vec3
+    inline vec3_t
     norm()
     {
       float l = magnitude();
       l = 1.0f / l;
-      return vec3{ x * l, y * l, z * l };
+      return vec3_t{ x * l, y * l, z * l };
     }
     inline float
-    dot(const vec3& v) const
+    dot(const vec3_t& v) const
     {
       return x * v.x + y * v.y + z * v.z;
     }
-    inline vec3
-    cross(const vec3& v) const
+    inline vec3_t
+    cross(const vec3_t& v) const
     {
-      return vec3{ y * v.z - z * v.y, z * v.x - x * v.z, x * v.y - y * v.x };
+      return vec3_t{ y * v.z - z * v.y, z * v.x - x * v.z, x * v.y - y * v.x };
     }
   };
-  inline vec3
-  operator-(const vec3& v)
+  inline vec3_t
+  operator-(const vec3_t& v)
   {
-    return vec3{ -v.x, -v.y, -v.z };
+    return vec3_t{ -v.x, -v.y, -v.z };
   }
-  inline vec3
-  operator*(const vec3& v, float s)
+  inline vec3_t
+  operator*(const vec3_t& v, float s)
   {
-    return vec3{ v.x * s, v.y * s, v.z * s };
+    return vec3_t{ v.x * s, v.y * s, v.z * s };
   }
-  inline vec3
-  operator*(const vec3& v, const vec3& u)
+  inline vec3_t
+  operator*(const vec3_t& v, const vec3_t& u)
   {
-    return vec3{ v.x * u.x, v.y * u.y, v.z * u.z };
+    return vec3_t{ v.x * u.x, v.y * u.y, v.z * u.z };
   }
-  inline vec3
-  operator/(const vec3& v, float s)
+  inline vec3_t
+  operator/(const vec3_t& v, float s)
   {
     s = 1.0f / s;
-    return vec3{ v.x * s, v.y * s, v.z * s };
+    return vec3_t{ v.x * s, v.y * s, v.z * s };
   }
-  inline vec3
-  operator+(const vec3& v, const vec3& u)
+  inline vec3_t
+  operator+(const vec3_t& v, const vec3_t& u)
   {
-    return vec3{ v.x + u.x, v.y + u.y, v.z + u.z };
+    return vec3_t{ v.x + u.x, v.y + u.y, v.z + u.z };
   }
-  inline vec3
-  operator+(const vec3& v, float s)
+  inline vec3_t
+  operator+(const vec3_t& v, float s)
   {
-    return vec3{ v.x + s, v.y + s, v.z + s };
+    return vec3_t{ v.x + s, v.y + s, v.z + s };
   }
-  inline vec3
-  operator-(const vec3& v, const vec3& u)
+  inline vec3_t
+  operator-(const vec3_t& v, const vec3_t& u)
   {
-    return vec3{ v.x - u.x, v.y - u.y, v.z - u.z };
+    return vec3_t{ v.x - u.x, v.y - u.y, v.z - u.z };
   }
-  inline vec3
-  operator-(const vec3& v, float s)
+  inline vec3_t
+  operator-(const vec3_t& v, float s)
   {
-    return vec3{ v.x - s, v.y - s, v.z - s };
+    return vec3_t{ v.x - s, v.y - s, v.z - s };
   }
   std::ostream&
-  operator<<(std::ostream& os, const vec3& v);
+  operator<<(std::ostream& os, const vec3_t& v);
 
-  struct vec4 {
+  struct vec4_t {
     union {
       struct {
         float x, y, z, w;
@@ -290,7 +290,7 @@ namespace Base
         float r, g, b, a;
       };
       struct {
-        vec3  xyz;
+        vec3_t  xyz;
         float w;
       };
       float data[4];
@@ -305,7 +305,7 @@ namespace Base
     {
       return (&x)[i];
     }
-    inline vec4&
+    inline vec4_t&
     operator*=(float s)
     {
       x *= s;
@@ -314,12 +314,12 @@ namespace Base
       w *= s;
       return *this;
     }
-    inline vec4
+    inline vec4_t
     operator*(float s)
     {
-      return vec4{ x * s, y * s, z * s, w * s };
+      return vec4_t{ x * s, y * s, z * s, w * s };
     }
-    inline vec4&
+    inline vec4_t&
     operator/=(float s)
     {
       s = 1.0f / s;
@@ -329,14 +329,14 @@ namespace Base
       w *= s;
       return *this;
     }
-    inline vec4
+    inline vec4_t
     operator/(float s)
     {
       s = 1.0f / s;
-      return vec4{ x * s, y * s, z * s, w * s };
+      return vec4_t{ x * s, y * s, z * s, w * s };
     }
-    inline vec4&
-    operator+=(const vec4& v)
+    inline vec4_t&
+    operator+=(const vec4_t& v)
     {
       x += v.x;
       y += v.y;
@@ -344,8 +344,8 @@ namespace Base
       w += v.w;
       return *this;
     }
-    inline vec4&
-    operator-=(const vec4& v)
+    inline vec4_t&
+    operator-=(const vec4_t& v)
     {
       x -= v.x;
       y -= v.y;
@@ -354,7 +354,7 @@ namespace Base
       return *this;
     }
     inline const bool
-    operator==(const vec4& v) const
+    operator==(const vec4_t& v) const
     {
       float l = sqrt(
         (x - v.x) * (x - v.x) + (y - v.y) * (y - v.y) + (z - v.z) * (z - v.z) +
@@ -362,7 +362,7 @@ namespace Base
       return l < EPS;
     }
     inline const bool
-    operator!=(const vec4& v) const
+    operator!=(const vec4_t& v) const
     {
       return !(v == (*this));
     }
@@ -371,17 +371,17 @@ namespace Base
     {
       return sqrt(x * x + y * y + z * z + w * w);
     }
-    inline vec4
+    inline vec4_t
     norm()
     {
       float l = magnitude();
       l = 1.0f / l;
-      return vec4{ x * l, y * l, z * l, w * l };
+      return vec4_t{ x * l, y * l, z * l, w * l };
     }
-    inline vec4
+    inline vec4_t
     clamp(float start, float end)
     {
-      vec4 r;
+      vec4_t r;
       for (int i = 0; i < 4; i++)
       {
         r.data[i] = data[i];
@@ -396,58 +396,58 @@ namespace Base
       }
       return r;
     }
-    inline vec4
-    cross(const vec4& v)
+    inline vec4_t
+    cross(const vec4_t& v)
     {
-      return vec4{
+      return vec4_t{
         y * v.z - z * v.y,
         z * v.x - x * v.z,
         x * v.y - y * v.x,
         0.0f };
     }
   };
-  inline vec4
-  operator-(const vec4& v)
+  inline vec4_t
+  operator-(const vec4_t& v)
   {
-    return vec4{ -v.x, -v.y, -v.z, -v.w };
+    return vec4_t{ -v.x, -v.y, -v.z, -v.w };
   }
-  inline vec4
-  operator*(const vec4& v, float s)
+  inline vec4_t
+  operator*(const vec4_t& v, float s)
   {
-    return vec4{ v.x * s, v.y * s, v.z * s, v.w * s };
+    return vec4_t{ v.x * s, v.y * s, v.z * s, v.w * s };
   }
-  inline vec4
-  operator*(const vec4& v, const vec4& u)
+  inline vec4_t
+  operator*(const vec4_t& v, const vec4_t& u)
   {
-    return vec4{ v.x * u.x, v.y * u.y, v.z * u.z, v.w * u.w };
+    return vec4_t{ v.x * u.x, v.y * u.y, v.z * u.z, v.w * u.w };
   }
-  inline vec4
-  operator/(const vec4& v, float s)
+  inline vec4_t
+  operator/(const vec4_t& v, float s)
   {
     s = 1.0f / s;
-    return vec4{ v.x * s, v.y * s, v.z * s, v.w * s };
+    return vec4_t{ v.x * s, v.y * s, v.z * s, v.w * s };
   }
-  inline vec4
-  operator+(const vec4& v, const vec4& u)
+  inline vec4_t
+  operator+(const vec4_t& v, const vec4_t& u)
   {
-    return vec4{ v.x + u.x, v.y + u.y, v.z + u.z, v.w + u.w };
+    return vec4_t{ v.x + u.x, v.y + u.y, v.z + u.z, v.w + u.w };
   }
-  inline vec4
-  operator+(const vec4& v, float s)
+  inline vec4_t
+  operator+(const vec4_t& v, float s)
   {
-    return vec4{ v.x + s, v.y + s, v.z + s, v.w + s };
+    return vec4_t{ v.x + s, v.y + s, v.z + s, v.w + s };
   }
-  inline vec4
-  operator-(const vec4& v, const vec4& u)
+  inline vec4_t
+  operator-(const vec4_t& v, const vec4_t& u)
   {
-    return vec4{ v.x - u.x, v.y - u.y, v.z - u.z, v.w - u.w };
+    return vec4_t{ v.x - u.x, v.y - u.y, v.z - u.z, v.w - u.w };
   }
-  inline vec4
-  operator-(const vec4& v, float s)
+  inline vec4_t
+  operator-(const vec4_t& v, float s)
   {
-    return vec4{ v.x - s, v.y - s, v.z - s, v.w - s };
+    return vec4_t{ v.x - s, v.y - s, v.z - s, v.w - s };
   }
   std::ostream&
-  operator<<(std::ostream& os, const vec4& v);
+  operator<<(std::ostream& os, const vec4_t& v);
 } // namespace Base
 } // namespace Temple

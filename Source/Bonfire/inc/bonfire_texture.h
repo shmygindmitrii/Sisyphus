@@ -14,7 +14,7 @@ namespace Bonfire
     uint32_t             width, height, channels;
     texture();
     texture(const uint8_t* d, uint32_t w, uint32_t h, uint32_t ch);
-    Temple::Base::vec4
+    Temple::Base::vec4_t
     getPixel(float u, float v) const;
   };
 } // namespace Bonfire

@@ -24,21 +24,21 @@ Temple::Barn::ReadObj(const char* filename)
     if (prefix == "v")
     {
       // vertex
-      Base::vec3 v;
+      Base::vec3_t v;
       iss >> v.x >> v.y >> v.z;
       objPtr->coord.push_back(v);
     }
     else if (prefix == "vt")
     {
       // texture
-      Base::vec2 t;
+      Base::vec2_t t;
       iss >> t.u >> t.v;
       objPtr->uv.push_back(t);
     }
     else if (prefix == "vn")
     {
       // normal
-      Base::vec3 n;
+      Base::vec3_t n;
       iss >> n.x >> n.y >> n.z;
       objPtr->normal.push_back(n);
     }

@@ -18,7 +18,7 @@ namespace Bonfire
     instance();
     uint32_t
     addTexture(const uint8_t* pixelData, uint32_t w, uint32_t h, uint32_t ch);
-    Base::vec4
+    Base::vec4_t
     getPixel(uint32_t texId, float u, float v) const;
 #if _WIN32 && !PLATFORM_XBO
     void

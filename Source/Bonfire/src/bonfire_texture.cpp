@@ -19,10 +19,10 @@ Temple::Bonfire::texture::texture(
   memcpy(data.data(), d, w * h * ch);
 }
 
-Temple::Base::vec4
+Temple::Base::vec4_t
 Temple::Bonfire::texture::getPixel(float u, float v) const
 {
-  Temple::Base::vec4 pixel;
+  Temple::Base::vec4_t pixel;
   int                iu = u * width;
   int                iv = (1.0f - v) * height;
   uint32_t           idx = iv * width * channels + iu * channels;

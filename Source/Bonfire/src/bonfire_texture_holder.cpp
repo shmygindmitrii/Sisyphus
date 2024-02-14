@@ -28,10 +28,10 @@ Temple::Bonfire::TextureHolder::addTexture(
   return m_textures.size() - 1;
 }
 
-Temple::Base::vec4
+Temple::Base::vec4_t
 Temple::Bonfire::TextureHolder::getPixel(uint32_t texId, float u, float v) const
 {
-  Temple::Base::vec4 pixel;
+  Temple::Base::vec4_t pixel;
   pixel.a = 1.0f;
   if (texId < m_textures.size())
   {

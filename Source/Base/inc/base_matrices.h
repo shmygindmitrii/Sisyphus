@@ -13,7 +13,7 @@ namespace Base
     union {
       float data[3][3];
       struct {
-        vec3 r0, r1, r2;
+        vec3_t r0, r1, r2;
       };
     };
     mat3();
@@ -27,16 +27,16 @@ namespace Base
       float m20,
       float m21,
       float m22);
-    mat3(const vec3& a, const vec3& b, const vec3& c);
+    mat3(const vec3_t& a, const vec3_t& b, const vec3_t& c);
     mat3(const mat3& m);
     mat3(mat3&& m) noexcept;
     mat3&
     operator=(const mat3& M);
     mat3&
     operator=(mat3&& M) noexcept;
-    vec3&
+    vec3_t&
     operator[](int i);
-    const vec3&
+    const vec3_t&
     operator[](int i) const;
     float&
     operator()(int i, int j);
@@ -62,8 +62,8 @@ namespace Base
     operator-(const mat3& M) const;
     mat3
     operator*(const mat3& M) const;
-    vec3
-    operator*(const vec3& v) const;
+    vec3_t
+    operator*(const vec3_t& v) const;
     //
     static mat3
     rotx(float angle);
@@ -72,7 +72,7 @@ namespace Base
     static mat3
     rotz(float angle);
     static mat3
-    rot(const vec3& n, float angle);
+    rot(const vec3_t& n, float angle);
     static mat3
     identity();
   };
@@ -89,7 +89,7 @@ namespace Base
     union {
       float data[4][4];
       struct {
-        vec4 r0, r1, r2, r3;
+        vec4_t r0, r1, r2, r3;
       };
     };
     mat4();
@@ -110,16 +110,16 @@ namespace Base
       float m31,
       float m32,
       float m33);
-    mat4(const vec4& a, const vec4& b, const vec4& c, const vec4& d);
+    mat4(const vec4_t& a, const vec4_t& b, const vec4_t& c, const vec4_t& d);
     mat4(const mat4& m);
     mat4(mat4&& m) noexcept;
     mat4&
     operator=(const mat4& M);
     mat4&
     operator=(mat4&& M) noexcept;
-    vec4&
+    vec4_t&
     operator[](int i);
-    const vec4&
+    const vec4_t&
     operator[](int i) const;
     float&
     operator()(int i, int j);
@@ -145,8 +145,8 @@ namespace Base
     operator-(const mat4& M) const;
     mat4
     operator*(const mat4& M) const;
-    vec4
-    operator*(const vec4& v) const;
+    vec4_t
+    operator*(const vec4_t& v) const;
     //
     static mat4
     rotx(float angle);
@@ -155,7 +155,7 @@ namespace Base
     static mat4
     rotz(float angle);
     static mat4
-    rot(const vec4& n, float angle);
+    rot(const vec4_t& n, float angle);
     static mat4
     identity();
     static mat4

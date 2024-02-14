@@ -44,7 +44,7 @@ Temple::Base::mat3::mat3(
   data[2][2] = m22;
 }
 
-Temple::Base::mat3::mat3(const vec3& a, const vec3& b, const vec3& c)
+Temple::Base::mat3::mat3(const vec3_t& a, const vec3_t& b, const vec3_t& c)
 {
   r0.x = a.x;
   r0.y = a.y;
@@ -123,13 +123,13 @@ Temple::Base::mat3::operator=(mat3&& M) noexcept
   return *this;
 }
 
-Temple::Base::vec3&
+Temple::Base::vec3_t&
 Temple::Base::mat3::operator[](int i)
 {
   return (&r0)[i];
 }
 
-const Temple::Base::vec3&
+const Temple::Base::vec3_t&
 Temple::Base::mat3::operator[](int i) const
 {
   return (&r0)[i];
@@ -287,10 +287,10 @@ Temple::Base::mat3::operator*(const mat3& M) const
       data[2][2] * M.data[2][2]);
 }
 
-Temple::Base::vec3
-Temple::Base::mat3::operator*(const vec3& v) const
+Temple::Base::vec3_t
+Temple::Base::mat3::operator*(const vec3_t& v) const
 {
-  return vec3{
+  return vec3_t{
     data[0][0] * v.x + data[0][1] * v.y + data[0][2] * v.z,
     data[1][0] * v.x + data[1][1] * v.y + data[1][2] * v.z,
     data[2][0] * v.x + data[2][1] * v.y + data[2][2] * v.z };
@@ -374,7 +374,7 @@ Temple::Base::mat3::rotz(float angle)
 }
 
 Temple::Base::mat3
-Temple::Base::mat3::rot(const Temple::Base::vec3& n, float angle)
+Temple::Base::mat3::rot(const Temple::Base::vec3_t& n, float angle)
 {
   float R00 = cos(angle) + n.x * n.x * (1.0f - cos(angle));
   float R01 = n.x * n.y * (1.0f - cos(angle)) - n.z * sin(angle);
@@ -466,10 +466,10 @@ Temple::Base::mat4::mat4(
 }
 
 Temple::Base::mat4::mat4(
-  const vec4& a,
-  const vec4& b,
-  const vec4& c,
-  const vec4& d)
+  const vec4_t& a,
+  const vec4_t& b,
+  const vec4_t& c,
+  const vec4_t& d)
 {
   r0.x = a.x;
   r0.y = a.y;
@@ -588,13 +588,13 @@ Temple::Base::mat4::operator=(mat4&& M) noexcept
   return *this;
 }
 
-Temple::Base::vec4&
+Temple::Base::vec4_t&
 Temple::Base::mat4::operator[](int i)
 {
   return (&r0)[i];
 }
 
-const Temple::Base::vec4&
+const Temple::Base::vec4_t&
 Temple::Base::mat4::operator[](int i) const
 {
   return (&r0)[i];
@@ -814,10 +814,10 @@ Temple::Base::mat4::operator*(const mat4& M) const
       data[3][2] * M.data[2][3] + data[3][3] * M.data[3][3]);
 }
 
-Temple::Base::vec4
-Temple::Base::mat4::operator*(const vec4& v) const
+Temple::Base::vec4_t
+Temple::Base::mat4::operator*(const vec4_t& v) const
 {
-  return vec4{
+  return vec4_t{
     data[0][0] * v.x + data[0][1] * v.y + data[0][2] * v.z + data[0][3] * v.w,
     data[1][0] * v.x + data[1][1] * v.y + data[1][2] * v.z + data[1][3] * v.w,
     data[2][0] * v.x + data[2][1] * v.y + data[2][2] * v.z + data[2][3] * v.w,
@@ -934,7 +934,7 @@ Temple::Base::mat4::rotz(float angle)
 }
 
 Temple::Base::mat4
-Temple::Base::mat4::rot(const Temple::Base::vec4& n, float angle)
+Temple::Base::mat4::rot(const Temple::Base::vec4_t& n, float angle)
 {
   float R00 = cos(angle) + n.x * n.x * (1.0f - cos(angle));
   float R01 = n.x * n.y * (1.0f - cos(angle)) - n.z * sin(angle);

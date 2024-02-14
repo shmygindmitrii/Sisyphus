@@ -29,7 +29,7 @@ BOOL
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK About(HWND, UINT, WPARAM, LPARAM);
 
-std::vector<Temple::Base::vec4> g_modelVerts;
+std::vector<Temple::Base::vec4_t> g_modelVerts;
 std::vector<int>                g_modelInds;
 std::vector<uint8_t>            g_modelVertAttribs;
 static uint32_t                 mosaicTexture;
@@ -45,7 +45,7 @@ static Temple::Bonfire::col4u              orange {205, 88, 0, 255};
 static Temple::Bonfire::col4u              violet {107, 0, 215, 255};
 static std::vector<Temple::Bonfire::col4u> defaultColorsU =
   {red, green, blue, yellow, pink, turquoise, orange, violet};
-static std::vector<Temple::Base::vec4> defaultColors = {
+static std::vector<Temple::Base::vec4_t> defaultColors = {
   Temple::Bonfire::getFloatColor(red),
   Temple::Bonfire::getFloatColor(green),
   Temple::Bonfire::getFloatColor(blue),
@@ -103,18 +103,18 @@ draw(HWND hWnd)
   // begin straight filling of color buffer
   renderContext.clearDepth(0.0f);
   renderContext.fill(bgColor); // fill background and also clear screen
-  Temple::Base::vec4              a {-0.0f, -0.0f, +0.2f, +1.0f};
-  Temple::Base::vec4              b {-0.7f, -0.7f, +0.2f, +1.0f};
-  Temple::Base::vec4              c {+0.7f, -0.7f, +0.2f, +1.0f};
-  Temple::Base::vec2              uv0 {0.0f, 0.0f};
-  Temple::Base::vec2              uv1 {1.0f, 0.0f};
-  Temple::Base::vec2              uv2 {0.0f, 1.0f};
-  Temple::Base::vec3              normal {0.0f, 0.0f, -1.0f};
-  std::vector<Temple::Base::vec4> abc = {a, b, c};
+  Temple::Base::vec4_t              a {-0.0f, -0.0f, +0.2f, +1.0f};
+  Temple::Base::vec4_t              b {-0.7f, -0.7f, +0.2f, +1.0f};
+  Temple::Base::vec4_t              c {+0.7f, -0.7f, +0.2f, +1.0f};
+  Temple::Base::vec2_t              uv0 {0.0f, 0.0f};
+  Temple::Base::vec2_t              uv1 {1.0f, 0.0f};
+  Temple::Base::vec2_t              uv2 {0.0f, 1.0f};
+  Temple::Base::vec3_t              normal {0.0f, 0.0f, -1.0f};
+  std::vector<Temple::Base::vec4_t> abc = {a, b, c};
   std::vector<uint8_t>            abcTriangleAttribs;
-  Temple::Base::vec4              fred = Temple::Bonfire::getFloatColor(red);
-  Temple::Base::vec4 fgreen = Temple::Bonfire::getFloatColor(green);
-  Temple::Base::vec4 fblue = Temple::Bonfire::getFloatColor(blue);
+  Temple::Base::vec4_t              fred = Temple::Bonfire::getFloatColor(red);
+  Temple::Base::vec4_t fgreen = Temple::Bonfire::getFloatColor(green);
+  Temple::Base::vec4_t fblue = Temple::Bonfire::getFloatColor(blue);
   Temple::Base::appendData(abcTriangleAttribs, fred);
   Temple::Base::appendData(abcTriangleAttribs, uv0);
   Temple::Base::appendData(abcTriangleAttribs, normal);
@@ -172,7 +172,7 @@ draw(HWND hWnd)
     Temple::Bonfire::ECullingMode::CounterClockWise);
 
   std::vector<uint8_t> descriptorSet;
-  Temple::Base::vec3   cameraPosition {0.0f, 0.0f, 0.0f};
+  Temple::Base::vec3_t   cameraPosition {0.0f, 0.0f, 0.0f};
   Temple::Base::appendData(descriptorSet, cameraPosition);
   int lightCount = 3;
   Temple::Base::appendData(descriptorSet, lightCount);
@@ -186,18 +186,18 @@ draw(HWND hWnd)
   Temple::Base::appendData(descriptorSet, ambientIllumination);
   Temple::Base::appendData(descriptorSet, lightPoint);
   Temple::Base::appendData(descriptorSet, pointIllumination);
-  Temple::Base::vec3 lightPointPosition {-2.0f, 0.0f, -1.0f};
+  Temple::Base::vec3_t lightPointPosition {-2.0f, 0.0f, -1.0f};
   Temple::Base::appendData(descriptorSet, lightPointPosition);
   Temple::Base::appendData(descriptorSet, lightDirected);
   Temple::Base::appendData(descriptorSet, directIllumination);
-  Temple::Base::vec3 lightDirection {-1.0f, 0.0f, 1.0f};
+  Temple::Base::vec3_t lightDirection {-1.0f, 0.0f, 1.0f};
   Temple::Base::appendData(descriptorSet, lightDirection);
 
   renderContext.setDescriptorSet(descriptorSet);
   renderContext.setVertexShader(
     [](
-      const Temple::Base::vec4&   inp,
-      Temple::Base::vec4&         out,
+      const Temple::Base::vec4_t&   inp,
+      Temple::Base::vec4_t&         out,
       std::vector<uint8_t>&       perVertexOut,
       const uint8_t*              perVertexData,
       const std::vector<uint8_t>& builtins,
@@ -209,63 +209,63 @@ draw(HWND hWnd)
       out = (*modelViewMatrixPtr) * inp;
       // almost rasterized coord is found - need to divide by w and make x,y fit
       // to viewport in another function
-      const Temple::Base::vec4* colorPtr =
-        reinterpret_cast<const Temple::Base::vec4*>(perVertexData);
-      const Temple::Base::vec2* texPtr =
-        reinterpret_cast<const Temple::Base::vec2*>(colorPtr + 1);
-      const Temple::Base::vec3* normalPtr =
-        reinterpret_cast<const Temple::Base::vec3*>(texPtr + 1);
+      const Temple::Base::vec4_t* colorPtr =
+        reinterpret_cast<const Temple::Base::vec4_t*>(perVertexData);
+      const Temple::Base::vec2_t* texPtr =
+        reinterpret_cast<const Temple::Base::vec2_t*>(colorPtr + 1);
+      const Temple::Base::vec3_t* normalPtr =
+        reinterpret_cast<const Temple::Base::vec3_t*>(texPtr + 1);
       int offset = 0;
       // rotate position
-      Temple::Base::vec4 pos = out;
-      memcpy(perVertexOut.data() + offset, &pos, sizeof(Temple::Base::vec4));
-      offset += sizeof(Temple::Base::vec4);
+      Temple::Base::vec4_t pos = out;
+      memcpy(perVertexOut.data() + offset, &pos, sizeof(Temple::Base::vec4_t));
+      offset += sizeof(Temple::Base::vec4_t);
       //
       memcpy(
         perVertexOut.data() + offset,
         colorPtr,
-        sizeof(Temple::Base::vec4));
-      offset += sizeof(Temple::Base::vec4);
-      memcpy(perVertexOut.data() + offset, texPtr, sizeof(Temple::Base::vec2));
-      offset += sizeof(Temple::Base::vec2);
+        sizeof(Temple::Base::vec4_t));
+      offset += sizeof(Temple::Base::vec4_t);
+      memcpy(perVertexOut.data() + offset, texPtr, sizeof(Temple::Base::vec2_t));
+      offset += sizeof(Temple::Base::vec2_t);
       // rotate normal
-      Temple::Base::vec4 normal {
+      Temple::Base::vec4_t normal {
         normalPtr->x,
         normalPtr->y,
         normalPtr->z,
         0.0f};
       normal = (*modelViewMatrixPtr) * normal;
       normal = normal.norm();
-      memcpy(perVertexOut.data() + offset, &normal, sizeof(Temple::Base::vec3));
+      memcpy(perVertexOut.data() + offset, &normal, sizeof(Temple::Base::vec3_t));
     });
   renderContext.setPixelShader(
     [](
-      const Temple::Base::vec4&   inp,
+      const Temple::Base::vec4_t&   inp,
       const uint8_t*              perPixelData,
       const std::vector<uint8_t>& builtins,
-      const std::vector<uint8_t>& descriptorSet) -> Temple::Base::vec4
+      const std::vector<uint8_t>& descriptorSet) -> Temple::Base::vec4_t
     {
-      const Temple::Base::vec4* posPtr =
-        reinterpret_cast<const Temple::Base::vec4*>(perPixelData);
-      const Temple::Base::vec4* pixelColorPtr =
-        reinterpret_cast<const Temple::Base::vec4*>(posPtr + 1);
-      const Temple::Base::vec2* texPtr =
-        reinterpret_cast<const Temple::Base::vec2*>(pixelColorPtr + 1);
-      const Temple::Base::vec3* normalPtr =
-        reinterpret_cast<const Temple::Base::vec3*>(texPtr + 1);
+      const Temple::Base::vec4_t* posPtr =
+        reinterpret_cast<const Temple::Base::vec4_t*>(perPixelData);
+      const Temple::Base::vec4_t* pixelColorPtr =
+        reinterpret_cast<const Temple::Base::vec4_t*>(posPtr + 1);
+      const Temple::Base::vec2_t* texPtr =
+        reinterpret_cast<const Temple::Base::vec2_t*>(pixelColorPtr + 1);
+      const Temple::Base::vec3_t* normalPtr =
+        reinterpret_cast<const Temple::Base::vec3_t*>(texPtr + 1);
       // per-pixel
-      const Temple::Base::vec4& texColor =
+      const Temple::Base::vec4_t& texColor =
         Temple::Bonfire::TextureHolder::instance()->getPixel(
           0,
           texPtr->u,
           texPtr->v);
       // illumination
-      const Temple::Base::vec3* cameraPositionPtr =
-        reinterpret_cast<const Temple::Base::vec3*>(descriptorSet.data());
+      const Temple::Base::vec3_t* cameraPositionPtr =
+        reinterpret_cast<const Temple::Base::vec3_t*>(descriptorSet.data());
       const int* lightCountPtr =
         reinterpret_cast<const int*>(cameraPositionPtr + 1);
       const int*         lightTypePtr = lightCountPtr + 1;
-      Temple::Base::vec3 pixelPosition {posPtr->x, posPtr->y, posPtr->z};
+      Temple::Base::vec3_t pixelPosition {posPtr->x, posPtr->y, posPtr->z};
       float              ambientIllumination = 0.0f, diffuseIllumination = 0.0f,
             specularIllumination = 0.0f;
       for (int i = 0; i < *lightCountPtr; i++)
@@ -280,9 +280,9 @@ draw(HWND hWnd)
         }
         else
         {
-          const Temple::Base::vec3* lightCrd =
-            reinterpret_cast<const Temple::Base::vec3*>(illuminationPtr + 1);
-          Temple::Base::vec3 v;
+          const Temple::Base::vec3_t* lightCrd =
+            reinterpret_cast<const Temple::Base::vec3_t*>(illuminationPtr + 1);
+          Temple::Base::vec3_t v;
           if ((*lightTypePtr) == 1)
           {
             // point light
@@ -301,10 +301,10 @@ draw(HWND hWnd)
           {
             diffuseIllumination += vDotn * (*illuminationPtr);
             // specular
-            Temple::Base::vec3 vp = v - (*normalPtr) * v.dot(*normalPtr);
-            Temple::Base::vec3 r = v - vp * 2.0f;
+            Temple::Base::vec3_t vp = v - (*normalPtr) * v.dot(*normalPtr);
+            Temple::Base::vec3_t r = v - vp * 2.0f;
             r = r.norm();
-            Temple::Base::vec3 d = (*cameraPositionPtr) - pixelPosition;
+            Temple::Base::vec3_t d = (*cameraPositionPtr) - pixelPosition;
             d = d.norm();
             float dDotR = d.dot(r);
             if (dDotR > 0)
@@ -317,12 +317,12 @@ draw(HWND hWnd)
       }
       float illumination =
         ambientIllumination + diffuseIllumination + specularIllumination;
-      Temple::Base::vec4 illuminationVec {
+      Temple::Base::vec4_t illuminationVec {
         illumination,
         illumination,
         illumination,
         1.0f};
-      Temple::Base::vec4 finalColor =
+      Temple::Base::vec4_t finalColor =
         (*pixelColorPtr) * texColor * illuminationVec;
       return finalColor.clamp(0.0f, 1.0f);
     });
@@ -388,7 +388,7 @@ wWinMain(
   std::shared_ptr<Temple::Barn::ObjFile> objFile =
     Temple::Barn::ReadObj(objPath);
 
-  std::vector<Temple::Base::vec4> colors;
+  std::vector<Temple::Base::vec4_t> colors;
   for (int vertIdx = 0; vertIdx < objFile->coord.size(); vertIdx++)
   {
     colors.push_back(defaultColors[vertIdx % defaultColors.size()]);
@@ -402,7 +402,7 @@ wWinMain(
       int                vertIdx = face.indices[j].position - 1;
       int                uvIdx = face.indices[j].texture - 1;
       int                normalIdx = face.indices[j].normal - 1;
-      Temple::Base::vec4 pos{ objFile->coord[vertIdx].x, objFile->coord[vertIdx].y, objFile->coord[vertIdx].z, 1.0f };
+      Temple::Base::vec4_t pos{ objFile->coord[vertIdx].x, objFile->coord[vertIdx].y, objFile->coord[vertIdx].z, 1.0f };
       g_modelVerts.push_back(pos);
       g_modelInds.push_back(gidx++);
       Temple::Base::appendData(g_modelVertAttribs, colors[vertIdx]);

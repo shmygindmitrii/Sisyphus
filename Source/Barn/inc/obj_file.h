@@ -24,9 +24,9 @@ namespace Barn
   };
 
   struct ObjFile {
-    std::vector<Base::vec3> coord;
-    std::vector<Base::vec2> uv;
-    std::vector<Base::vec3> normal;
+    std::vector<Base::vec3_t> coord;
+    std::vector<Base::vec2_t> uv;
+    std::vector<Base::vec3_t> normal;
     std::vector<ObjFace>    faces;
   };
   std::shared_ptr<ObjFile>

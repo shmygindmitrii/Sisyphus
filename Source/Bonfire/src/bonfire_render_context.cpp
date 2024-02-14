@@ -79,16 +79,16 @@ Temple::Bonfire::interpolateAttributes(
       __interpolateAttribsTemplate<uint8_t>(aIn, bIn, cOut, weight);
       break;
     case EVertexAttribType::VEC2:
-      __interpolateAttribsTemplate<Base::vec2>(aIn, bIn, cOut, weight);
+      __interpolateAttribsTemplate<Base::vec2_t>(aIn, bIn, cOut, weight);
       break;
     case EVertexAttribType::VEC3:
-      __interpolateAttribsTemplate<Base::vec3>(aIn, bIn, cOut, weight);
+      __interpolateAttribsTemplate<Base::vec3_t>(aIn, bIn, cOut, weight);
       break;
     case EVertexAttribType::VEC4:
-      __interpolateAttribsTemplate<Base::vec4>(aIn, bIn, cOut, weight);
+      __interpolateAttribsTemplate<Base::vec4_t>(aIn, bIn, cOut, weight);
       break;
     case EVertexAttribType::UV:
-      __interpolateAttribsTemplate<Base::vec2>(aIn, bIn, cOut, weight);
+      __interpolateAttribsTemplate<Base::vec2_t>(aIn, bIn, cOut, weight);
       break;
     }
   }
@@ -124,27 +124,27 @@ Temple::Bonfire::multiplyAttributes(
       __multAttribsTemplate<uint8_t>(aIn, cOut, mult);
       break;
     case EVertexAttribType::VEC2:
-      __multAttribsTemplate<Base::vec2>(aIn, cOut, mult);
+      __multAttribsTemplate<Base::vec2_t>(aIn, cOut, mult);
       break;
     case EVertexAttribType::VEC3:
-      __multAttribsTemplate<Base::vec3>(aIn, cOut, mult);
+      __multAttribsTemplate<Base::vec3_t>(aIn, cOut, mult);
       break;
     case EVertexAttribType::VEC4:
-      __multAttribsTemplate<Base::vec4>(aIn, cOut, mult);
+      __multAttribsTemplate<Base::vec4_t>(aIn, cOut, mult);
       break;
     case EVertexAttribType::UV:
-      __multAttribsTemplate<Base::vec2>(aIn, cOut, mult);
+      __multAttribsTemplate<Base::vec2_t>(aIn, cOut, mult);
       break;
     }
   }
 }
 
 Temple::Bonfire::Plane::Plane()
-  : normal(Base::vec3{ 0.0f, 0.0f, 1.0f })
+  : normal(Base::vec3_t{ 0.0f, 0.0f, 1.0f })
     , offset(0.0f)
 {}
 
-Temple::Bonfire::Plane::Plane(const Base::vec3& _normal, float _offset)
+Temple::Bonfire::Plane::Plane(const Base::vec3_t& _normal, float _offset)
     : normal(_normal)
     , offset(_offset)
 {}
@@ -302,44 +302,44 @@ Temple::Bonfire::RenderContext::setFrustum(
 {
   // create 6 planes that forms frustum in view coordinates
   // znear plane
-  Base::vec3& znerNormal = m_frustum.bounds[0].normal;
+  Base::vec3_t& znerNormal = m_frustum.bounds[0].normal;
   znerNormal.x = 0.0f;
   znerNormal.y = 0.0f;
   znerNormal.z = -1.0f;
   m_frustum.bounds[0].offset = znear; // depends on direction of normal
   // zfar plane
-  Base::vec3& zfarNormal = m_frustum.bounds[1].normal;
+  Base::vec3_t& zfarNormal = m_frustum.bounds[1].normal;
   zfarNormal.x = 0.0f;
   zfarNormal.y = 0.0f;
   zfarNormal.z = 1.0f;
   m_frustum.bounds[1].offset = -zfar;
   // points on planes - here we have world coordinates where y is going from up
   // to down
-  Base::vec3 b {0.0f, znear * tanf(0.5f * fov), znear};
-  Base::vec3 r {znear * tanf(0.5f * fov) * aspect, 0.0f, znear};
-  Base::vec3 t {0.0f, -b.y, znear};
-  Base::vec3 l {-r.x, 0.0f, znear};
+  Base::vec3_t b {0.0f, znear * tanf(0.5f * fov), znear};
+  Base::vec3_t r {znear * tanf(0.5f * fov) * aspect, 0.0f, znear};
+  Base::vec3_t t {0.0f, -b.y, znear};
+  Base::vec3_t l {-r.x, 0.0f, znear};
   // top plane
-  Base::vec3& topNormal = m_frustum.bounds[2].normal;
+  Base::vec3_t& topNormal = m_frustum.bounds[2].normal;
   topNormal.x = 0.0f;
   topNormal.y = -cosf(0.5f * fov);
   topNormal.z = -sinf(0.5f * fov);
   m_frustum.bounds[2].offset = -topNormal.dot(t);
   // bottom plane
-  Base::vec3& bottomNormal = m_frustum.bounds[3].normal;
+  Base::vec3_t& bottomNormal = m_frustum.bounds[3].normal;
   bottomNormal.x = 0.0f;
   bottomNormal.y = -topNormal.y;
   bottomNormal.z = topNormal.z;
   m_frustum.bounds[3].offset = -bottomNormal.dot(b);
   // left plane
   float       horHalfAngle = atanf(aspect * b.y / znear);
-  Base::vec3& leftNormal = m_frustum.bounds[4].normal;
+  Base::vec3_t& leftNormal = m_frustum.bounds[4].normal;
   leftNormal.x = -cosf(horHalfAngle);
   leftNormal.y = 0.0f;
   leftNormal.z = -sinf(horHalfAngle);
   m_frustum.bounds[4].offset = -leftNormal.dot(l);
   // right plane
-  Base::vec3& rightNormal = m_frustum.bounds[5].normal;
+  Base::vec3_t& rightNormal = m_frustum.bounds[5].normal;
   rightNormal.x = -leftNormal.x;
   rightNormal.y = 0.0f;
   rightNormal.z = leftNormal.z;
@@ -348,9 +348,9 @@ Temple::Bonfire::RenderContext::setFrustum(
 
 bool
 Temple::Bonfire::RenderContext::outOfSight(
-  const Base::vec4& a,
-  const Base::vec4& b,
-  const Base::vec4& c,
+  const Base::vec4_t& a,
+  const Base::vec4_t& b,
+  const Base::vec4_t& c,
   float             znear,
   float             zfar,
   float             aspect)
@@ -366,7 +366,7 @@ Temple::Bonfire::RenderContext::outOfSight(
 }
 
 void
-Temple::Bonfire::RenderContext::putPixel(int x, int y, const Base::vec4& color)
+Temple::Bonfire::RenderContext::putPixel(int x, int y, const Base::vec4_t& color)
 {
   // color - from 0 to 1 each component
   if (x < 0 || x >= m_width || y < 0 || y >= m_height)
@@ -394,19 +394,19 @@ Temple::Bonfire::RenderContext::fill(const col4u& color)
   }
 }
 
-Temple::Base::vec4
-Temple::Bonfire::RenderContext::processVertex(const Base::vec4& v)
+Temple::Base::vec4_t
+Temple::Bonfire::RenderContext::processVertex(const Base::vec4_t& v)
 {
-  Base::vec4 c = m_perspectiveMatrix * v;
+  Base::vec4_t c = m_perspectiveMatrix * v;
 
   float w = c.w;
   c.w = 1.0f;
   c = c / w;
 
-  Base::vec3 crd {c.x, -c.y, c.z};
+  Base::vec3_t crd {c.x, -c.y, c.z};
   crd = (crd + 1.0f) * 0.5f * (m_viewportMax - m_viewportMin) + m_viewportMin;
 
-  return Base::vec4{ crd.x, crd.y, crd.z, c.w };
+  return Base::vec4_t{ crd.x, crd.y, crd.z, c.w };
 }
 
 void
@@ -438,7 +438,7 @@ Temple::Bonfire::RenderContext::clearDepth(float val)
 
 void
 Temple::Bonfire::RenderContext::renderPixelDepthWise(
-  const Base::vec4& p,
+  const Base::vec4_t& p,
   const uint8_t*    data)
 {
   int pixFlatIdx = ((int)p.y) * m_width + (int)p.x;
@@ -492,17 +492,17 @@ getWeightBetween(float x, float y, float x0, float y0, float x1, float y1)
 
 static float
 segmentPlaneIntersection(
-  const Temple::Base::vec3&     a,
-  const Temple::Base::vec3&     b,
+  const Temple::Base::vec3_t&     a,
+  const Temple::Base::vec3_t&     b,
   const Temple::Bonfire::Plane& p)
 {
-  const Temple::Base::vec3 ab = b - a;
+  const Temple::Base::vec3_t ab = b - a;
   float                    k = (-p.normal.dot(a) - p.offset) / p.normal.dot(ab);
   return k;
 }
 
 static inline float
-pointPlaneSide(const Temple::Base::vec3& a, const Temple::Bonfire::Plane& p)
+pointPlaneSide(const Temple::Base::vec3_t& a, const Temple::Bonfire::Plane& p)
 {
   // -value - under
   // 0 - on
@@ -513,15 +513,15 @@ pointPlaneSide(const Temple::Base::vec3& a, const Temple::Bonfire::Plane& p)
 
 static void
 cullTriangleTwoPointOutside(
-  const Temple::Base::vec4&            a,
-  const Temple::Base::vec4&            b,
-  const Temple::Base::vec4&            c,
+  const Temple::Base::vec4_t&            a,
+  const Temple::Base::vec4_t&            b,
+  const Temple::Base::vec4_t&            c,
   const uint8_t*                       pDataA,
   const uint8_t*                       pDataB,
   const uint8_t*                       pDataC,
   const Temple::Bonfire::VertexFormat& vf,
   const Temple::Bonfire::Plane&        p,
-  std::vector<Temple::Base::vec4>&     passedVertexCoords,
+  std::vector<Temple::Base::vec4_t>&     passedVertexCoords,
   std::vector<uint8_t>&                passedVertexData)
 {
   // a and b are outside
@@ -551,9 +551,9 @@ cullTriangleTwoPointOutside(
       dataBK.data(),
       kB,
       vf);
-    Temple::Base::vec4 ak = (a - c) * kA + c;
+    Temple::Base::vec4_t ak = (a - c) * kA + c;
     ak.w = c.w;
-    Temple::Base::vec4 bk = (b - c) * kB + c;
+    Temple::Base::vec4_t bk = (b - c) * kB + c;
     bk.w = b.w;
     //
     passedVertexCoords.emplace_back(c);
@@ -567,15 +567,15 @@ cullTriangleTwoPointOutside(
 
 static void
 cullTriangleOnePointOutsideOneOn(
-  const Temple::Base::vec4&            a,
-  const Temple::Base::vec4&            b,
-  const Temple::Base::vec4&            c,
+  const Temple::Base::vec4_t&            a,
+  const Temple::Base::vec4_t&            b,
+  const Temple::Base::vec4_t&            c,
   const uint8_t*                       pDataA,
   const uint8_t*                       pDataB,
   const uint8_t*                       pDataC,
   const Temple::Bonfire::VertexFormat& vf,
   const Temple::Bonfire::Plane&        p,
-  std::vector<Temple::Base::vec4>&     passedVertexCoords,
+  std::vector<Temple::Base::vec4_t>&     passedVertexCoords,
   std::vector<uint8_t>&                passedVertexData)
 {
   // a is outside and b is on the plane
@@ -596,7 +596,7 @@ cullTriangleOnePointOutsideOneOn(
       dataCK.data(),
       kA,
       vf);
-    Temple::Base::vec4 ck = (a - c) * kA + c;
+    Temple::Base::vec4_t ck = (a - c) * kA + c;
     ck.w = c.w;
     //
     passedVertexCoords.emplace_back(b);
@@ -610,15 +610,15 @@ cullTriangleOnePointOutsideOneOn(
 
 static void
 cullTriangleOnePointOutside(
-  const Temple::Base::vec4&            a,
-  const Temple::Base::vec4&            b,
-  const Temple::Base::vec4&            c,
+  const Temple::Base::vec4_t&            a,
+  const Temple::Base::vec4_t&            b,
+  const Temple::Base::vec4_t&            c,
   const uint8_t*                       pDataA,
   const uint8_t*                       pDataB,
   const uint8_t*                       pDataC,
   const Temple::Bonfire::VertexFormat& vf,
   const Temple::Bonfire::Plane&        p,
-  std::vector<Temple::Base::vec4>&     passedVertexCoords,
+  std::vector<Temple::Base::vec4_t>&     passedVertexCoords,
   std::vector<uint8_t>&                passedVertexData)
 {
   // a-point is outside
@@ -710,9 +710,9 @@ cullTriangleOnePointOutside(
           dataCK.data(),
           kC,
           vf);
-        Temple::Base::vec4 bk = (a - b) * kB + b;
+        Temple::Base::vec4_t bk = (a - b) * kB + b;
         bk.w = b.w;
-        Temple::Base::vec4 ck = (a - c) * kC + c;
+        Temple::Base::vec4_t ck = (a - c) * kC + c;
         ck.w = c.w;
         //
         passedVertexCoords.emplace_back(b);
@@ -735,15 +735,15 @@ cullTriangleOnePointOutside(
 
 static void
 cullTriangleByPlane(
-  const Temple::Base::vec4&            a,
-  const Temple::Base::vec4&            b,
-  const Temple::Base::vec4&            c,
+  const Temple::Base::vec4_t&            a,
+  const Temple::Base::vec4_t&            b,
+  const Temple::Base::vec4_t&            c,
   const uint8_t*                       pDataA,
   const uint8_t*                       pDataB,
   const uint8_t*                       pDataC,
   const Temple::Bonfire::VertexFormat& vf,
   const Temple::Bonfire::Plane&        p,
-  std::vector<Temple::Base::vec4>&     passedVertexCoords,
+  std::vector<Temple::Base::vec4_t>&     passedVertexCoords,
   std::vector<uint8_t>&                passedVertexData)
 {
   float aSide = pointPlaneSide(a.xyz, p);
@@ -819,18 +819,18 @@ cullTriangleByPlane(
 
 static void
 cullTrianglesByPlane(
-  std::vector<Temple::Base::vec4>&     inputVertexCoords,
+  std::vector<Temple::Base::vec4_t>&     inputVertexCoords,
   const uint8_t*                       pData,
   const Temple::Bonfire::VertexFormat& vf,
   const Temple::Bonfire::Plane&        p,
-  std::vector<Temple::Base::vec4>&     passedVertexCoords,
+  std::vector<Temple::Base::vec4_t>&     passedVertexCoords,
   std::vector<uint8_t>&                passedVertexData)
 {
   for (int i = 0; i < inputVertexCoords.size(); i += 3)
   {
-    const Temple::Base::vec4& a = inputVertexCoords[i];
-    const Temple::Base::vec4& b = inputVertexCoords[i + 1];
-    const Temple::Base::vec4& c = inputVertexCoords[i + 2];
+    const Temple::Base::vec4_t& a = inputVertexCoords[i];
+    const Temple::Base::vec4_t& b = inputVertexCoords[i + 1];
+    const Temple::Base::vec4_t& c = inputVertexCoords[i + 2];
     const uint8_t*            pDataA = pData + i * vf.size;
     const uint8_t*            pDataB = pData + (i + 1) * vf.size;
     const uint8_t*            pDataC = pData + (i + 2) * vf.size;
@@ -850,26 +850,26 @@ cullTrianglesByPlane(
 
 void
 Temple::Bonfire::RenderContext::cullTriangleByFrustum(
-  const Base::vec4&        a,
-  const Base::vec4&        b,
-  const Base::vec4&        c,
+  const Base::vec4_t&        a,
+  const Base::vec4_t&        b,
+  const Base::vec4_t&        c,
   const uint8_t*           aData,
   const uint8_t*           bData,
   const uint8_t*           cData,
   const VertexFormat&      vf,
-  std::vector<Base::vec4>& passedVertexCoords,
+  std::vector<Base::vec4_t>& passedVertexCoords,
   std::vector<uint8_t>&    passedVertexData)
 {
-  std::vector<Base::vec4> vertexPassedFront = {a, b, c};
+  std::vector<Base::vec4_t> vertexPassedFront = {a, b, c};
   std::vector<uint8_t>    dataPassedFront = {};
   Base::appendData(dataPassedFront, aData, vf.size, 0);
   Base::appendData(dataPassedFront, bData, vf.size, 0);
   Base::appendData(dataPassedFront, cData, vf.size, 0);
-  std::vector<Base::vec4> vertexPassedBack = {};
+  std::vector<Base::vec4_t> vertexPassedBack = {};
   std::vector<uint8_t>    dataPassedBack = {};
 
-  std::vector<Base::vec4>* pVertexPassedFront = &vertexPassedFront;
-  std::vector<Base::vec4>* pVertexPassedBack = &vertexPassedBack;
+  std::vector<Base::vec4_t>* pVertexPassedFront = &vertexPassedFront;
+  std::vector<Base::vec4_t>* pVertexPassedBack = &vertexPassedBack;
   std::vector<uint8_t>*    pDataPassedFront = &dataPassedFront;
   std::vector<uint8_t>*    pDataPassedBack = &dataPassedBack;
 
@@ -901,7 +901,7 @@ Temple::Bonfire::RenderContext::cullTriangleByFrustum(
 
 void
 Temple::Bonfire::RenderContext::drawLines(
-  const std::vector<Base::vec4>& coords,
+  const std::vector<Base::vec4_t>& coords,
   const std::vector<int>&        indices,
   const uint8_t*                 vertexData,
   const VertexFormat&            vInFormat,
@@ -913,12 +913,12 @@ Temple::Bonfire::RenderContext::drawLines(
   }
   for (int i = 0; i < indices.size(); i += 2)
   {
-    const Base::vec4& va = coords[indices[i]];
-    const Base::vec4& vb = coords[indices[i + 1]];
+    const Base::vec4_t& va = coords[indices[i]];
+    const Base::vec4_t& vb = coords[indices[i + 1]];
     const uint8_t*    aData = &vertexData[indices[i] * vInFormat.size];
     const uint8_t*    bData = &vertexData[indices[i + 1] * vInFormat.size];
     // draw single line here
-    Base::vec4           a, b;
+    Base::vec4_t           a, b;
     std::vector<uint8_t> aVertexOut(vOutFormat.size),
       bVertexOut(vOutFormat.size);
     this->m_vsf(
@@ -939,8 +939,8 @@ Temple::Bonfire::RenderContext::drawLines(
     a = processVertex(a);
     b = processVertex(b);
     // obtained vertex shader results and go to the pixel stage
-    Base::vec4 a0(a);
-    Base::vec4 b0(b);
+    Base::vec4_t a0(a);
+    Base::vec4_t b0(b);
     // perspective correct interpolation part - normalize by z first
     std::vector<uint8_t> vDepthedA(vOutFormat.size), vDepthedB(vOutFormat.size);
     uint8_t *vDepthedAPtr = vDepthedA.data(), *vDepthedBPtr = vDepthedB.data();
@@ -968,7 +968,7 @@ Temple::Bonfire::RenderContext::drawLines(
       {
         float                slope = xDif / yDif;
         std::vector<uint8_t> cOut(vOutFormat.size);
-        Base::vec4           c;
+        Base::vec4_t           c;
         for (c.y = a0.y; c.y < b0.y; c.y += 1.0f)
         {
           c.x = a0.x + (c.y - a0.y) * slope;
@@ -995,7 +995,7 @@ Temple::Bonfire::RenderContext::drawLines(
         }
         float                slope = yDif / xDif;
         std::vector<uint8_t> cOut(vOutFormat.size);
-        Base::vec4           c;
+        Base::vec4_t           c;
         for (c.x = a0.x; c.x < b0.x; c.x += 1.0f)
         {
           c.y = a0.y + (c.x - a0.x) * slope;
@@ -1019,7 +1019,7 @@ Temple::Bonfire::RenderContext::drawLines(
 
 void
 Temple::Bonfire::RenderContext::drawTriangles(
-  const std::vector<Base::vec4>& coords,
+  const std::vector<Base::vec4_t>& coords,
   const std::vector<int>&        indices,
   const uint8_t*                 vertexData,
   const VertexFormat&            vInFormat,
@@ -1032,14 +1032,14 @@ Temple::Bonfire::RenderContext::drawTriangles(
   int fragments = 0;
   for (int i = 0; i < indices.size(); i += 3)
   {
-    const Base::vec4& va(coords[indices[i]]);
-    const Base::vec4& vb(coords[indices[i + 1]]);
-    const Base::vec4& vc(coords[indices[i + 2]]);
+    const Base::vec4_t& va(coords[indices[i]]);
+    const Base::vec4_t& vb(coords[indices[i + 1]]);
+    const Base::vec4_t& vc(coords[indices[i + 2]]);
     const uint8_t*    aData = &vertexData[indices[i] * vInFormat.size];
     const uint8_t*    bData = &vertexData[indices[i + 1] * vInFormat.size];
     const uint8_t*    cData = &vertexData[indices[i + 2] * vInFormat.size];
     //
-    Base::vec4           aWorld, bWorld, cWorld;
+    Base::vec4_t           aWorld, bWorld, cWorld;
     std::vector<uint8_t> aVertexOut(vOutFormat.size),
       bVertexOut(vOutFormat.size), cVertexOut(vOutFormat.size);
 
@@ -1068,7 +1068,7 @@ Temple::Bonfire::RenderContext::drawTriangles(
     // backface culling
     if (m_backFaceCulling != ECullingMode::None)
     {
-      Temple::Base::vec4 side0, side1, outsideNormal;
+      Temple::Base::vec4_t side0, side1, outsideNormal;
       switch (m_backFaceCulling)
       {
       case ECullingMode::ClockWise:
@@ -1083,14 +1083,14 @@ Temple::Bonfire::RenderContext::drawTriangles(
         outsideNormal = side0.cross(side1);
         break;
       }
-      Base::vec4 z = aWorld + bWorld + cWorld;
+      Base::vec4_t z = aWorld + bWorld + cWorld;
       float      zlength = z.magnitude();
       if (zlength < Temple::Base::EPS)
       {
         continue;
       }
       z = z * (1.0f / zlength);
-      Base::vec3 n {outsideNormal.x, outsideNormal.y, outsideNormal.z};
+      Base::vec3_t n {outsideNormal.x, outsideNormal.y, outsideNormal.z};
       n = n.norm();
       if (z.xyz.dot(n) > 0.0f)
       {
@@ -1099,7 +1099,7 @@ Temple::Bonfire::RenderContext::drawTriangles(
     }
     // frustum culling
     std::vector<uint8_t>    viewPassedVertexData = {};
-    std::vector<Base::vec4> viewPassedVertexCoords = {};
+    std::vector<Base::vec4_t> viewPassedVertexCoords = {};
     this->cullTriangleByFrustum(
       aWorld,
       bWorld,
@@ -1113,20 +1113,20 @@ Temple::Bonfire::RenderContext::drawTriangles(
     // rasterization
     for (int j = 0; j < viewPassedVertexCoords.size(); j += 3)
     {
-      const Base::vec4& aVisible(viewPassedVertexCoords[j]);
-      const Base::vec4& bVisible(viewPassedVertexCoords[j + 1]);
-      const Base::vec4& cVisible(viewPassedVertexCoords[j + 2]);
+      const Base::vec4_t& aVisible(viewPassedVertexCoords[j]);
+      const Base::vec4_t& bVisible(viewPassedVertexCoords[j + 1]);
+      const Base::vec4_t& cVisible(viewPassedVertexCoords[j + 2]);
       //
       uint8_t* aVertexOutPtr = &viewPassedVertexData[j * vOutFormat.size];
       uint8_t* bVertexOutPtr = &viewPassedVertexData[(j + 1) * vOutFormat.size];
       uint8_t* cVertexOutPtr = &viewPassedVertexData[(j + 2) * vOutFormat.size];
       //
-      Base::vec4 a, b, c;
+      Base::vec4_t a, b, c;
       a = processVertex(aVisible);
       b = processVertex(bVisible);
       c = processVertex(cVisible);
       //
-      Base::vec4 sa = a, sb = b, sc = c;
+      Base::vec4_t sa = a, sb = b, sc = c;
       if (sa.y > sc.y)
       {
         std::swap(sa, sc);
@@ -1187,7 +1187,7 @@ Temple::Bonfire::RenderContext::drawTriangles(
       //
       if (leftToRight)
       {
-        Base::vec4 c;
+        Base::vec4_t c;
         for (idx = 0; idx < xab.size() % (n + 1); idx++)
         {
           float leftx = xab[idx];
@@ -1290,7 +1290,7 @@ Temple::Bonfire::RenderContext::drawTriangles(
       }
       else
       {
-        Base::vec4 c;
+        Base::vec4_t c;
         for (idx = 0; idx < xab.size() % (n + 1); idx++)
         {
           float leftx = xac[idx];

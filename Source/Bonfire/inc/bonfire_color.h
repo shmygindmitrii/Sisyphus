@@ -27,7 +27,7 @@ namespace Bonfire
     operator*(float other);
   };
 #pragma pack(pop)
-  Base::vec4
+  Base::vec4_t
   getFloatColor(const col4u& c);
 } // namespace Bonfire
 } // namespace Temple

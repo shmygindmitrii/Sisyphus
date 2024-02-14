@@ -69,14 +69,14 @@ namespace Bonfire
   // need to interpolate everything needed for pixel shader put to perVertexOut
   // - this data will be interpolated
   using vertexShaderFunc = void (*)(
-    const Base::vec4&           input,
-    Base::vec4&                 output,
+    const Base::vec4_t&           input,
+    Base::vec4_t&                 output,
     std::vector<uint8_t>&       perVertexOut,
     const uint8_t*              perVertexData,
     const std::vector<uint8_t>& builtins,
     const std::vector<uint8_t>& descriptorSet); // over single vertex
-  using pixelShaderFunc = Base::vec4 (*)(
-    const Base::vec4&           input,
+  using pixelShaderFunc = Base::vec4_t (*)(
+    const Base::vec4_t&           input,
     const uint8_t*              perPixelInp,
     const std::vector<uint8_t>& builtins,
     const std::vector<uint8_t>& descriptorSet); // over single pixel
@@ -84,10 +84,10 @@ namespace Bonfire
   using logFunc = void (*)(const char* msg, size_t msgLength);
   //
   struct Plane {
-    Base::vec3 normal;
+    Base::vec3_t normal;
     float      offset;
     Plane();
-    Plane(const Base::vec3& _normal, float _offset);
+    Plane(const Base::vec3_t& _normal, float _offset);
   };
   struct Frustum {
     Plane bounds[6];
@@ -100,7 +100,7 @@ namespace Bonfire
     int                  m_width = 0;
     int                  m_height = 0;
     int                  m_bytesPerPixel = 0;
-    Base::vec3           m_viewportMin, m_viewportMax;
+    Base::vec3_t           m_viewportMin, m_viewportMax;
     std::vector<uint8_t> m_descriptorSet;
     vertexShaderFunc     m_vsf = nullptr;
     pixelShaderFunc      m_psf = nullptr;
@@ -150,30 +150,30 @@ namespace Bonfire
     setFrustum(float fov, float aspect, float znear, float zfar);
     bool
     outOfSight(
-      const Base::vec4& a,
-      const Base::vec4& b,
-      const Base::vec4& c,
+      const Base::vec4_t& a,
+      const Base::vec4_t& b,
+      const Base::vec4_t& c,
       float             znear,
       float             zfar,
       float             aspect);
     void
-    putPixel(int x, int y, const Base::vec4& color);
+    putPixel(int x, int y, const Base::vec4_t& color);
     void
-    renderPixelDepthWise(const Base::vec4& p, const uint8_t* data);
-    Base::vec4
-    processVertex(const Base::vec4& v);
+    renderPixelDepthWise(const Base::vec4_t& p, const uint8_t* data);
+    Base::vec4_t
+    processVertex(const Base::vec4_t& v);
     void
     fill(const col4u& color);
     void
     cullTriangleByFrustum(
-      const Base::vec4&        a,
-      const Base::vec4&        b,
-      const Base::vec4&        c,
+      const Base::vec4_t&        a,
+      const Base::vec4_t&        b,
+      const Base::vec4_t&        c,
       const uint8_t*           aData,
       const uint8_t*           bData,
       const uint8_t*           cData,
       const VertexFormat&      vf,
-      std::vector<Base::vec4>& passedVertexCoords,
+      std::vector<Base::vec4_t>& passedVertexCoords,
       std::vector<uint8_t>&    passedVertexData);
     void
     setDepthTest(bool flag);
@@ -185,14 +185,14 @@ namespace Bonfire
     clearDepth(float val);
     void
     drawLines(
-      const std::vector<Base::vec4>& coords,
+      const std::vector<Base::vec4_t>& coords,
       const std::vector<int>&        indices,
       const uint8_t*                 vertexData,
       const VertexFormat&            vInFormat,
       const VertexFormat&            vOutFormat);
     void
     drawTriangles(
-      const std::vector<Base::vec4>& coords,
+      const std::vector<Base::vec4_t>& coords,
       const std::vector<int>&        indices,
       const uint8_t*                 vertexData,
       const VertexFormat&            vInFormat,

@@ -6,19 +6,19 @@
 
 // other methods tend to be inlined
 
-// vec2
+// vec2_t
 
 std::ostream&
-Temple::Base::operator<<(std::ostream& os, const Temple::Base::vec2& v)
+Temple::Base::operator<<(std::ostream& os, const Temple::Base::vec2_t& v)
 {
   os << std::fixed << std::setprecision(4) << '[' << v.x << ' ' << v.y << ']';
   return os;
 }
 
-// vec3
+// vec3_t
 
 std::ostream&
-Temple::Base::operator<<(std::ostream& os, const Temple::Base::vec3& v)
+Temple::Base::operator<<(std::ostream& os, const Temple::Base::vec3_t& v)
 {
   os << std::fixed << std::setprecision(4) << '[' << v.x << ' ' << v.y << ' '
      << v.z << ']';
@@ -26,10 +26,10 @@ Temple::Base::operator<<(std::ostream& os, const Temple::Base::vec3& v)
 }
 
 
-// vec4
+// vec4_t
 
 std::ostream&
-Temple::Base::operator<<(std::ostream& os, const Temple::Base::vec4& v)
+Temple::Base::operator<<(std::ostream& os, const Temple::Base::vec4_t& v)
 {
   os << std::fixed << std::setprecision(4) << '[' << v.x << ' ' << v.y << ' '
      << v.z << ' ' << v.w << ']';
