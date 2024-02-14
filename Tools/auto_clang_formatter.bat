@@ -1,1 +1,0 @@
-python auto_clang_formatter.py ../Source
