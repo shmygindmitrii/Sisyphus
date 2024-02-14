@@ -8,7 +8,7 @@
 #include <vector>
 
 Temple::Bonfire::VertexFormat::VertexFormat(
-  const std::vector<Temple::Bonfire::VertexAttribType>& attribs)
+  const std::vector<Temple::Bonfire::EVertexAttribType>& attribs)
 {
   size = 0;
   for (int i = 0; i < attribs.size(); i++)
@@ -16,25 +16,25 @@ Temple::Bonfire::VertexFormat::VertexFormat(
     attributes.push_back(attribs[i]);
     switch (attribs[i])
     {
-    case VertexAttribType::FLOAT32:
+    case EVertexAttribType::FLOAT32:
       size += 4;
       break;
-    case VertexAttribType::INT32:
+    case EVertexAttribType::INT32:
       size += 4;
       break;
-    case VertexAttribType::UINT8:
+    case EVertexAttribType::UINT8:
       size += 1;
       break;
-    case VertexAttribType::VEC2:
+    case EVertexAttribType::VEC2:
       size += 8;
       break;
-    case VertexAttribType::VEC3:
+    case EVertexAttribType::VEC3:
       size += 12;
       break;
-    case VertexAttribType::VEC4:
+    case EVertexAttribType::VEC4:
       size += 16;
       break;
-    case VertexAttribType::UV:
+    case EVertexAttribType::UV:
       size += 8;
       break;
     }
@@ -69,25 +69,25 @@ Temple::Bonfire::interpolateAttributes(
   {
     switch (vf.attributes[i])
     {
-    case VertexAttribType::FLOAT32:
+    case EVertexAttribType::FLOAT32:
       __interpolateAttribsTemplate<float>(aIn, bIn, cOut, weight);
       break;
-    case VertexAttribType::INT32:
+    case EVertexAttribType::INT32:
       __interpolateAttribsTemplate<int32_t>(aIn, bIn, cOut, weight);
       break;
-    case VertexAttribType::UINT8:
+    case EVertexAttribType::UINT8:
       __interpolateAttribsTemplate<uint8_t>(aIn, bIn, cOut, weight);
       break;
-    case VertexAttribType::VEC2:
+    case EVertexAttribType::VEC2:
       __interpolateAttribsTemplate<Base::vec2>(aIn, bIn, cOut, weight);
       break;
-    case VertexAttribType::VEC3:
+    case EVertexAttribType::VEC3:
       __interpolateAttribsTemplate<Base::vec3>(aIn, bIn, cOut, weight);
       break;
-    case VertexAttribType::VEC4:
+    case EVertexAttribType::VEC4:
       __interpolateAttribsTemplate<Base::vec4>(aIn, bIn, cOut, weight);
       break;
-    case VertexAttribType::UV:
+    case EVertexAttribType::UV:
       __interpolateAttribsTemplate<Base::vec2>(aIn, bIn, cOut, weight);
       break;
     }
@@ -114,25 +114,25 @@ Temple::Bonfire::multiplyAttributes(
   {
     switch (vf.attributes[i])
     {
-    case VertexAttribType::FLOAT32:
+    case EVertexAttribType::FLOAT32:
       __multAttribsTemplate<float>(aIn, cOut, mult);
       break;
-    case VertexAttribType::INT32:
+    case EVertexAttribType::INT32:
       __multAttribsTemplate<int32_t>(aIn, cOut, mult);
       break;
-    case VertexAttribType::UINT8:
+    case EVertexAttribType::UINT8:
       __multAttribsTemplate<uint8_t>(aIn, cOut, mult);
       break;
-    case VertexAttribType::VEC2:
+    case EVertexAttribType::VEC2:
       __multAttribsTemplate<Base::vec2>(aIn, cOut, mult);
       break;
-    case VertexAttribType::VEC3:
+    case EVertexAttribType::VEC3:
       __multAttribsTemplate<Base::vec3>(aIn, cOut, mult);
       break;
-    case VertexAttribType::VEC4:
+    case EVertexAttribType::VEC4:
       __multAttribsTemplate<Base::vec4>(aIn, cOut, mult);
       break;
-    case VertexAttribType::UV:
+    case EVertexAttribType::UV:
       __multAttribsTemplate<Base::vec2>(aIn, cOut, mult);
       break;
     }
@@ -422,7 +422,7 @@ Temple::Bonfire::RenderContext::setDepthWrite(bool flag)
 }
 
 void
-Temple::Bonfire::RenderContext::setBackfaceCulling(CullingMode mode)
+Temple::Bonfire::RenderContext::setBackfaceCulling(ECullingMode mode)
 {
   m_backFaceCulling = mode;
 }
@@ -1066,17 +1066,17 @@ Temple::Bonfire::RenderContext::drawTriangles(
       this->m_descriptorSet);
 
     // backface culling
-    if (m_backFaceCulling != CullingMode::None)
+    if (m_backFaceCulling != ECullingMode::None)
     {
       Temple::Base::vec4 side0, side1, outsideNormal;
       switch (m_backFaceCulling)
       {
-      case CullingMode::ClockWise:
+      case ECullingMode::ClockWise:
         side0 = cWorld - aWorld;
         side1 = bWorld - cWorld;
         outsideNormal = side0.cross(side1);
         break;
-      case CullingMode::CounterClockWise:
+      case ECullingMode::CounterClockWise:
       default:
         side0 = bWorld - aWorld;
         side1 = cWorld - bWorld;

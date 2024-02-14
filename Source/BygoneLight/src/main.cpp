@@ -129,15 +129,15 @@ draw(HWND hWnd)
   std::vector<int> abcTriangleIndices = {2, 1, 0};
 
   Temple::Bonfire::VertexFormat vertexOutputFormat({
-    Temple::Bonfire::VertexAttribType::VEC4, // position
-    Temple::Bonfire::VertexAttribType::VEC4, // color
-    Temple::Bonfire::VertexAttribType::VEC2, // tex
-    Temple::Bonfire::VertexAttribType::VEC3, // normal
+    Temple::Bonfire::EVertexAttribType::VEC4, // position
+    Temple::Bonfire::EVertexAttribType::VEC4, // color
+    Temple::Bonfire::EVertexAttribType::VEC2, // tex
+    Temple::Bonfire::EVertexAttribType::VEC3, // normal
   });
   Temple::Bonfire::VertexFormat vertexInputFormat({
-    Temple::Bonfire::VertexAttribType::VEC4, // color
-    Temple::Bonfire::VertexAttribType::VEC2, // tex
-    Temple::Bonfire::VertexAttribType::VEC3, // normal
+    Temple::Bonfire::EVertexAttribType::VEC4, // color
+    Temple::Bonfire::EVertexAttribType::VEC2, // tex
+    Temple::Bonfire::EVertexAttribType::VEC3, // normal
   });
 
   auto      curTime = std::chrono::high_resolution_clock::now();
@@ -169,7 +169,7 @@ draw(HWND hWnd)
     Temple::Base::mat4::identity()); // not really used yet
   renderContext.setPerspective(90.0f, width / (float)height, 0.4f, 100.0f);
   renderContext.setBackfaceCulling(
-    Temple::Bonfire::CullingMode::CounterClockWise);
+    Temple::Bonfire::ECullingMode::CounterClockWise);
 
   std::vector<uint8_t> descriptorSet;
   Temple::Base::vec3   cameraPosition {0.0f, 0.0f, 0.0f};
