@@ -23,9 +23,9 @@ Temple::Base::vec4_t
 Temple::Bonfire::texture::getPixel(float u, float v) const
 {
   Temple::Base::vec4_t pixel;
-  int                iu = u * width;
-  int                iv = (1.0f - v) * height;
-  uint32_t           idx = iv * width * channels + iu * channels;
+  int                  iu = u * width;
+  int                  iv = (1.0f - v) * height;
+  uint32_t             idx = iv * width * channels + iu * channels;
   pixel.a = 1.0f;
   if (idx < width * height * channels)
   {

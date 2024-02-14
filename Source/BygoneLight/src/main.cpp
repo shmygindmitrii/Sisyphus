@@ -30,9 +30,9 @@ LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK About(HWND, UINT, WPARAM, LPARAM);
 
 std::vector<Temple::Base::vec4_t> g_modelVerts;
-std::vector<int>                g_modelInds;
-std::vector<uint8_t>            g_modelVertAttribs;
-static uint32_t                 mosaicTexture;
+std::vector<int>                  g_modelInds;
+std::vector<uint8_t>              g_modelVertAttribs;
+static uint32_t                   mosaicTexture;
 
 //
 static Temple::Bonfire::col4u              red {255, 0, 0, 255};
@@ -111,7 +111,7 @@ draw(HWND hWnd)
   Temple::Base::vec2_t              uv2 {0.0f, 1.0f};
   Temple::Base::vec3_t              normal {0.0f, 0.0f, -1.0f};
   std::vector<Temple::Base::vec4_t> abc = {a, b, c};
-  std::vector<uint8_t>            abcTriangleAttribs;
+  std::vector<uint8_t>              abcTriangleAttribs;
   Temple::Base::vec4_t              fred = Temple::Bonfire::getFloatColor(red);
   Temple::Base::vec4_t fgreen = Temple::Bonfire::getFloatColor(green);
   Temple::Base::vec4_t fblue = Temple::Bonfire::getFloatColor(blue);
@@ -172,7 +172,7 @@ draw(HWND hWnd)
     Temple::Bonfire::ECullingMode::CounterClockWise);
 
   std::vector<uint8_t> descriptorSet;
-  Temple::Base::vec3_t   cameraPosition {0.0f, 0.0f, 0.0f};
+  Temple::Base::vec3_t cameraPosition {0.0f, 0.0f, 0.0f};
   Temple::Base::appendData(descriptorSet, cameraPosition);
   int lightCount = 3;
   Temple::Base::appendData(descriptorSet, lightCount);
@@ -196,8 +196,8 @@ draw(HWND hWnd)
   renderContext.setDescriptorSet(descriptorSet);
   renderContext.setVertexShader(
     [](
-      const Temple::Base::vec4_t&   inp,
-      Temple::Base::vec4_t&         out,
+      const Temple::Base::vec4_t& inp,
+      Temple::Base::vec4_t&       out,
       std::vector<uint8_t>&       perVertexOut,
       const uint8_t*              perVertexData,
       const std::vector<uint8_t>& builtins,
@@ -226,7 +226,10 @@ draw(HWND hWnd)
         colorPtr,
         sizeof(Temple::Base::vec4_t));
       offset += sizeof(Temple::Base::vec4_t);
-      memcpy(perVertexOut.data() + offset, texPtr, sizeof(Temple::Base::vec2_t));
+      memcpy(
+        perVertexOut.data() + offset,
+        texPtr,
+        sizeof(Temple::Base::vec2_t));
       offset += sizeof(Temple::Base::vec2_t);
       // rotate normal
       Temple::Base::vec4_t normal {
@@ -236,11 +239,14 @@ draw(HWND hWnd)
         0.0f};
       normal = (*modelViewMatrixPtr) * normal;
       normal = normal.norm();
-      memcpy(perVertexOut.data() + offset, &normal, sizeof(Temple::Base::vec3_t));
+      memcpy(
+        perVertexOut.data() + offset,
+        &normal,
+        sizeof(Temple::Base::vec3_t));
     });
   renderContext.setPixelShader(
     [](
-      const Temple::Base::vec4_t&   inp,
+      const Temple::Base::vec4_t& inp,
       const uint8_t*              perPixelData,
       const std::vector<uint8_t>& builtins,
       const std::vector<uint8_t>& descriptorSet) -> Temple::Base::vec4_t
@@ -264,9 +270,9 @@ draw(HWND hWnd)
         reinterpret_cast<const Temple::Base::vec3_t*>(descriptorSet.data());
       const int* lightCountPtr =
         reinterpret_cast<const int*>(cameraPositionPtr + 1);
-      const int*         lightTypePtr = lightCountPtr + 1;
+      const int*           lightTypePtr = lightCountPtr + 1;
       Temple::Base::vec3_t pixelPosition {posPtr->x, posPtr->y, posPtr->z};
-      float              ambientIllumination = 0.0f, diffuseIllumination = 0.0f,
+      float ambientIllumination = 0.0f, diffuseIllumination = 0.0f,
             specularIllumination = 0.0f;
       for (int i = 0; i < *lightCountPtr; i++)
       {
@@ -399,10 +405,14 @@ wWinMain(
     const Temple::Barn::ObjFace& face = objFile->faces[i];
     for (int j = 0; j < 3; j++)
     {
-      int                vertIdx = face.indices[j].position - 1;
-      int                uvIdx = face.indices[j].texture - 1;
-      int                normalIdx = face.indices[j].normal - 1;
-      Temple::Base::vec4_t pos{ objFile->coord[vertIdx].x, objFile->coord[vertIdx].y, objFile->coord[vertIdx].z, 1.0f };
+      int                  vertIdx = face.indices[j].position - 1;
+      int                  uvIdx = face.indices[j].texture - 1;
+      int                  normalIdx = face.indices[j].normal - 1;
+      Temple::Base::vec4_t pos {
+        objFile->coord[vertIdx].x,
+        objFile->coord[vertIdx].y,
+        objFile->coord[vertIdx].z,
+        1.0f};
       g_modelVerts.push_back(pos);
       g_modelInds.push_back(gidx++);
       Temple::Base::appendData(g_modelVertAttribs, colors[vertIdx]);

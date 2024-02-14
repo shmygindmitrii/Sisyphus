@@ -27,7 +27,7 @@ namespace Barn
     std::vector<Base::vec3_t> coord;
     std::vector<Base::vec2_t> uv;
     std::vector<Base::vec3_t> normal;
-    std::vector<ObjFace>    faces;
+    std::vector<ObjFace>      faces;
   };
   std::shared_ptr<ObjFile>
   ReadObj(const char* path);

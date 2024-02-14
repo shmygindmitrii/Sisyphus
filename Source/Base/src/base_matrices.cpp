@@ -290,10 +290,10 @@ Temple::Base::mat3::operator*(const mat3& M) const
 Temple::Base::vec3_t
 Temple::Base::mat3::operator*(const vec3_t& v) const
 {
-  return vec3_t{
+  return vec3_t {
     data[0][0] * v.x + data[0][1] * v.y + data[0][2] * v.z,
     data[1][0] * v.x + data[1][1] * v.y + data[1][2] * v.z,
-    data[2][0] * v.x + data[2][1] * v.y + data[2][2] * v.z };
+    data[2][0] * v.x + data[2][1] * v.y + data[2][2] * v.z};
 }
 
 std::ostream&
@@ -817,11 +817,11 @@ Temple::Base::mat4::operator*(const mat4& M) const
 Temple::Base::vec4_t
 Temple::Base::mat4::operator*(const vec4_t& v) const
 {
-  return vec4_t{
+  return vec4_t {
     data[0][0] * v.x + data[0][1] * v.y + data[0][2] * v.z + data[0][3] * v.w,
     data[1][0] * v.x + data[1][1] * v.y + data[1][2] * v.z + data[1][3] * v.w,
     data[2][0] * v.x + data[2][1] * v.y + data[2][2] * v.z + data[2][3] * v.w,
-    data[3][0] * v.x + data[3][1] * v.y + data[3][2] * v.z + data[3][3] * v.w };
+    data[3][0] * v.x + data[3][1] * v.y + data[3][2] * v.z + data[3][3] * v.w};
 }
 
 std::ostream&
