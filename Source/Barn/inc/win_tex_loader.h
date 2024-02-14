@@ -7,5 +7,7 @@
 
 static std::unordered_map<std::string, int> s_texturesLoaded;
 
-uint32_t loadTexture(const char* path);
-void saveTexture(const uint8_t* data, int w, int h, int channels);
+uint32_t
+loadTexture(const char* path);
+void
+saveTexture(const uint8_t* data, int w, int h, int channels);
