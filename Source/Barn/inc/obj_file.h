@@ -15,12 +15,7 @@ namespace Barn
     unsigned int normal;
   };
   struct ObjFace {
-#if 0
-            unsigned int index_count;
-            ObjFaceIndex indices[4];
-#else
     ObjFaceIndex indices[3];
-#endif
   };
 
   struct ObjFile {
@@ -30,6 +25,6 @@ namespace Barn
     std::vector<ObjFace>      faces;
   };
   std::shared_ptr<ObjFile>
-  ReadObj(const char* path);
+  read_obj_model_file(const char* path);
 } // namespace Barn
 } // namespace Temple

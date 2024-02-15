@@ -5,7 +5,7 @@
 #include <memory>
 
 std::shared_ptr<Temple::Barn::ObjFile>
-Temple::Barn::ReadObj(const char* filename)
+Temple::Barn::read_obj_model_file(const char* filename)
 {
   std::ifstream file(filename);
 
@@ -14,7 +14,7 @@ Temple::Barn::ReadObj(const char* filename)
     std::cerr << "Failed to open file: " << filename << std::endl;
     return nullptr;
   }
-  std::shared_ptr<ObjFile> objPtr = std::make_shared<ObjFile>();
+  std::shared_ptr<ObjFile> obj_ptr = std::make_shared<ObjFile>();
   std::string              line;
   while (getline(file, line))
   {
@@ -26,55 +26,55 @@ Temple::Barn::ReadObj(const char* filename)
       // vertex
       Base::vec3_t v;
       iss >> v.x >> v.y >> v.z;
-      objPtr->coord.push_back(v);
+      obj_ptr->coord.push_back(v);
     }
     else if (prefix == "vt")
     {
       // texture
       Base::vec2_t t;
       iss >> t.u >> t.v;
-      objPtr->uv.push_back(t);
+      obj_ptr->uv.push_back(t);
     }
     else if (prefix == "vn")
     {
       // normal
       Base::vec3_t n;
       iss >> n.x >> n.y >> n.z;
-      objPtr->normal.push_back(n);
+      obj_ptr->normal.push_back(n);
     }
     else if (prefix == "f")
     {
       ObjFace     face;
       std::string vertex;
-      int         faceVertIdx = 0;
+      int         face_vert_idx = 0;
       while (iss >> vertex)
       {
-        std::istringstream vertexStream(vertex);
+        std::istringstream vertex_stream(vertex);
         std::string        index;
         int                idx;
 
         // Vertex index
-        getline(vertexStream, index, '/');
+        getline(vertex_stream, index, '/');
         idx = std::stoi(index);
-        face.indices[faceVertIdx].position = idx;
+        face.indices[face_vert_idx].position = idx;
 
         // Texture index
-        if (getline(vertexStream, index, '/'))
+        if (getline(vertex_stream, index, '/'))
         {
           idx = std::stoi(index);
-          face.indices[faceVertIdx].texture = idx;
+          face.indices[face_vert_idx].texture = idx;
         }
 
         // Normal index
-        if (getline(vertexStream, index))
+        if (getline(vertex_stream, index))
         {
           idx = std::stoi(index);
-          face.indices[faceVertIdx].normal = idx;
+          face.indices[face_vert_idx].normal = idx;
         }
-        faceVertIdx++;
+        face_vert_idx++;
       }
-      objPtr->faces.push_back(face);
+      obj_ptr->faces.push_back(face);
     }
   }
-  return objPtr;
+  return obj_ptr;
 }

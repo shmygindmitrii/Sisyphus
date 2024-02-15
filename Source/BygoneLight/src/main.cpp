@@ -264,7 +264,7 @@ draw(HWND hWnd)
         reinterpret_cast<const Temple::Base::vec3_t*>(texPtr + 1);
       // per-pixel
       const Temple::Base::vec4_t& texColor =
-        Temple::Bonfire::TextureHolder::instance()->getPixel(
+        Temple::Bonfire::TextureHolder::instance()->get_pixel(
           0,
           texPtr->u,
           texPtr->v);
@@ -394,9 +394,9 @@ wWinMain(
   char texPath[128], objPath[128];
   snprintf(texPath, 128, "%s/side_colored.png", TEMPLE_RESOURCES_FOLDER);
   snprintf(objPath, 128, "%s/cube_sided.obj", TEMPLE_RESOURCES_FOLDER);
-  mosaicTexture = loadTexture(texPath);
+  mosaicTexture = load_texture_win(texPath);
   std::shared_ptr<Temple::Barn::ObjFile> objFile =
-    Temple::Barn::ReadObj(objPath);
+    Temple::Barn::read_obj_model_file(objPath);
 
   std::vector<Temple::Base::vec4_t> colors;
   for (int vertIdx = 0; vertIdx < objFile->coord.size(); vertIdx++)

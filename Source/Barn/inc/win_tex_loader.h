@@ -5,9 +5,7 @@
 #include <unordered_map>
 #include "bonfire_texture_holder.h"
 
-static std::unordered_map<std::string, int> s_texturesLoaded;
+static std::unordered_map<std::string, int> s_textures_loaded;
 
 uint32_t
-loadTexture(const char* path);
-void
-saveTexture(const uint8_t* data, int w, int h, int channels);
+load_texture_win(const char* path);

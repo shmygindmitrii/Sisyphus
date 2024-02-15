@@ -18,7 +18,7 @@ Temple::Bonfire::TextureHolder::instance()
 }
 
 uint32_t
-Temple::Bonfire::TextureHolder::addTexture(
+Temple::Bonfire::TextureHolder::add_texture(
   const uint8_t* pixelData,
   uint32_t       w,
   uint32_t       h,
@@ -29,7 +29,7 @@ Temple::Bonfire::TextureHolder::addTexture(
 }
 
 Temple::Base::vec4_t
-Temple::Bonfire::TextureHolder::getPixel(uint32_t texId, float u, float v) const
+Temple::Bonfire::TextureHolder::get_pixel(uint32_t texId, float u, float v) const
 {
   Temple::Base::vec4_t pixel;
   pixel.a = 1.0f;
@@ -42,7 +42,7 @@ Temple::Bonfire::TextureHolder::getPixel(uint32_t texId, float u, float v) const
 }
 
 void
-Temple::Bonfire::TextureHolder::saveTexture(const char* path, int texId)
+Temple::Bonfire::TextureHolder::save_texture(const char* path, int texId)
 {
   if (texId >= 0 && texId < m_textures.size())
   {

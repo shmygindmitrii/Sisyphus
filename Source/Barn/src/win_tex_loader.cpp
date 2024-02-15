@@ -4,22 +4,22 @@
 #include "stb_image.h"
 
 uint32_t
-loadTexture(const char* path)
+load_texture_win(const char* path)
 {
-  if (s_texturesLoaded.find(path) != s_texturesLoaded.end())
+  if (s_textures_loaded.find(path) != s_textures_loaded.end())
   {
-    return s_texturesLoaded[path];
+    return s_textures_loaded[path];
   }
   else
   {
     int            w, h, ch;
     unsigned char* img = stbi_load(path, &w, &h, &ch, 0);
-    uint32_t texId = Temple::Bonfire::TextureHolder::instance()->addTexture(
+    uint32_t tex_id = Temple::Bonfire::TextureHolder::instance()->add_texture(
       reinterpret_cast<const uint8_t*>(img),
       w,
       h,
       ch);
-    s_texturesLoaded[path] = texId;
-    return texId;
+    s_textures_loaded[path] = tex_id;
+    return tex_id;
   }
 }
