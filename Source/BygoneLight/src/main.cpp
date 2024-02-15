@@ -115,15 +115,15 @@ draw(HWND hWnd)
   Temple::Base::vec4_t              fred = Temple::Bonfire::getFloatColor(red);
   Temple::Base::vec4_t fgreen = Temple::Bonfire::getFloatColor(green);
   Temple::Base::vec4_t fblue = Temple::Bonfire::getFloatColor(blue);
-  Temple::Base::appendData(abcTriangleAttribs, fred);
-  Temple::Base::appendData(abcTriangleAttribs, uv0);
-  Temple::Base::appendData(abcTriangleAttribs, normal);
-  Temple::Base::appendData(abcTriangleAttribs, fgreen);
-  Temple::Base::appendData(abcTriangleAttribs, uv1);
-  Temple::Base::appendData(abcTriangleAttribs, normal);
-  Temple::Base::appendData(abcTriangleAttribs, fblue);
-  Temple::Base::appendData(abcTriangleAttribs, uv2);
-  Temple::Base::appendData(abcTriangleAttribs, normal);
+  Temple::Base::append_data(abcTriangleAttribs, fred);
+  Temple::Base::append_data(abcTriangleAttribs, uv0);
+  Temple::Base::append_data(abcTriangleAttribs, normal);
+  Temple::Base::append_data(abcTriangleAttribs, fgreen);
+  Temple::Base::append_data(abcTriangleAttribs, uv1);
+  Temple::Base::append_data(abcTriangleAttribs, normal);
+  Temple::Base::append_data(abcTriangleAttribs, fblue);
+  Temple::Base::append_data(abcTriangleAttribs, uv2);
+  Temple::Base::append_data(abcTriangleAttribs, normal);
 
   std::vector<int> abcLineIndices = {0, 1, 1, 2, 2, 0};
   std::vector<int> abcTriangleIndices = {2, 1, 0};
@@ -173,25 +173,25 @@ draw(HWND hWnd)
 
   std::vector<uint8_t> descriptorSet;
   Temple::Base::vec3_t cameraPosition {0.0f, 0.0f, 0.0f};
-  Temple::Base::appendData(descriptorSet, cameraPosition);
+  Temple::Base::append_data(descriptorSet, cameraPosition);
   int lightCount = 3;
-  Temple::Base::appendData(descriptorSet, lightCount);
+  Temple::Base::append_data(descriptorSet, lightCount);
   int   lightAmbient = 0;
   float ambientIllumination = 0.2f;
   int   lightPoint = 1;
   float pointIllumination = 0.4f;
   int   lightDirected = 2;
   float directIllumination = 0.4f;
-  Temple::Base::appendData(descriptorSet, lightAmbient);
-  Temple::Base::appendData(descriptorSet, ambientIllumination);
-  Temple::Base::appendData(descriptorSet, lightPoint);
-  Temple::Base::appendData(descriptorSet, pointIllumination);
+  Temple::Base::append_data(descriptorSet, lightAmbient);
+  Temple::Base::append_data(descriptorSet, ambientIllumination);
+  Temple::Base::append_data(descriptorSet, lightPoint);
+  Temple::Base::append_data(descriptorSet, pointIllumination);
   Temple::Base::vec3_t lightPointPosition {-2.0f, 0.0f, -1.0f};
-  Temple::Base::appendData(descriptorSet, lightPointPosition);
-  Temple::Base::appendData(descriptorSet, lightDirected);
-  Temple::Base::appendData(descriptorSet, directIllumination);
+  Temple::Base::append_data(descriptorSet, lightPointPosition);
+  Temple::Base::append_data(descriptorSet, lightDirected);
+  Temple::Base::append_data(descriptorSet, directIllumination);
   Temple::Base::vec3_t lightDirection {-1.0f, 0.0f, 1.0f};
-  Temple::Base::appendData(descriptorSet, lightDirection);
+  Temple::Base::append_data(descriptorSet, lightDirection);
 
   renderContext.setDescriptorSet(descriptorSet);
   renderContext.setVertexShader(
@@ -238,7 +238,7 @@ draw(HWND hWnd)
         normalPtr->z,
         0.0f};
       normal = (*modelViewMatrixPtr) * normal;
-      normal = normal.norm();
+      normal = normal.calculate_normalized();
       memcpy(
         perVertexOut.data() + offset,
         &normal,
@@ -293,26 +293,26 @@ draw(HWND hWnd)
           {
             // point light
             v = (*lightCrd) - pixelPosition;
-            v = v.norm();
+            v = v.calculate_normalized();
           }
           else
           {
             // directed light
             v = -(*lightCrd);
-            v /= v.magnitude();
+            v /= v.calculate_magnitude();
           }
           // diffuse
-          float vDotn = v.dot(*normalPtr);
+          float vDotn = v.calculate_dot_product(*normalPtr);
           if (vDotn > 0)
           {
             diffuseIllumination += vDotn * (*illuminationPtr);
             // specular
-            Temple::Base::vec3_t vp = v - (*normalPtr) * v.dot(*normalPtr);
+            Temple::Base::vec3_t vp = v - (*normalPtr) * v.calculate_dot_product(*normalPtr);
             Temple::Base::vec3_t r = v - vp * 2.0f;
-            r = r.norm();
+            r = r.calculate_normalized();
             Temple::Base::vec3_t d = (*cameraPositionPtr) - pixelPosition;
-            d = d.norm();
-            float dDotR = d.dot(r);
+            d = d.calculate_normalized();
+            float dDotR = d.calculate_dot_product(r);
             if (dDotR > 0)
             {
               specularIllumination += pow(dDotR, 16.0f) * (*illuminationPtr);
@@ -415,9 +415,9 @@ wWinMain(
         1.0f};
       g_modelVerts.push_back(pos);
       g_modelInds.push_back(gidx++);
-      Temple::Base::appendData(g_modelVertAttribs, colors[vertIdx]);
-      Temple::Base::appendData(g_modelVertAttribs, objFile->uv[uvIdx]);
-      Temple::Base::appendData(g_modelVertAttribs, objFile->normal[normalIdx]);
+      Temple::Base::append_data(g_modelVertAttribs, colors[vertIdx]);
+      Temple::Base::append_data(g_modelVertAttribs, objFile->uv[uvIdx]);
+      Temple::Base::append_data(g_modelVertAttribs, objFile->normal[normalIdx]);
     }
   }
   HACCEL hAccelTable =

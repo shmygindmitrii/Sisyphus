@@ -68,13 +68,13 @@ TEST_CASE("Temple::Base::vec3_t tests", "[Base::vec3_t]")
     Temple::Base::vec3_t a {12.4f, 2.1f, -2.5f};
     float magnitude = sqrt(12.4f * 12.4f + 2.1f * 2.1f + 2.5f * 2.5f);
     INFO(
-      "Testing vec3_t magnitude failed: ||" << a << "|| -> " << a.magnitude()
+      "Testing vec3_t magnitude failed: ||" << a << "|| -> " << a.calculate_magnitude()
                                             << " and it is != " << magnitude);
-    REQUIRE(EQUAL_FLOATS(a.magnitude(), magnitude));
+    REQUIRE(EQUAL_FLOATS(a.calculate_magnitude(), magnitude));
   }
   {
     Temple::Base::vec3_t a {12.4f, 2.1f, -2.5f};
-    Temple::Base::vec3_t u = a.norm();
+    Temple::Base::vec3_t u = a.calculate_normalized();
     float magnitude = sqrt(12.4f * 12.4f + 2.1f * 2.1f + 2.5f * 2.5f);
     Temple::Base::vec3_t c {
       12.4f / magnitude,
@@ -172,13 +172,13 @@ TEST_CASE("Temple::Base::vec4_t tests", "[Base::vec4_t]")
     float                magnitude =
       sqrt(12.4f * 12.4f + 2.1f * 2.1f + 2.5f * 2.5f + 3.9f * 3.9f);
     INFO(
-      "Testing vec4_t magnitude failed: ||" << a << "|| -> " << a.magnitude()
+      "Testing vec4_t magnitude failed: ||" << a << "|| -> " << a.calculate_magnitude()
                                             << " and it is != " << magnitude);
-    REQUIRE(EQUAL_FLOATS(a.magnitude(), magnitude));
+    REQUIRE(EQUAL_FLOATS(a.calculate_magnitude(), magnitude));
   }
   {
     Temple::Base::vec4_t a {12.4f, 2.1f, -2.5f, 1.2f};
-    Temple::Base::vec4_t u = a.norm();
+    Temple::Base::vec4_t u = a.calculate_normalized();
     float                magnitude =
       sqrt(12.4f * 12.4f + 2.1f * 2.1f + 2.5f * 2.5f + 1.2f * 1.2f);
     Temple::Base::vec4_t c {

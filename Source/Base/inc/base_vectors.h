@@ -74,7 +74,7 @@ namespace Base
     operator==(const vec2_t& v) const
     {
       float l = (x - v.x) * (x - v.x) + (y - v.y) * (y - v.y);
-      return l < EPS;
+      return l < Base::eps;
     }
     inline const bool
     operator!=(const vec2_t& v) const
@@ -82,14 +82,14 @@ namespace Base
       return !(v == (*this));
     }
     inline const float
-    magnitude() const
+    calculate_magnitude() const
     {
       return sqrt(x * x + y * y);
     }
     inline vec2_t
-    norm()
+    calculate_normalized()
     {
-      float l = magnitude();
+      float l = this->calculate_magnitude();
       l = 1.0f / l;
       return vec2_t {x * l, y * l};
     }
@@ -207,7 +207,7 @@ namespace Base
     {
       float l = sqrt(
         (x - v.x) * (x - v.x) + (y - v.y) * (y - v.y) + (z - v.z) * (z - v.z));
-      return l < EPS;
+      return l < Base::eps;
     }
     inline const bool
     operator!=(const vec3_t& v) const
@@ -215,24 +215,24 @@ namespace Base
       return !(v == (*this));
     }
     inline const float
-    magnitude() const
+    calculate_magnitude() const
     {
       return sqrt(x * x + y * y + z * z);
     }
     inline vec3_t
-    norm()
+    calculate_normalized()
     {
-      float l = magnitude();
+      float l = this->calculate_magnitude();
       l = 1.0f / l;
       return vec3_t {x * l, y * l, z * l};
     }
     inline float
-    dot(const vec3_t& v) const
+    calculate_dot_product(const vec3_t& v) const
     {
       return x * v.x + y * v.y + z * v.z;
     }
     inline vec3_t
-    cross(const vec3_t& v) const
+    calculate_cross_product(const vec3_t& v) const
     {
       return vec3_t {y * v.z - z * v.y, z * v.x - x * v.z, x * v.y - y * v.x};
     }
@@ -359,7 +359,7 @@ namespace Base
       float l = sqrt(
         (x - v.x) * (x - v.x) + (y - v.y) * (y - v.y) + (z - v.z) * (z - v.z) +
         (w - v.w) * (w - v.w));
-      return l < EPS;
+      return l < Base::eps;
     }
     inline const bool
     operator!=(const vec4_t& v) const
@@ -367,14 +367,14 @@ namespace Base
       return !(v == (*this));
     }
     inline const float
-    magnitude() const
+    calculate_magnitude() const
     {
       return sqrt(x * x + y * y + z * z + w * w);
     }
     inline vec4_t
-    norm()
+    calculate_normalized()
     {
-      float l = magnitude();
+      float l = this->calculate_magnitude();
       l = 1.0f / l;
       return vec4_t {x * l, y * l, z * l, w * l};
     }
@@ -397,7 +397,7 @@ namespace Base
       return r;
     }
     inline vec4_t
-    cross(const vec4_t& v)
+    calculate_cross_product(const vec4_t& v)
     {
       return vec4_t {
         y * v.z - z * v.y,

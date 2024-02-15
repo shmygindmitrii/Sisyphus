@@ -23,7 +23,7 @@ Temple::Base::interpolate(float x0, float y0, float x1, float y1)
 }
 
 void
-Temple::Base::appendData(
+Temple::Base::append_data(
   std::vector<uint8_t>& v,
   const uint8_t*        pData,
   const int             srcSize,
@@ -35,7 +35,7 @@ Temple::Base::appendData(
 }
 
 void
-Temple::Base::replaceData(
+Temple::Base::replace_data(
   std::vector<uint8_t>& v,
   const uint8_t*        pData,
   const int             destOffset,
