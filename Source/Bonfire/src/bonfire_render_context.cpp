@@ -163,7 +163,7 @@ Temple::Bonfire::RenderContext::RenderContext(
   assert(fullSize > 0);
   m_data = new uint8_t[fullSize];
   m_depth = new float[m_width * m_height];
-  m_builtins.resize(sizeof(Base::mat4) * 5);
+  m_builtins.resize(sizeof(Base::mat4_t) * 5);
 }
 
 const uint8_t*
@@ -249,34 +249,34 @@ Temple::Bonfire::RenderContext::setPixelShader(
 }
 
 void
-Temple::Bonfire::RenderContext::setModelMatrix(const Base::mat4& m)
+Temple::Bonfire::RenderContext::setModelMatrix(const Base::mat4_t& m)
 {
   m_modelMatrix = m;
   m_modelViewMatrix = m_viewMatrix * m_modelMatrix;
   m_transformMatrix = m_perspectiveMatrix * m_modelViewMatrix;
   Base::replace_data(m_builtins, m_modelMatrix, 0);
-  Base::replace_data(m_builtins, m_modelViewMatrix, sizeof(Base::mat4) * 3);
-  Base::replace_data(m_builtins, m_transformMatrix, sizeof(Base::mat4) * 4);
+  Base::replace_data(m_builtins, m_modelViewMatrix, sizeof(Base::mat4_t) * 3);
+  Base::replace_data(m_builtins, m_transformMatrix, sizeof(Base::mat4_t) * 4);
 }
 
 void
-Temple::Bonfire::RenderContext::setViewMatrix(const Base::mat4& m)
+Temple::Bonfire::RenderContext::setViewMatrix(const Base::mat4_t& m)
 {
   m_viewMatrix = m;
   m_modelViewMatrix = m_viewMatrix * m_modelMatrix;
   m_transformMatrix = m_perspectiveMatrix * m_modelViewMatrix;
-  Base::replace_data(m_builtins, m_viewMatrix, sizeof(Base::mat4));
-  Base::replace_data(m_builtins, m_modelViewMatrix, sizeof(Base::mat4) * 3);
-  Base::replace_data(m_builtins, m_transformMatrix, sizeof(Base::mat4) * 4);
+  Base::replace_data(m_builtins, m_viewMatrix, sizeof(Base::mat4_t));
+  Base::replace_data(m_builtins, m_modelViewMatrix, sizeof(Base::mat4_t) * 3);
+  Base::replace_data(m_builtins, m_transformMatrix, sizeof(Base::mat4_t) * 4);
 }
 
 void
-Temple::Bonfire::RenderContext::setPerspectiveMatrix(const Base::mat4& m)
+Temple::Bonfire::RenderContext::setPerspectiveMatrix(const Base::mat4_t& m)
 {
   m_perspectiveMatrix = m;
   m_transformMatrix = m_perspectiveMatrix * m_modelViewMatrix;
-  Base::replace_data(m_builtins, m_perspectiveMatrix, sizeof(Base::mat4) * 2);
-  Base::replace_data(m_builtins, m_transformMatrix, sizeof(Base::mat4) * 4);
+  Base::replace_data(m_builtins, m_perspectiveMatrix, sizeof(Base::mat4_t) * 2);
+  Base::replace_data(m_builtins, m_transformMatrix, sizeof(Base::mat4_t) * 4);
 }
 
 void
@@ -287,8 +287,8 @@ Temple::Bonfire::RenderContext::setPerspective(
   float zfar)
 {
   fov = fov * Temple::Base::pi / 180.0f;
-  Base::mat4 perspectiveMatrix =
-    Base::mat4::projection(fov, aspect, znear, zfar);
+  Base::mat4_t perspectiveMatrix =
+    Base::mat4_t::projection(fov, aspect, znear, zfar);
   this->setFrustum(fov, aspect, znear, zfar);
   this->setPerspectiveMatrix(perspectiveMatrix);
 }
@@ -500,7 +500,8 @@ segmentPlaneIntersection(
   const Temple::Bonfire::Plane& p)
 {
   const Temple::Base::vec3_t ab = b - a;
-  float k = (-p.normal.calculate_dot_product(a) - p.offset) / p.normal.calculate_dot_product(ab);
+  float k = (-p.normal.calculate_dot_product(a) - p.offset) /
+            p.normal.calculate_dot_product(ab);
   return k;
 }
 

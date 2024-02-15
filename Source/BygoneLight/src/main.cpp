@@ -151,22 +151,22 @@ draw(HWND hWnd)
 
   // float angley = 30.0f / 360.0f * 2.0f * M_PI;
   // float anglez = 10.0f / 360.0f * 2.0f * M_PI;
-  const Temple::Base::mat4 mRotY = Temple::Base::mat4::roty(angle);
-  const Temple::Base::mat4 mRotZ = Temple::Base::mat4::rotz(angle);
-  Temple::Base::mat4       mRotation = mRotY * mRotZ;
+  const Temple::Base::mat4_t mRotY = Temple::Base::mat4_t::roty(angle);
+  const Temple::Base::mat4_t mRotZ = Temple::Base::mat4_t::rotz(angle);
+  Temple::Base::mat4_t       mRotation = mRotY * mRotZ;
 
-  Temple::Base::mat4 mScale = Temple::Base::mat4::identity();
+  Temple::Base::mat4_t mScale = Temple::Base::mat4_t::identity();
   mScale.r0.x = 0.5f;
   mScale.r1.y = 0.5f;
   mScale.r2.z = 0.5f;
 
-  Temple::Base::mat4 mTranslation = Temple::Base::mat4::identity();
+  Temple::Base::mat4_t mTranslation = Temple::Base::mat4_t::identity();
   mTranslation.r1.w = 0.3f; // y-shift
   mTranslation.r2.w = 0.7f; // z-shift
 
   renderContext.setModelMatrix(mTranslation * mRotation * mScale);
   renderContext.setViewMatrix(
-    Temple::Base::mat4::identity()); // not really used yet
+    Temple::Base::mat4_t::identity()); // not really used yet
   renderContext.setPerspective(90.0f, width / (float)height, 0.4f, 100.0f);
   renderContext.setBackfaceCulling(
     Temple::Bonfire::ECullingMode::CounterClockWise);
@@ -203,9 +203,9 @@ draw(HWND hWnd)
       const std::vector<uint8_t>& builtins,
       const std::vector<uint8_t>& descriptorSet)
     {
-      const Temple::Base::mat4* modelViewMatrixPtr =
-        reinterpret_cast<const Temple::Base::mat4*>(builtins.data());
-      const Temple::Base::mat4* mTransformPtr = modelViewMatrixPtr + 4;
+      const Temple::Base::mat4_t* modelViewMatrixPtr =
+        reinterpret_cast<const Temple::Base::mat4_t*>(builtins.data());
+      const Temple::Base::mat4_t* mTransformPtr = modelViewMatrixPtr + 4;
       out = (*modelViewMatrixPtr) * inp;
       // almost rasterized coord is found - need to divide by w and make x,y fit
       // to viewport in another function
@@ -307,7 +307,8 @@ draw(HWND hWnd)
           {
             diffuseIllumination += vDotn * (*illuminationPtr);
             // specular
-            Temple::Base::vec3_t vp = v - (*normalPtr) * v.calculate_dot_product(*normalPtr);
+            Temple::Base::vec3_t vp =
+              v - (*normalPtr) * v.calculate_dot_product(*normalPtr);
             Temple::Base::vec3_t r = v - vp * 2.0f;
             r = r.calculate_normalized();
             Temple::Base::vec3_t d = (*cameraPositionPtr) - pixelPosition;

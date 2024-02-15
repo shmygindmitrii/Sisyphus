@@ -8,7 +8,7 @@ namespace Temple
 {
 namespace Base
 {
-  struct mat3 {
+  struct mat3_t {
     // column-wise - each array contains column instead of row
     union {
       float data[3][3];
@@ -25,49 +25,49 @@ namespace Base
     const float&
     operator()(int i, int j) const;
     const bool
-    operator==(const mat3& M) const;
+    operator==(const mat3_t& M) const;
     const bool
-    operator!=(const mat3& M) const;
-    mat3&
+    operator!=(const mat3_t& M) const;
+    mat3_t&
     operator*=(float s);
-    mat3&
+    mat3_t&
     operator/=(float s);
-    mat3&
-    operator+=(const mat3& M);
-    mat3&
-    operator-=(const mat3& M);
-    mat3
-    operator+(const mat3& M) const;
-    mat3
+    mat3_t&
+    operator+=(const mat3_t& M);
+    mat3_t&
+    operator-=(const mat3_t& M);
+    mat3_t
+    operator+(const mat3_t& M) const;
+    mat3_t
     operator-() const;
-    mat3
-    operator-(const mat3& M) const;
-    mat3
-    operator*(const mat3& M) const;
+    mat3_t
+    operator-(const mat3_t& M) const;
+    mat3_t
+    operator*(const mat3_t& M) const;
     vec3_t
     operator*(const vec3_t& v) const;
     //
-    static mat3
+    static mat3_t
     rotx(float angle);
-    static mat3
+    static mat3_t
     roty(float angle);
-    static mat3
+    static mat3_t
     rotz(float angle);
-    static mat3
+    static mat3_t
     rot(const vec3_t& n, float angle);
-    static mat3
+    static mat3_t
     identity();
   };
 
   std::ostream&
-  operator<<(std::ostream& os, const mat3& M);
+  operator<<(std::ostream& os, const mat3_t& M);
 
-  mat3
-  operator*(float s, const mat3& M);
-  mat3
-  operator/(const mat3& M, float s);
+  mat3_t
+  operator*(float s, const mat3_t& M);
+  mat3_t
+  operator/(const mat3_t& M, float s);
 
-  struct mat4 {
+  struct mat4_t {
     union {
       float data[4][4];
       struct {
@@ -83,48 +83,48 @@ namespace Base
     const float&
     operator()(int i, int j) const;
     const bool
-    operator==(const mat4& M) const;
+    operator==(const mat4_t& M) const;
     const bool
-    operator!=(const mat4& M) const;
-    mat4&
+    operator!=(const mat4_t& M) const;
+    mat4_t&
     operator*=(float s);
-    mat4&
+    mat4_t&
     operator/=(float s);
-    mat4&
-    operator+=(const mat4& M);
-    mat4&
-    operator-=(const mat4& M);
-    mat4
-    operator+(const mat4& M) const;
-    mat4
+    mat4_t&
+    operator+=(const mat4_t& M);
+    mat4_t&
+    operator-=(const mat4_t& M);
+    mat4_t
+    operator+(const mat4_t& M) const;
+    mat4_t
     operator-() const;
-    mat4
-    operator-(const mat4& M) const;
-    mat4
-    operator*(const mat4& M) const;
+    mat4_t
+    operator-(const mat4_t& M) const;
+    mat4_t
+    operator*(const mat4_t& M) const;
     vec4_t
     operator*(const vec4_t& v) const;
     //
-    static mat4
+    static mat4_t
     rotx(float angle);
-    static mat4
+    static mat4_t
     roty(float angle);
-    static mat4
+    static mat4_t
     rotz(float angle);
-    static mat4
+    static mat4_t
     rot(const vec4_t& n, float angle);
-    static mat4
+    static mat4_t
     identity();
-    static mat4
+    static mat4_t
     projection(float fov, float aspect, float znear, float zfar);
   };
 
   std::ostream&
-  operator<<(std::ostream& os, const mat4& M);
+  operator<<(std::ostream& os, const mat4_t& M);
 
-  mat4
-  operator*(float s, const mat4& M);
-  mat4
-  operator/(const mat4& M, float s);
+  mat4_t
+  operator*(float s, const mat4_t& M);
+  mat4_t
+  operator/(const mat4_t& M, float s);
 } // namespace Base
 } // namespace Temple

@@ -107,11 +107,11 @@ namespace Bonfire
     bool                 m_depthWrite = true;
     bool                 m_depthTest = true;
     ECullingMode         m_backFaceCulling = ECullingMode::None;
-    Base::mat4           m_modelMatrix = Base::mat4::identity();
-    Base::mat4           m_viewMatrix = Base::mat4::identity();
-    Base::mat4           m_perspectiveMatrix = Base::mat4::identity();
-    Base::mat4           m_modelViewMatrix = Base::mat4::identity();
-    Base::mat4           m_transformMatrix = Base::mat4::identity();
+    Base::mat4_t         m_modelMatrix = Base::mat4_t::identity();
+    Base::mat4_t         m_viewMatrix = Base::mat4_t::identity();
+    Base::mat4_t         m_perspectiveMatrix = Base::mat4_t::identity();
+    Base::mat4_t         m_modelViewMatrix = Base::mat4_t::identity();
+    Base::mat4_t         m_transformMatrix = Base::mat4_t::identity();
     std::vector<uint8_t> m_builtins; // default matrices - immediate mode
     //
     Frustum m_frustum;
@@ -139,11 +139,11 @@ namespace Bonfire
     void
     setPixelShader(pixelShaderFunc psf);
     void
-    setModelMatrix(const Base::mat4& m);
+    setModelMatrix(const Base::mat4_t& m);
     void
-    setViewMatrix(const Base::mat4& m);
+    setViewMatrix(const Base::mat4_t& m);
     void
-    setPerspectiveMatrix(const Base::mat4& m);
+    setPerspectiveMatrix(const Base::mat4_t& m);
     void
     setPerspective(float fov, float aspect, float znear, float zfar);
     void
