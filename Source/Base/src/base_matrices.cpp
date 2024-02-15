@@ -211,7 +211,7 @@ Temple::Base::operator/(const Temple::Base::mat3_t& M, float s)
 }
 
 Temple::Base::mat3_t
-Temple::Base::mat3_t::rotx(float angle)
+Temple::Base::mat3_t::calculate_rotation_matrix_around_x(float angle)
 {
   return mat3_t {
     1.0f,
@@ -226,7 +226,7 @@ Temple::Base::mat3_t::rotx(float angle)
 }
 
 Temple::Base::mat3_t
-Temple::Base::mat3_t::roty(float angle)
+Temple::Base::mat3_t::calculate_rotation_matrix_around_y(float angle)
 {
   return mat3_t {
     cos(angle),
@@ -241,7 +241,7 @@ Temple::Base::mat3_t::roty(float angle)
 }
 
 Temple::Base::mat3_t
-Temple::Base::mat3_t::rotz(float angle)
+Temple::Base::mat3_t::calculate_rotation_matrix_around_z(float angle)
 {
   return mat3_t {
     cos(angle),
@@ -256,7 +256,9 @@ Temple::Base::mat3_t::rotz(float angle)
 }
 
 Temple::Base::mat3_t
-Temple::Base::mat3_t::rot(const Temple::Base::vec3_t& n, float angle)
+Temple::Base::mat3_t::calculate_rotation_matrix(
+  const Temple::Base::vec3_t& n,
+  float                       angle)
 {
   float R00 = cos(angle) + n.x * n.x * (1.0f - cos(angle));
   float R01 = n.x * n.y * (1.0f - cos(angle)) - n.z * sin(angle);
@@ -274,7 +276,7 @@ Temple::Base::mat3_t::rot(const Temple::Base::vec3_t& n, float angle)
 }
 
 Temple::Base::mat3_t
-Temple::Base::mat3_t::identity()
+Temple::Base::mat3_t::get_identity_matrix()
 {
   mat3_t m;
   m.r0.x = 1.0f;
@@ -566,7 +568,7 @@ Temple::Base::operator/(const Temple::Base::mat4_t& M, float s)
 }
 
 Temple::Base::mat4_t
-Temple::Base::mat4_t::rotx(float angle)
+Temple::Base::mat4_t::calculate_rotation_matrix_around_x(float angle)
 {
   return mat4_t {
     1.0f,
@@ -588,7 +590,7 @@ Temple::Base::mat4_t::rotx(float angle)
 }
 
 Temple::Base::mat4_t
-Temple::Base::mat4_t::roty(float angle)
+Temple::Base::mat4_t::calculate_rotation_matrix_around_y(float angle)
 {
   return mat4_t {
     cos(angle),
@@ -610,7 +612,7 @@ Temple::Base::mat4_t::roty(float angle)
 }
 
 Temple::Base::mat4_t
-Temple::Base::mat4_t::rotz(float angle)
+Temple::Base::mat4_t::calculate_rotation_matrix_around_z(float angle)
 {
   return mat4_t {
     cos(angle),
@@ -632,7 +634,9 @@ Temple::Base::mat4_t::rotz(float angle)
 }
 
 Temple::Base::mat4_t
-Temple::Base::mat4_t::rot(const Temple::Base::vec4_t& n, float angle)
+Temple::Base::mat4_t::calculate_rotation_matrix(
+  const Temple::Base::vec4_t& n,
+  float                       angle)
 {
   float R00 = cos(angle) + n.x * n.x * (1.0f - cos(angle));
   float R01 = n.x * n.y * (1.0f - cos(angle)) - n.z * sin(angle);
@@ -666,7 +670,7 @@ Temple::Base::mat4_t::rot(const Temple::Base::vec4_t& n, float angle)
 }
 
 Temple::Base::mat4_t
-Temple::Base::mat4_t::identity()
+Temple::Base::mat4_t::get_identity_matrix()
 {
   mat4_t m = {};
   m.r0.x = 1.0f;
@@ -677,13 +681,13 @@ Temple::Base::mat4_t::identity()
 }
 
 Temple::Base::mat4_t
-Temple::Base::mat4_t::projection(
+Temple::Base::mat4_t::calculate_projection_matrix(
   float fov,
   float aspect,
   float znear,
   float zfar)
 {
-  mat4_t m = identity();
+  mat4_t m = get_identity_matrix();
   // take aspect into account + fov
   // only fov in range of somewhat 45<fov<180 is described correctly - right
   // limit is crucial, ctg of 90 is zero, nothing is seen. fov / 2 in radians

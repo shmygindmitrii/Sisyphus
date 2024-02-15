@@ -35,15 +35,15 @@ namespace Base
   void
   append_data(
     std::vector<uint8_t>& v,
-    const uint8_t*        pData,
-    const int             srcSize,
-    const int             srcOffset);
+    const uint8_t*        p_data,
+    const int             src_size,
+    const int             src_offset);
   void
   replace_data(
     std::vector<uint8_t>& v,
-    const uint8_t*        pData,
-    const int             destOffset,
-    const int             srcSize,
-    const int             srcOffset);
+    const uint8_t*        p_data,
+    const int             dest_offset,
+    const int             src_size,
+    const int             src_offset);
 } // namespace Base
 } // namespace Temple

@@ -117,7 +117,9 @@ TEST_CASE("Temple::Base::mat3_t tests", "[Base::mat3_t]")
       Temple::Base::vec3_t n {1.0f, 2.0f, 3.0f};
       n = n / n.calculate_magnitude();
       Temple::Base::mat3_t mrot =
-        Temple::Base::mat3_t::rot(n, 1.0f); // angle in radians
+        Temple::Base::mat3_t::calculate_rotation_matrix(
+          n,
+          1.0f); // angle in radians
       Temple::Base::mat3_t expected = Temple::Base::mat3_t {
         0.5731379f,
         -0.6090066f,
@@ -136,7 +138,9 @@ TEST_CASE("Temple::Base::mat3_t tests", "[Base::mat3_t]")
       Temple::Base::vec3_t n {-0.5f, 5.0f, 0.31f};
       n = n / n.calculate_magnitude(); // should be unit-vector
       Temple::Base::mat3_t mrot =
-        Temple::Base::mat3_t::rot(n, 1.0f); // angle in radians
+        Temple::Base::mat3_t::calculate_rotation_matrix(
+          n,
+          1.0f); // angle in radians
       Temple::Base::mat3_t expected = Temple::Base::mat3_t {
         0.5448365f,
         -0.0971558f,
@@ -156,13 +160,19 @@ TEST_CASE("Temple::Base::mat3_t tests", "[Base::mat3_t]")
       Temple::Base::vec3_t j {0.0f, 1.0f, 0.0f};
       Temple::Base::vec3_t k {0.0f, 0.0f, 1.0f};
       float                angle = 3.14 * 0.5f;
-      Temple::Base::mat3_t mi = Temple::Base::mat3_t::rot(i, angle);
-      Temple::Base::mat3_t mj = Temple::Base::mat3_t::rot(j, angle);
-      Temple::Base::mat3_t mk = Temple::Base::mat3_t::rot(k, angle);
+      Temple::Base::mat3_t mi =
+        Temple::Base::mat3_t::calculate_rotation_matrix(i, angle);
+      Temple::Base::mat3_t mj =
+        Temple::Base::mat3_t::calculate_rotation_matrix(j, angle);
+      Temple::Base::mat3_t mk =
+        Temple::Base::mat3_t::calculate_rotation_matrix(k, angle);
 
-      Temple::Base::mat3_t mi0 = Temple::Base::mat3_t::rotx(angle);
-      Temple::Base::mat3_t mj0 = Temple::Base::mat3_t::roty(angle);
-      Temple::Base::mat3_t mk0 = Temple::Base::mat3_t::rotz(angle);
+      Temple::Base::mat3_t mi0 =
+        Temple::Base::mat3_t::calculate_rotation_matrix_around_x(angle);
+      Temple::Base::mat3_t mj0 =
+        Temple::Base::mat3_t::calculate_rotation_matrix_around_y(angle);
+      Temple::Base::mat3_t mk0 =
+        Temple::Base::mat3_t::calculate_rotation_matrix_around_z(angle);
 
       REQUIRE((mi == mi0 && mj == mj0 && mk == mk0));
     }
@@ -447,7 +457,9 @@ TEST_CASE("Temple::Base::mat4_t tests", "[Base::mat4_t]")
       Temple::Base::vec4_t n {1.0f, 2.0f, 3.0f, 0.0f};
       n = n / n.calculate_magnitude();
       Temple::Base::mat4_t mrot =
-        Temple::Base::mat4_t::rot(n, 1.0f); // angle in radians
+        Temple::Base::mat4_t::calculate_rotation_matrix(
+          n,
+          1.0f); // angle in radians
       Temple::Base::mat4_t expected = Temple::Base::mat4_t {
         0.5731379f,
         -0.6090066f,
@@ -473,7 +485,9 @@ TEST_CASE("Temple::Base::mat4_t tests", "[Base::mat4_t]")
       Temple::Base::vec4_t n {-0.5f, 5.0f, 0.31f, 0.0f};
       n = n / n.calculate_magnitude(); // should be unit-vector
       Temple::Base::mat4_t mrot =
-        Temple::Base::mat4_t::rot(n, 1.0f); // angle in radians
+        Temple::Base::mat4_t::calculate_rotation_matrix(
+          n,
+          1.0f); // angle in radians
       Temple::Base::mat4_t expected = Temple::Base::mat4_t {
         0.5448365f,
         -0.0971558f,
@@ -500,13 +514,19 @@ TEST_CASE("Temple::Base::mat4_t tests", "[Base::mat4_t]")
       Temple::Base::vec4_t j {0.0f, 1.0f, 0.0f, 0.0f};
       Temple::Base::vec4_t k {0.0f, 0.0f, 1.0f, 0.0f};
       float                angle = 3.14 * 0.5f;
-      Temple::Base::mat4_t mi = Temple::Base::mat4_t::rot(i, angle);
-      Temple::Base::mat4_t mj = Temple::Base::mat4_t::rot(j, angle);
-      Temple::Base::mat4_t mk = Temple::Base::mat4_t::rot(k, angle);
+      Temple::Base::mat4_t mi =
+        Temple::Base::mat4_t::calculate_rotation_matrix(i, angle);
+      Temple::Base::mat4_t mj =
+        Temple::Base::mat4_t::calculate_rotation_matrix(j, angle);
+      Temple::Base::mat4_t mk =
+        Temple::Base::mat4_t::calculate_rotation_matrix(k, angle);
 
-      Temple::Base::mat4_t mi0 = Temple::Base::mat4_t::rotx(angle);
-      Temple::Base::mat4_t mj0 = Temple::Base::mat4_t::roty(angle);
-      Temple::Base::mat4_t mk0 = Temple::Base::mat4_t::rotz(angle);
+      Temple::Base::mat4_t mi0 =
+        Temple::Base::mat4_t::calculate_rotation_matrix_around_x(angle);
+      Temple::Base::mat4_t mj0 =
+        Temple::Base::mat4_t::calculate_rotation_matrix_around_y(angle);
+      Temple::Base::mat4_t mk0 =
+        Temple::Base::mat4_t::calculate_rotation_matrix_around_z(angle);
 
       REQUIRE((mi == mi0 && mj == mj0 && mk == mk0));
     }
@@ -517,11 +537,12 @@ TEST_CASE("Temple::Base::mat4_t tests", "[Base::mat4_t]")
     {
       float                zNear = 10.0f;
       float                zFar = 100.0f;
-      Temple::Base::mat4_t proj = Temple::Base::mat4_t::projection(
-        90.0 * Temple::Base::pi / 180.0f,
-        1.0f,
-        zNear,
-        zFar);
+      Temple::Base::mat4_t proj =
+        Temple::Base::mat4_t::calculate_projection_matrix(
+          90.0 * Temple::Base::pi / 180.0f,
+          1.0f,
+          zNear,
+          zFar);
       Temple::Base::vec4_t pNear {0.0f, 0.0f, zNear, 1.0f};
       Temple::Base::vec4_t pFar {0.0f, 0.0f, zFar, 1.0f};
       Temple::Base::vec4_t pNearProjected = proj * pNear;

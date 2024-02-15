@@ -48,15 +48,15 @@ namespace Base
     operator*(const vec3_t& v) const;
     //
     static mat3_t
-    rotx(float angle);
+    calculate_rotation_matrix_around_x(float angle);
     static mat3_t
-    roty(float angle);
+    calculate_rotation_matrix_around_y(float angle);
     static mat3_t
-    rotz(float angle);
+    calculate_rotation_matrix_around_z(float angle);
     static mat3_t
-    rot(const vec3_t& n, float angle);
+    calculate_rotation_matrix(const vec3_t& n, float angle);
     static mat3_t
-    identity();
+    get_identity_matrix();
   };
 
   std::ostream&
@@ -106,17 +106,21 @@ namespace Base
     operator*(const vec4_t& v) const;
     //
     static mat4_t
-    rotx(float angle);
+    calculate_rotation_matrix_around_x(float angle);
     static mat4_t
-    roty(float angle);
+    calculate_rotation_matrix_around_y(float angle);
     static mat4_t
-    rotz(float angle);
+    calculate_rotation_matrix_around_z(float angle);
     static mat4_t
-    rot(const vec4_t& n, float angle);
+    calculate_rotation_matrix(const vec4_t& n, float angle);
     static mat4_t
-    identity();
+    get_identity_matrix();
     static mat4_t
-    projection(float fov, float aspect, float znear, float zfar);
+    calculate_projection_matrix(
+      float fov,
+      float aspect,
+      float znear,
+      float zfar);
   };
 
   std::ostream&

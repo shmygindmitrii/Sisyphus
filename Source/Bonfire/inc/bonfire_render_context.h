@@ -107,11 +107,11 @@ namespace Bonfire
     bool                 m_depthWrite = true;
     bool                 m_depthTest = true;
     ECullingMode         m_backFaceCulling = ECullingMode::None;
-    Base::mat4_t         m_modelMatrix = Base::mat4_t::identity();
-    Base::mat4_t         m_viewMatrix = Base::mat4_t::identity();
-    Base::mat4_t         m_perspectiveMatrix = Base::mat4_t::identity();
-    Base::mat4_t         m_modelViewMatrix = Base::mat4_t::identity();
-    Base::mat4_t         m_transformMatrix = Base::mat4_t::identity();
+    Base::mat4_t         m_modelMatrix = Base::mat4_t::get_identity_matrix();
+    Base::mat4_t         m_viewMatrix = Base::mat4_t::get_identity_matrix();
+    Base::mat4_t m_perspectiveMatrix = Base::mat4_t::get_identity_matrix();
+    Base::mat4_t m_modelViewMatrix = Base::mat4_t::get_identity_matrix();
+    Base::mat4_t m_transformMatrix = Base::mat4_t::get_identity_matrix();
     std::vector<uint8_t> m_builtins; // default matrices - immediate mode
     //
     Frustum m_frustum;

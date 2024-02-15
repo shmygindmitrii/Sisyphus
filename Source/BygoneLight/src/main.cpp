@@ -151,22 +151,25 @@ draw(HWND hWnd)
 
   // float angley = 30.0f / 360.0f * 2.0f * M_PI;
   // float anglez = 10.0f / 360.0f * 2.0f * M_PI;
-  const Temple::Base::mat4_t mRotY = Temple::Base::mat4_t::roty(angle);
-  const Temple::Base::mat4_t mRotZ = Temple::Base::mat4_t::rotz(angle);
-  Temple::Base::mat4_t       mRotation = mRotY * mRotZ;
+  const Temple::Base::mat4_t mRotY =
+    Temple::Base::mat4_t::calculate_rotation_matrix_around_y(angle);
+  const Temple::Base::mat4_t mRotZ =
+    Temple::Base::mat4_t::calculate_rotation_matrix_around_z(angle);
+  Temple::Base::mat4_t mRotation = mRotY * mRotZ;
 
-  Temple::Base::mat4_t mScale = Temple::Base::mat4_t::identity();
+  Temple::Base::mat4_t mScale = Temple::Base::mat4_t::get_identity_matrix();
   mScale.r0.x = 0.5f;
   mScale.r1.y = 0.5f;
   mScale.r2.z = 0.5f;
 
-  Temple::Base::mat4_t mTranslation = Temple::Base::mat4_t::identity();
+  Temple::Base::mat4_t mTranslation =
+    Temple::Base::mat4_t::get_identity_matrix();
   mTranslation.r1.w = 0.3f; // y-shift
   mTranslation.r2.w = 0.7f; // z-shift
 
   renderContext.setModelMatrix(mTranslation * mRotation * mScale);
   renderContext.setViewMatrix(
-    Temple::Base::mat4_t::identity()); // not really used yet
+    Temple::Base::mat4_t::get_identity_matrix()); // not really used yet
   renderContext.setPerspective(90.0f, width / (float)height, 0.4f, 100.0f);
   renderContext.setBackfaceCulling(
     Temple::Bonfire::ECullingMode::CounterClockWise);

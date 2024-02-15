@@ -288,7 +288,7 @@ Temple::Bonfire::RenderContext::setPerspective(
 {
   fov = fov * Temple::Base::pi / 180.0f;
   Base::mat4_t perspectiveMatrix =
-    Base::mat4_t::projection(fov, aspect, znear, zfar);
+    Base::mat4_t::calculate_projection_matrix(fov, aspect, znear, zfar);
   this->setFrustum(fov, aspect, znear, zfar);
   this->setPerspectiveMatrix(perspectiveMatrix);
 }
