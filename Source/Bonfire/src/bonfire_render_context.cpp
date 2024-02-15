@@ -254,9 +254,9 @@ Temple::Bonfire::RenderContext::setModelMatrix(const Base::mat4& m)
   m_modelMatrix = m;
   m_modelViewMatrix = m_viewMatrix * m_modelMatrix;
   m_transformMatrix = m_perspectiveMatrix * m_modelViewMatrix;
-  Base::replaceData(m_builtins, m_modelMatrix, 0);
-  Base::replaceData(m_builtins, m_modelViewMatrix, sizeof(Base::mat4) * 3);
-  Base::replaceData(m_builtins, m_transformMatrix, sizeof(Base::mat4) * 4);
+  Base::replace_data(m_builtins, m_modelMatrix, 0);
+  Base::replace_data(m_builtins, m_modelViewMatrix, sizeof(Base::mat4) * 3);
+  Base::replace_data(m_builtins, m_transformMatrix, sizeof(Base::mat4) * 4);
 }
 
 void
@@ -265,9 +265,9 @@ Temple::Bonfire::RenderContext::setViewMatrix(const Base::mat4& m)
   m_viewMatrix = m;
   m_modelViewMatrix = m_viewMatrix * m_modelMatrix;
   m_transformMatrix = m_perspectiveMatrix * m_modelViewMatrix;
-  Base::replaceData(m_builtins, m_viewMatrix, sizeof(Base::mat4));
-  Base::replaceData(m_builtins, m_modelViewMatrix, sizeof(Base::mat4) * 3);
-  Base::replaceData(m_builtins, m_transformMatrix, sizeof(Base::mat4) * 4);
+  Base::replace_data(m_builtins, m_viewMatrix, sizeof(Base::mat4));
+  Base::replace_data(m_builtins, m_modelViewMatrix, sizeof(Base::mat4) * 3);
+  Base::replace_data(m_builtins, m_transformMatrix, sizeof(Base::mat4) * 4);
 }
 
 void
@@ -275,8 +275,8 @@ Temple::Bonfire::RenderContext::setPerspectiveMatrix(const Base::mat4& m)
 {
   m_perspectiveMatrix = m;
   m_transformMatrix = m_perspectiveMatrix * m_modelViewMatrix;
-  Base::replaceData(m_builtins, m_perspectiveMatrix, sizeof(Base::mat4) * 2);
-  Base::replaceData(m_builtins, m_transformMatrix, sizeof(Base::mat4) * 4);
+  Base::replace_data(m_builtins, m_perspectiveMatrix, sizeof(Base::mat4) * 2);
+  Base::replace_data(m_builtins, m_transformMatrix, sizeof(Base::mat4) * 4);
 }
 
 void
@@ -286,7 +286,7 @@ Temple::Bonfire::RenderContext::setPerspective(
   float znear,
   float zfar)
 {
-  fov = fov * Temple::Base::PI / 180.0f;
+  fov = fov * Temple::Base::pi / 180.0f;
   Base::mat4 perspectiveMatrix =
     Base::mat4::projection(fov, aspect, znear, zfar);
   this->setFrustum(fov, aspect, znear, zfar);
@@ -324,26 +324,26 @@ Temple::Bonfire::RenderContext::setFrustum(
   topNormal.x = 0.0f;
   topNormal.y = -cosf(0.5f * fov);
   topNormal.z = -sinf(0.5f * fov);
-  m_frustum.bounds[2].offset = -topNormal.dot(t);
+  m_frustum.bounds[2].offset = -topNormal.calculate_dot_product(t);
   // bottom plane
   Base::vec3_t& bottomNormal = m_frustum.bounds[3].normal;
   bottomNormal.x = 0.0f;
   bottomNormal.y = -topNormal.y;
   bottomNormal.z = topNormal.z;
-  m_frustum.bounds[3].offset = -bottomNormal.dot(b);
+  m_frustum.bounds[3].offset = -bottomNormal.calculate_dot_product(b);
   // left plane
   float         horHalfAngle = atanf(aspect * b.y / znear);
   Base::vec3_t& leftNormal = m_frustum.bounds[4].normal;
   leftNormal.x = -cosf(horHalfAngle);
   leftNormal.y = 0.0f;
   leftNormal.z = -sinf(horHalfAngle);
-  m_frustum.bounds[4].offset = -leftNormal.dot(l);
+  m_frustum.bounds[4].offset = -leftNormal.calculate_dot_product(l);
   // right plane
   Base::vec3_t& rightNormal = m_frustum.bounds[5].normal;
   rightNormal.x = -leftNormal.x;
   rightNormal.y = 0.0f;
   rightNormal.z = leftNormal.z;
-  m_frustum.bounds[5].offset = -rightNormal.dot(r);
+  m_frustum.bounds[5].offset = -rightNormal.calculate_dot_product(r);
 }
 
 bool
@@ -500,7 +500,7 @@ segmentPlaneIntersection(
   const Temple::Bonfire::Plane& p)
 {
   const Temple::Base::vec3_t ab = b - a;
-  float k = (-p.normal.dot(a) - p.offset) / p.normal.dot(ab);
+  float k = (-p.normal.calculate_dot_product(a) - p.offset) / p.normal.calculate_dot_product(ab);
   return k;
 }
 
@@ -511,7 +511,7 @@ pointPlaneSide(const Temple::Base::vec3_t& a, const Temple::Bonfire::Plane& p)
   // 0 - on
   // +value - above
   // literally put this into the plane equation
-  return p.normal.dot(a) + p.offset;
+  return p.normal.calculate_dot_product(a) + p.offset;
 }
 
 static void
@@ -529,7 +529,7 @@ cullTriangleTwoPointOutside(
 {
   // a and b are outside
   float cSide = pointPlaneSide(c.xyz, p);
-  if (fabs(cSide) <= Temple::Base::EPS)
+  if (fabs(cSide) <= Temple::Base::eps)
   {
     // c is on the plane, discard
   }
@@ -562,9 +562,9 @@ cullTriangleTwoPointOutside(
     passedVertexCoords.emplace_back(c);
     passedVertexCoords.emplace_back(ak);
     passedVertexCoords.emplace_back(bk);
-    Temple::Base::appendData(passedVertexData, pDataC, vf.size, 0);
-    Temple::Base::appendData(passedVertexData, dataAK.data(), vf.size, 0);
-    Temple::Base::appendData(passedVertexData, dataBK.data(), vf.size, 0);
+    Temple::Base::append_data(passedVertexData, pDataC, vf.size, 0);
+    Temple::Base::append_data(passedVertexData, dataAK.data(), vf.size, 0);
+    Temple::Base::append_data(passedVertexData, dataBK.data(), vf.size, 0);
   }
 }
 
@@ -583,7 +583,7 @@ cullTriangleOnePointOutsideOneOn(
 {
   // a is outside and b is on the plane
   float cSide = pointPlaneSide(c.xyz, p);
-  if (fabs(cSide) <= Temple::Base::EPS)
+  if (fabs(cSide) <= Temple::Base::eps)
   {
     // only segment is on the plane, we can discard it
   }
@@ -605,9 +605,9 @@ cullTriangleOnePointOutsideOneOn(
     passedVertexCoords.emplace_back(b);
     passedVertexCoords.emplace_back(c);
     passedVertexCoords.emplace_back(ck);
-    Temple::Base::appendData(passedVertexData, pDataB, vf.size, 0);
-    Temple::Base::appendData(passedVertexData, pDataC, vf.size, 0);
-    Temple::Base::appendData(passedVertexData, dataCK.data(), vf.size, 0);
+    Temple::Base::append_data(passedVertexData, pDataB, vf.size, 0);
+    Temple::Base::append_data(passedVertexData, pDataC, vf.size, 0);
+    Temple::Base::append_data(passedVertexData, dataCK.data(), vf.size, 0);
   }
 }
 
@@ -662,7 +662,7 @@ cullTriangleOnePointOutside(
     else
     {
       // only one point is really outside
-      if (fabs(bSide) < Temple::Base::EPS)
+      if (fabs(bSide) < Temple::Base::eps)
       {
         // b is on the plane
         cullTriangleOnePointOutsideOneOn(
@@ -677,7 +677,7 @@ cullTriangleOnePointOutside(
           passedVertexCoords,
           passedVertexData);
       }
-      else if (fabs(cSide) < Temple::Base::EPS)
+      else if (fabs(cSide) < Temple::Base::eps)
       {
         // c is on the plane
         cullTriangleOnePointOutsideOneOn(
@@ -721,16 +721,16 @@ cullTriangleOnePointOutside(
         passedVertexCoords.emplace_back(b);
         passedVertexCoords.emplace_back(c);
         passedVertexCoords.emplace_back(bk);
-        Temple::Base::appendData(passedVertexData, pDataB, vf.size, 0);
-        Temple::Base::appendData(passedVertexData, pDataC, vf.size, 0);
-        Temple::Base::appendData(passedVertexData, dataBK.data(), vf.size, 0);
+        Temple::Base::append_data(passedVertexData, pDataB, vf.size, 0);
+        Temple::Base::append_data(passedVertexData, pDataC, vf.size, 0);
+        Temple::Base::append_data(passedVertexData, dataBK.data(), vf.size, 0);
         //
         passedVertexCoords.emplace_back(c);
         passedVertexCoords.emplace_back(ck);
         passedVertexCoords.emplace_back(bk);
-        Temple::Base::appendData(passedVertexData, pDataC, vf.size, 0);
-        Temple::Base::appendData(passedVertexData, dataCK.data(), vf.size, 0);
-        Temple::Base::appendData(passedVertexData, dataBK.data(), vf.size, 0);
+        Temple::Base::append_data(passedVertexData, pDataC, vf.size, 0);
+        Temple::Base::append_data(passedVertexData, dataCK.data(), vf.size, 0);
+        Temple::Base::append_data(passedVertexData, dataBK.data(), vf.size, 0);
       }
     }
   }
@@ -759,9 +759,9 @@ cullTriangleByPlane(
     passedVertexCoords.emplace_back(a);
     passedVertexCoords.emplace_back(b);
     passedVertexCoords.emplace_back(c);
-    Temple::Base::appendData(passedVertexData, pDataA, vf.size, 0);
-    Temple::Base::appendData(passedVertexData, pDataB, vf.size, 0);
-    Temple::Base::appendData(passedVertexData, pDataC, vf.size, 0);
+    Temple::Base::append_data(passedVertexData, pDataA, vf.size, 0);
+    Temple::Base::append_data(passedVertexData, pDataB, vf.size, 0);
+    Temple::Base::append_data(passedVertexData, pDataC, vf.size, 0);
   }
   else if (aSide > 0.0f && bSide > 0.0f && cSide > 0.0f)
   {
@@ -865,9 +865,9 @@ Temple::Bonfire::RenderContext::cullTriangleByFrustum(
 {
   std::vector<Base::vec4_t> vertexPassedFront = {a, b, c};
   std::vector<uint8_t>      dataPassedFront = {};
-  Base::appendData(dataPassedFront, aData, vf.size, 0);
-  Base::appendData(dataPassedFront, bData, vf.size, 0);
-  Base::appendData(dataPassedFront, cData, vf.size, 0);
+  Base::append_data(dataPassedFront, aData, vf.size, 0);
+  Base::append_data(dataPassedFront, bData, vf.size, 0);
+  Base::append_data(dataPassedFront, cData, vf.size, 0);
   std::vector<Base::vec4_t> vertexPassedBack = {};
   std::vector<uint8_t>      dataPassedBack = {};
 
@@ -894,7 +894,7 @@ Temple::Bonfire::RenderContext::cullTriangleByFrustum(
   for (int i = 0; i < pVertexPassedFront->size(); i++)
   {
     passedVertexCoords.emplace_back((*pVertexPassedFront)[i]);
-    Temple::Base::appendData(
+    Temple::Base::append_data(
       passedVertexData,
       pDataPassedFront->data() + (vf.size * i),
       vf.size,
@@ -1077,25 +1077,25 @@ Temple::Bonfire::RenderContext::drawTriangles(
       case ECullingMode::ClockWise:
         side0 = cWorld - aWorld;
         side1 = bWorld - cWorld;
-        outsideNormal = side0.cross(side1);
+        outsideNormal = side0.calculate_cross_product(side1);
         break;
       case ECullingMode::CounterClockWise:
       default:
         side0 = bWorld - aWorld;
         side1 = cWorld - bWorld;
-        outsideNormal = side0.cross(side1);
+        outsideNormal = side0.calculate_cross_product(side1);
         break;
       }
       Base::vec4_t z = aWorld + bWorld + cWorld;
-      float        zlength = z.magnitude();
-      if (zlength < Temple::Base::EPS)
+      float        zlength = z.calculate_magnitude();
+      if (zlength < Temple::Base::eps)
       {
         continue;
       }
       z = z * (1.0f / zlength);
       Base::vec3_t n {outsideNormal.x, outsideNormal.y, outsideNormal.z};
-      n = n.norm();
-      if (z.xyz.dot(n) > 0.0f)
+      n = n.calculate_normalized();
+      if (z.xyz.calculate_dot_product(n) > 0.0f)
       {
         continue;
       }

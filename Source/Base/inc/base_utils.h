@@ -4,7 +4,7 @@
 #include <vector>
 #include <cassert>
 
-#define EQUAL_FLOATS(a, b) (abs(a - b) < Temple::Base::EPS)
+#define EQUAL_FLOATS(a, b) (abs(a - b) < Temple::Base::eps)
 
 namespace Temple
 {
@@ -18,7 +18,7 @@ namespace Base
     float y1); // interpolate second value
   template <typename T>
   static void
-  appendData(std::vector<uint8_t>& v, const T& data)
+  append_data(std::vector<uint8_t>& v, const T& data)
   {
     int oldSize = v.size();
     v.resize(oldSize + sizeof(T));
@@ -26,20 +26,20 @@ namespace Base
   }
   template <typename T>
   static void
-  replaceData(std::vector<uint8_t>& v, const T& data, uint32_t offset)
+  replace_data(std::vector<uint8_t>& v, const T& data, uint32_t offset)
   {
     int oldSize = v.size();
     assert(offset + sizeof(T) <= v.size());
     memcpy(&v[offset], (void*)&data, sizeof(T));
   }
   void
-  appendData(
+  append_data(
     std::vector<uint8_t>& v,
     const uint8_t*        pData,
     const int             srcSize,
     const int             srcOffset);
   void
-  replaceData(
+  replace_data(
     std::vector<uint8_t>& v,
     const uint8_t*        pData,
     const int             destOffset,

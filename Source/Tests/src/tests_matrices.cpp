@@ -11,9 +11,9 @@ TEST_CASE("Temple::Base::mat3 tests", "[Base::mat3]")
   {
     Temple::Base::mat3 M;
     REQUIRE(
-      (EQUAL_FLOATS(0.0f, M.r0.magnitude()) &&
-       EQUAL_FLOATS(0.0f, M.r1.magnitude()) &&
-       EQUAL_FLOATS(0.0f, M.r2.magnitude())));
+      (EQUAL_FLOATS(0.0f, M.r0.calculate_magnitude()) &&
+       EQUAL_FLOATS(0.0f, M.r1.calculate_magnitude()) &&
+       EQUAL_FLOATS(0.0f, M.r2.calculate_magnitude())));
   }
   SECTION("mat3 constructor with 9 floats and equality operator")
   {
@@ -121,7 +121,7 @@ TEST_CASE("Temple::Base::mat3 tests", "[Base::mat3]")
     SECTION("  Example 1")
     {
       Temple::Base::vec3_t n {1.0f, 2.0f, 3.0f};
-      n = n / n.magnitude();
+      n = n / n.calculate_magnitude();
       Temple::Base::mat3 mrot =
         Temple::Base::mat3::rot(n, 1.0f); // angle in radians
       Temple::Base::mat3 expected = Temple::Base::mat3(
@@ -140,7 +140,7 @@ TEST_CASE("Temple::Base::mat3 tests", "[Base::mat3]")
     SECTION("  Example 2")
     {
       Temple::Base::vec3_t n {-0.5f, 5.0f, 0.31f};
-      n = n / n.magnitude(); // should be unit-vector
+      n = n / n.calculate_magnitude(); // should be unit-vector
       Temple::Base::mat3 mrot =
         Temple::Base::mat3::rot(n, 1.0f); // angle in radians
       Temple::Base::mat3 expected = Temple::Base::mat3(
@@ -199,10 +199,10 @@ TEST_CASE("Temple::Base::mat4 tests", "[Base::mat4]")
   {
     Temple::Base::mat4 M;
     REQUIRE(
-      (EQUAL_FLOATS(0.0f, M.r0.magnitude()) &&
-       EQUAL_FLOATS(0.0f, M.r1.magnitude()) &&
-       EQUAL_FLOATS(0.0f, M.r2.magnitude()) &&
-       EQUAL_FLOATS(0.0f, M.r3.magnitude())));
+      (EQUAL_FLOATS(0.0f, M.r0.calculate_magnitude()) &&
+       EQUAL_FLOATS(0.0f, M.r1.calculate_magnitude()) &&
+       EQUAL_FLOATS(0.0f, M.r2.calculate_magnitude()) &&
+       EQUAL_FLOATS(0.0f, M.r3.calculate_magnitude())));
   }
   SECTION("mat4 constructor with 16 floats and equality operator")
   {
@@ -434,7 +434,7 @@ TEST_CASE("Temple::Base::mat4 tests", "[Base::mat4]")
     SECTION("  Example 1")
     {
       Temple::Base::vec4_t n {1.0f, 2.0f, 3.0f, 0.0f};
-      n = n / n.magnitude();
+      n = n / n.calculate_magnitude();
       Temple::Base::mat4 mrot =
         Temple::Base::mat4::rot(n, 1.0f); // angle in radians
       Temple::Base::mat4 expected = Temple::Base::mat4(
@@ -460,7 +460,7 @@ TEST_CASE("Temple::Base::mat4 tests", "[Base::mat4]")
     SECTION("  Example 2")
     {
       Temple::Base::vec4_t n {-0.5f, 5.0f, 0.31f, 0.0f};
-      n = n / n.magnitude(); // should be unit-vector
+      n = n / n.calculate_magnitude(); // should be unit-vector
       Temple::Base::mat4 mrot =
         Temple::Base::mat4::rot(n, 1.0f); // angle in radians
       Temple::Base::mat4 expected = Temple::Base::mat4(
@@ -507,7 +507,7 @@ TEST_CASE("Temple::Base::mat4 tests", "[Base::mat4]")
       float              zNear = 10.0f;
       float              zFar = 100.0f;
       Temple::Base::mat4 proj = Temple::Base::mat4::projection(
-        90.0 * Temple::Base::PI / 180.0f,
+        90.0 * Temple::Base::pi / 180.0f,
         1.0f,
         zNear,
         zFar);

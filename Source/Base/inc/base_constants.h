@@ -4,7 +4,7 @@ namespace Temple
 {
 namespace Base
 {
-  const float EPS = 0.0001f;
-  const float PI = 3.141592653f;
+  const float eps = 0.0001f;
+  const float pi = 3.141592653f;
 } // namespace Base
 } // namespace Temple
