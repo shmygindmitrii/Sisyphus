@@ -16,24 +16,6 @@ namespace Base
         vec3_t r0, r1, r2;
       };
     };
-    mat3();
-    mat3(
-      float m00,
-      float m01,
-      float m02,
-      float m10,
-      float m11,
-      float m12,
-      float m20,
-      float m21,
-      float m22);
-    mat3(const vec3_t& a, const vec3_t& b, const vec3_t& c);
-    mat3(const mat3& m);
-    mat3(mat3&& m) noexcept;
-    mat3&
-    operator=(const mat3& M);
-    mat3&
-    operator=(mat3&& M) noexcept;
     vec3_t&
     operator[](int i);
     const vec3_t&
@@ -92,31 +74,6 @@ namespace Base
         vec4_t r0, r1, r2, r3;
       };
     };
-    mat4();
-    mat4(
-      float m00,
-      float m01,
-      float m02,
-      float m03,
-      float m10,
-      float m11,
-      float m12,
-      float m13,
-      float m20,
-      float m21,
-      float m22,
-      float m23,
-      float m30,
-      float m31,
-      float m32,
-      float m33);
-    mat4(const vec4_t& a, const vec4_t& b, const vec4_t& c, const vec4_t& d);
-    mat4(const mat4& m);
-    mat4(mat4&& m) noexcept;
-    mat4&
-    operator=(const mat4& M);
-    mat4&
-    operator=(mat4&& M) noexcept;
     vec4_t&
     operator[](int i);
     const vec4_t&

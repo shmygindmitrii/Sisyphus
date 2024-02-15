@@ -5,124 +5,6 @@
 
 // mat3
 
-Temple::Base::mat3::mat3()
-{
-  data[0][0] = 0.0f;
-  data[0][1] = 0.0f;
-  data[0][2] = 0.0f;
-
-  data[1][0] = 0.0f;
-  data[1][1] = 0.0f;
-  data[1][2] = 0.0f;
-
-  data[2][0] = 0.0f;
-  data[2][1] = 0.0f;
-  data[2][2] = 0.0f;
-}
-
-Temple::Base::mat3::mat3(
-  float m00,
-  float m01,
-  float m02,
-  float m10,
-  float m11,
-  float m12,
-  float m20,
-  float m21,
-  float m22)
-{
-  data[0][0] = m00;
-  data[0][1] = m01;
-  data[0][2] = m02;
-
-  data[1][0] = m10;
-  data[1][1] = m11;
-  data[1][2] = m12;
-
-  data[2][0] = m20;
-  data[2][1] = m21;
-  data[2][2] = m22;
-}
-
-Temple::Base::mat3::mat3(const vec3_t& a, const vec3_t& b, const vec3_t& c)
-{
-  r0.x = a.x;
-  r0.y = a.y;
-  r0.z = a.z;
-
-  r1.x = b.x;
-  r1.y = b.y;
-  r1.z = b.z;
-
-  r2.x = c.x;
-  r2.y = c.y;
-  r2.z = c.z;
-}
-
-Temple::Base::mat3::mat3(const mat3& M)
-{
-  data[0][0] = M.data[0][0];
-  data[0][1] = M.data[0][1];
-  data[0][2] = M.data[0][2];
-
-  data[1][0] = M.data[1][0];
-  data[1][1] = M.data[1][1];
-  data[1][2] = M.data[1][2];
-
-  data[2][0] = M.data[2][0];
-  data[2][1] = M.data[2][1];
-  data[2][2] = M.data[2][2];
-}
-
-Temple::Base::mat3::mat3(mat3&& M) noexcept
-{
-  data[0][0] = M.data[0][0];
-  data[0][1] = M.data[0][1];
-  data[0][2] = M.data[0][2];
-
-  data[1][0] = M.data[1][0];
-  data[1][1] = M.data[1][1];
-  data[1][2] = M.data[1][2];
-
-  data[2][0] = M.data[2][0];
-  data[2][1] = M.data[2][1];
-  data[2][2] = M.data[2][2];
-}
-
-Temple::Base::mat3&
-Temple::Base::mat3::operator=(const mat3& M)
-{
-  data[0][0] = M.data[0][0];
-  data[0][1] = M.data[1][0];
-  data[0][2] = M.data[2][0];
-
-  data[1][0] = M.data[0][1];
-  data[1][1] = M.data[1][1];
-  data[1][2] = M.data[2][1];
-
-  data[2][0] = M.data[0][2];
-  data[2][1] = M.data[1][2];
-  data[2][2] = M.data[2][2];
-  return *this;
-}
-
-Temple::Base::mat3&
-Temple::Base::mat3::operator=(mat3&& M) noexcept
-{
-  data[0][0] = M.data[0][0];
-  data[0][1] = M.data[0][1];
-  data[0][2] = M.data[0][2];
-
-  data[1][0] = M.data[1][0];
-  data[1][1] = M.data[1][1];
-  data[1][2] = M.data[1][2];
-
-  data[2][0] = M.data[2][0];
-  data[2][1] = M.data[2][1];
-  data[2][2] = M.data[2][2];
-  return *this;
-}
-
 Temple::Base::vec3_t&
 Temple::Base::mat3::operator[](int i)
 {
@@ -221,7 +103,7 @@ Temple::Base::mat3::operator-=(const mat3& M)
 Temple::Base::mat3
 Temple::Base::mat3::operator+(const mat3& M) const
 {
-  return mat3(
+  return mat3{
     data[0][0] + M.data[0][0],
     data[0][1] + M.data[0][1],
     data[0][2] + M.data[0][2],
@@ -230,13 +112,13 @@ Temple::Base::mat3::operator+(const mat3& M) const
     data[1][2] + M.data[1][2],
     data[2][0] + M.data[2][0],
     data[2][1] + M.data[2][1],
-    data[2][2] + M.data[2][2]);
+    data[2][2] + M.data[2][2] };
 }
 
 Temple::Base::mat3
 Temple::Base::mat3::operator-() const
 {
-  return mat3(
+  return mat3{
     -data[0][0],
     -data[0][1],
     -data[0][2],
@@ -245,13 +127,13 @@ Temple::Base::mat3::operator-() const
     -data[1][2],
     -data[2][0],
     -data[2][1],
-    -data[2][2]);
+    -data[2][2] };
 }
 
 Temple::Base::mat3
 Temple::Base::mat3::operator-(const mat3& M) const
 {
-  return mat3(
+  return mat3{
     data[0][0] - M.data[0][0],
     data[0][1] - M.data[0][1],
     data[0][2] - M.data[0][2],
@@ -260,13 +142,13 @@ Temple::Base::mat3::operator-(const mat3& M) const
     data[1][2] - M.data[1][2],
     data[2][0] - M.data[2][0],
     data[2][1] - M.data[2][1],
-    data[2][2] - M.data[2][2]);
+    data[2][2] - M.data[2][2] };
 }
 
 Temple::Base::mat3
 Temple::Base::mat3::operator*(const mat3& M) const
 {
-  return mat3(
+  return mat3{
     data[0][0] * M.data[0][0] + data[0][1] * M.data[1][0] +
       data[0][2] * M.data[2][0],
     data[0][0] * M.data[0][1] + data[0][1] * M.data[1][1] +
@@ -284,7 +166,7 @@ Temple::Base::mat3::operator*(const mat3& M) const
     data[2][0] * M.data[0][1] + data[2][1] * M.data[1][1] +
       data[2][2] * M.data[2][1],
     data[2][0] * M.data[0][2] + data[2][1] * M.data[1][2] +
-      data[2][2] * M.data[2][2]);
+      data[2][2] * M.data[2][2] };
 }
 
 Temple::Base::vec3_t
@@ -293,7 +175,7 @@ Temple::Base::mat3::operator*(const vec3_t& v) const
   return vec3_t {
     data[0][0] * v.x + data[0][1] * v.y + data[0][2] * v.z,
     data[1][0] * v.x + data[1][1] * v.y + data[1][2] * v.z,
-    data[2][0] * v.x + data[2][1] * v.y + data[2][2] * v.z};
+    data[2][0] * v.x + data[2][1] * v.y + data[2][2] * v.z };
 }
 
 std::ostream&
@@ -309,7 +191,7 @@ Temple::Base::operator<<(std::ostream& os, const mat3& M)
 Temple::Base::mat3
 Temple::Base::operator*(float s, const Temple::Base::mat3& M)
 {
-  return mat3(
+  return mat3{
     M(0, 0) * s,
     M(0, 1) * s,
     M(0, 2) * s,
@@ -318,7 +200,7 @@ Temple::Base::operator*(float s, const Temple::Base::mat3& M)
     M(1, 2) * s,
     M(2, 0) * s,
     M(2, 1) * s,
-    M(2, 2) * s);
+    M(2, 2) * s };
 }
 
 Temple::Base::mat3
@@ -331,7 +213,7 @@ Temple::Base::operator/(const Temple::Base::mat3& M, float s)
 Temple::Base::mat3
 Temple::Base::mat3::rotx(float angle)
 {
-  return mat3(
+  return mat3{
     1.0f,
     0.0f,
     0.0f,
@@ -340,13 +222,13 @@ Temple::Base::mat3::rotx(float angle)
     -sin(angle),
     0.0f,
     sin(angle),
-    cos(angle));
+    cos(angle) };
 }
 
 Temple::Base::mat3
 Temple::Base::mat3::roty(float angle)
 {
-  return mat3(
+  return mat3{
     cos(angle),
     0.0f,
     sin(angle),
@@ -355,13 +237,13 @@ Temple::Base::mat3::roty(float angle)
     0.0f,
     -sin(angle),
     0.0f,
-    cos(angle));
+    cos(angle) };
 }
 
 Temple::Base::mat3
 Temple::Base::mat3::rotz(float angle)
 {
-  return mat3(
+  return mat3{
     cos(angle),
     -sin(angle),
     0.0f,
@@ -370,7 +252,7 @@ Temple::Base::mat3::rotz(float angle)
     0.0f,
     0.0f,
     0.0f,
-    1.0f);
+    1.0f };
 }
 
 Temple::Base::mat3
@@ -388,7 +270,7 @@ Temple::Base::mat3::rot(const Temple::Base::vec3_t& n, float angle)
   float R21 = n.z * n.y * (1.0f - cos(angle)) + n.x * sin(angle);
   float R22 = cos(angle) + n.z * n.z * (1 - cos(angle));
 
-  return mat3(R00, R01, R02, R10, R11, R12, R20, R21, R22);
+  return mat3{ R00, R01, R02, R10, R11, R12, R20, R21, R22 };
 }
 
 Temple::Base::mat3
@@ -402,191 +284,6 @@ Temple::Base::mat3::identity()
 }
 
 // mat4
-
-Temple::Base::mat4::mat4()
-{
-  data[0][0] = 0.0f;
-  data[0][1] = 0.0f;
-  data[0][2] = 0.0f;
-  data[0][3] = 0.0f;
-
-  data[1][0] = 0.0f;
-  data[1][1] = 0.0f;
-  data[1][2] = 0.0f;
-  data[1][3] = 0.0f;
-
-  data[2][0] = 0.0f;
-  data[2][1] = 0.0f;
-  data[2][2] = 0.0f;
-  data[2][3] = 0.0f;
-
-  data[3][0] = 0.0f;
-  data[3][1] = 0.0f;
-  data[3][2] = 0.0f;
-  data[3][3] = 0.0f;
-}
-
-Temple::Base::mat4::mat4(
-  float m00,
-  float m01,
-  float m02,
-  float m03,
-  float m10,
-  float m11,
-  float m12,
-  float m13,
-  float m20,
-  float m21,
-  float m22,
-  float m23,
-  float m30,
-  float m31,
-  float m32,
-  float m33)
-{
-  data[0][0] = m00;
-  data[0][1] = m01;
-  data[0][2] = m02;
-  data[0][3] = m03;
-
-  data[1][0] = m10;
-  data[1][1] = m11;
-  data[1][2] = m12;
-  data[1][3] = m13;
-
-  data[2][0] = m20;
-  data[2][1] = m21;
-  data[2][2] = m22;
-  data[2][3] = m23;
-
-  data[3][0] = m30;
-  data[3][1] = m31;
-  data[3][2] = m32;
-  data[3][3] = m33;
-}
-
-Temple::Base::mat4::mat4(
-  const vec4_t& a,
-  const vec4_t& b,
-  const vec4_t& c,
-  const vec4_t& d)
-{
-  r0.x = a.x;
-  r0.y = a.y;
-  r0.z = a.z;
-  r0.w = a.w;
-
-  r1.x = b.x;
-  r1.y = b.y;
-  r1.z = b.z;
-  r1.w = b.w;
-
-  r2.x = c.x;
-  r2.y = c.y;
-  r2.z = c.z;
-  r2.w = c.w;
-
-  r3.x = d.x;
-  r3.y = d.y;
-  r3.z = d.z;
-  r3.w = d.w;
-}
-
-Temple::Base::mat4::mat4(const mat4& M)
-{
-  data[0][0] = M.data[0][0];
-  data[0][1] = M.data[0][1];
-  data[0][2] = M.data[0][2];
-  data[0][3] = M.data[0][3];
-
-  data[1][0] = M.data[1][0];
-  data[1][1] = M.data[1][1];
-  data[1][2] = M.data[1][2];
-  data[1][3] = M.data[1][3];
-
-  data[2][0] = M.data[2][0];
-  data[2][1] = M.data[2][1];
-  data[2][2] = M.data[2][2];
-  data[2][3] = M.data[2][3];
-
-  data[3][0] = M.data[3][0];
-  data[3][1] = M.data[3][1];
-  data[3][2] = M.data[3][2];
-  data[3][3] = M.data[3][3];
-}
-
-Temple::Base::mat4::mat4(mat4&& M) noexcept
-{
-  data[0][0] = M.data[0][0];
-  data[0][1] = M.data[0][1];
-  data[0][2] = M.data[0][2];
-  data[0][3] = M.data[0][3];
-
-  data[1][0] = M.data[1][0];
-  data[1][1] = M.data[1][1];
-  data[1][2] = M.data[1][2];
-  data[1][3] = M.data[1][3];
-
-  data[2][0] = M.data[2][0];
-  data[2][1] = M.data[2][1];
-  data[2][2] = M.data[2][2];
-  data[2][3] = M.data[2][3];
-
-  data[3][0] = M.data[3][0];
-  data[3][1] = M.data[3][1];
-  data[3][2] = M.data[3][2];
-  data[3][3] = M.data[3][3];
-}
-
-Temple::Base::mat4&
-Temple::Base::mat4::operator=(const mat4& M)
-{
-  data[0][0] = M.data[0][0];
-  data[0][1] = M.data[0][1];
-  data[0][2] = M.data[0][2];
-  data[0][3] = M.data[0][3];
-
-  data[1][0] = M.data[1][0];
-  data[1][1] = M.data[1][1];
-  data[1][2] = M.data[1][2];
-  data[1][3] = M.data[1][3];
-
-  data[2][0] = M.data[2][0];
-  data[2][1] = M.data[2][1];
-  data[2][2] = M.data[2][2];
-  data[2][3] = M.data[2][3];
-
-  data[3][0] = M.data[3][0];
-  data[3][1] = M.data[3][1];
-  data[3][2] = M.data[3][2];
-  data[3][3] = M.data[3][3];
-  return *this;
-}
-
-Temple::Base::mat4&
-Temple::Base::mat4::operator=(mat4&& M) noexcept
-{
-  data[0][0] = M.data[0][0];
-  data[0][1] = M.data[0][1];
-  data[0][2] = M.data[0][2];
-  data[0][3] = M.data[0][3];
-
-  data[1][0] = M.data[1][0];
-  data[1][1] = M.data[1][1];
-  data[1][2] = M.data[1][2];
-  data[1][3] = M.data[1][3];
-
-  data[2][0] = M.data[2][0];
-  data[2][1] = M.data[2][1];
-  data[2][2] = M.data[2][2];
-  data[2][3] = M.data[2][3];
-
-  data[3][0] = M.data[3][0];
-  data[3][1] = M.data[3][1];
-  data[3][2] = M.data[3][2];
-  data[3][3] = M.data[3][3];
-  return *this;
-}
 
 Temple::Base::vec4_t&
 Temple::Base::mat4::operator[](int i)
@@ -710,7 +407,7 @@ Temple::Base::mat4::operator-=(const mat4& M)
 Temple::Base::mat4
 Temple::Base::mat4::operator+(const mat4& M) const
 {
-  return mat4(
+  mat4 m {
     data[0][0] + M.data[0][0],
     data[0][1] + M.data[0][1],
     data[0][2] + M.data[0][2],
@@ -726,13 +423,14 @@ Temple::Base::mat4::operator+(const mat4& M) const
     data[3][0] + M.data[3][0],
     data[3][1] + M.data[3][1],
     data[3][2] + M.data[3][2],
-    data[3][3] + M.data[3][3]);
+    data[3][3] + M.data[3][3] };
+  return m;
 }
 
 Temple::Base::mat4
 Temple::Base::mat4::operator-() const
-{ // [dim] TODO
-  return mat4(
+{
+  return mat4{
     -data[0][0],
     -data[0][1],
     -data[0][2],
@@ -748,13 +446,13 @@ Temple::Base::mat4::operator-() const
     -data[3][0],
     -data[3][1],
     -data[3][2],
-    -data[3][3]);
+    -data[3][3] };
 }
 
 Temple::Base::mat4
 Temple::Base::mat4::operator-(const mat4& M) const
 {
-  return mat4(
+  return mat4{
     data[0][0] - M.data[0][0],
     data[0][1] - M.data[0][1],
     data[0][2] - M.data[0][2],
@@ -770,13 +468,13 @@ Temple::Base::mat4::operator-(const mat4& M) const
     data[3][0] - M.data[3][0],
     data[3][1] - M.data[3][1],
     data[3][2] - M.data[3][2],
-    data[3][3] - M.data[3][3]);
+    data[3][3] - M.data[3][3] };
 }
 
 Temple::Base::mat4
 Temple::Base::mat4::operator*(const mat4& M) const
 {
-  return mat4(
+  return mat4{
     data[0][0] * M.data[0][0] + data[0][1] * M.data[1][0] +
       data[0][2] * M.data[2][0] + data[0][3] * M.data[3][0],
     data[0][0] * M.data[0][1] + data[0][1] * M.data[1][1] +
@@ -811,7 +509,7 @@ Temple::Base::mat4::operator*(const mat4& M) const
     data[3][0] * M.data[0][2] + data[3][1] * M.data[1][2] +
       data[3][2] * M.data[2][2] + data[3][3] * M.data[3][2],
     data[3][0] * M.data[0][3] + data[3][1] * M.data[1][3] +
-      data[3][2] * M.data[2][3] + data[3][3] * M.data[3][3]);
+      data[3][2] * M.data[2][3] + data[3][3] * M.data[3][3] };
 }
 
 Temple::Base::vec4_t
@@ -841,7 +539,7 @@ Temple::Base::operator<<(std::ostream& os, const mat4& M)
 Temple::Base::mat4
 Temple::Base::operator*(float s, const Temple::Base::mat4& M)
 {
-  return mat4(
+  return mat4{
     M.data[0][0] * s,
     M.data[0][1] * s,
     M.data[0][2] * s,
@@ -857,7 +555,7 @@ Temple::Base::operator*(float s, const Temple::Base::mat4& M)
     M.data[3][0] * s,
     M.data[3][1] * s,
     M.data[3][2] * s,
-    M.data[3][3] * s);
+    M.data[3][3] * s };
 }
 
 Temple::Base::mat4
@@ -870,7 +568,7 @@ Temple::Base::operator/(const Temple::Base::mat4& M, float s)
 Temple::Base::mat4
 Temple::Base::mat4::rotx(float angle)
 {
-  return mat4(
+  return mat4{
     1.0f,
     0.0f,
     0.0f,
@@ -886,13 +584,13 @@ Temple::Base::mat4::rotx(float angle)
     0.0f,
     0.0f,
     0.0f,
-    1.0f);
+    1.0f };
 }
 
 Temple::Base::mat4
 Temple::Base::mat4::roty(float angle)
 {
-  return mat4(
+  return mat4{
     cos(angle),
     0.0f,
     sin(angle),
@@ -908,13 +606,13 @@ Temple::Base::mat4::roty(float angle)
     0.0f,
     0.0f,
     0.0f,
-    1.0f);
+    1.0f };
 }
 
 Temple::Base::mat4
 Temple::Base::mat4::rotz(float angle)
 {
-  return mat4(
+  return mat4{
     cos(angle),
     -sin(angle),
     0.0f,
@@ -930,7 +628,7 @@ Temple::Base::mat4::rotz(float angle)
     0.0f,
     0.0f,
     0.0f,
-    1.0f);
+    1.0f };
 }
 
 Temple::Base::mat4
@@ -948,7 +646,7 @@ Temple::Base::mat4::rot(const Temple::Base::vec4_t& n, float angle)
   float R21 = n.z * n.y * (1.0f - cos(angle)) + n.x * sin(angle);
   float R22 = cos(angle) + n.z * n.z * (1 - cos(angle));
 
-  return mat4(
+  return mat4{
     R00,
     R01,
     R02,
@@ -964,13 +662,13 @@ Temple::Base::mat4::rot(const Temple::Base::vec4_t& n, float angle)
     0.0f,
     0.0f,
     0.0f,
-    1.0f);
+    1.0f };
 }
 
 Temple::Base::mat4
 Temple::Base::mat4::identity()
 {
-  mat4 m;
+  mat4 m = {};
   m.r0.x = 1.0f;
   m.r1.y = 1.0f;
   m.r2.z = 1.0f;
