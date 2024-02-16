@@ -410,7 +410,7 @@ wWinMain(
     for (int j = 0; j < 3; j++)
     {
       int                  vertIdx = face.indices[j].position - 1;
-      int                  uvIdx = face.indices[j].Texture - 1;
+      int                  uvIdx = face.indices[j].texture - 1;
       int                  normalIdx = face.indices[j].normal - 1;
       Temple::Base::vec4_t pos {
         objFile->coord[vertIdx].x,

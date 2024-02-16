@@ -11,7 +11,7 @@ namespace Barn
 {
   struct ObjFaceIndex {
     unsigned int position;
-    unsigned int Texture;
+    unsigned int texture;
     unsigned int normal;
   };
   struct ObjFace {

@@ -62,7 +62,7 @@ Temple::Barn::read_obj_model_file(const char* filename)
         if (getline(vertex_stream, index, '/'))
         {
           idx = std::stoi(index);
-          face.indices[face_vert_idx].Texture = idx;
+          face.indices[face_vert_idx].texture = idx;
         }
 
         // Normal index
