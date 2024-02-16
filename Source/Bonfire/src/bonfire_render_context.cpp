@@ -173,7 +173,10 @@ Temple::Bonfire::RenderContext::get_frame() const
 }
 
 void
-Temple::Bonfire::RenderContext::resize(int width, int height, int bytes_per_pixel)
+Temple::Bonfire::RenderContext::resize(
+  int width,
+  int height,
+  int bytes_per_pixel)
 {
   size_t old_resolution = m_width * m_height;
   size_t old_size = old_resolution * (size_t)m_bytes_per_pixel;
@@ -275,7 +278,10 @@ Temple::Bonfire::RenderContext::set_perspective_matrix(const Base::mat4_t& m)
 {
   m_perspective_matrix = m;
   m_transform_matrix = m_perspective_matrix * m_model_view_matrix;
-  Base::replace_data(m_builtins, m_perspective_matrix, sizeof(Base::mat4_t) * 2);
+  Base::replace_data(
+    m_builtins,
+    m_perspective_matrix,
+    sizeof(Base::mat4_t) * 2);
   Base::replace_data(m_builtins, m_transform_matrix, sizeof(Base::mat4_t) * 4);
 }
 
@@ -388,7 +394,8 @@ Temple::Bonfire::RenderContext::process_vertex(const Base::vec4_t& v)
   c = c / w;
 
   Base::vec3_t crd {c.x, -c.y, c.z};
-  crd = (crd + 1.0f) * 0.5f * (m_viewport_max - m_viewport_min) + m_viewport_min;
+  crd =
+    (crd + 1.0f) * 0.5f * (m_viewport_max - m_viewport_min) + m_viewport_min;
 
   return Base::vec4_t {crd.x, crd.y, crd.z, c.w};
 }
@@ -705,14 +712,26 @@ cull_triangle_one_point_outside(
         passed_vertex_coords.emplace_back(bk);
         Temple::Base::append_data(passed_vertex_data, p_data_b, vf.size, 0);
         Temple::Base::append_data(passed_vertex_data, p_data_c, vf.size, 0);
-        Temple::Base::append_data(passed_vertex_data, data_bk.data(), vf.size, 0);
+        Temple::Base::append_data(
+          passed_vertex_data,
+          data_bk.data(),
+          vf.size,
+          0);
         //
         passed_vertex_coords.emplace_back(c);
         passed_vertex_coords.emplace_back(ck);
         passed_vertex_coords.emplace_back(bk);
         Temple::Base::append_data(passed_vertex_data, p_data_c, vf.size, 0);
-        Temple::Base::append_data(passed_vertex_data, data_ck.data(), vf.size, 0);
-        Temple::Base::append_data(passed_vertex_data, data_bk.data(), vf.size, 0);
+        Temple::Base::append_data(
+          passed_vertex_data,
+          data_ck.data(),
+          vf.size,
+          0);
+        Temple::Base::append_data(
+          passed_vertex_data,
+          data_bk.data(),
+          vf.size,
+          0);
       }
     }
   }
@@ -900,8 +919,8 @@ Temple::Bonfire::RenderContext::draw_lines(
   {
     const Base::vec4_t& va = coords[indices[i]];
     const Base::vec4_t& vb = coords[indices[i + 1]];
-    const uint8_t*      p_data_a = &p_vertex_data[indices[i] * v_in_format.size];
-    const uint8_t*      p_data_b = &p_vertex_data[indices[i + 1] * v_in_format.size];
+    const uint8_t* p_data_a = &p_vertex_data[indices[i] * v_in_format.size];
+    const uint8_t* p_data_b = &p_vertex_data[indices[i + 1] * v_in_format.size];
     // draw single line here
     Base::vec4_t         a, b;
     std::vector<uint8_t> a_vertex_out(v_out_format.size),
@@ -927,8 +946,10 @@ Temple::Bonfire::RenderContext::draw_lines(
     Base::vec4_t a0(a);
     Base::vec4_t b0(b);
     // perspective correct interpolation part - normalize by z first
-    std::vector<uint8_t> v_depthed_a(v_out_format.size), v_depthed_b(v_out_format.size);
-    uint8_t *p_depthed_a = v_depthed_a.data(), *p_depthed_b = v_depthed_b.data();
+    std::vector<uint8_t> v_depthed_a(v_out_format.size),
+      v_depthed_b(v_out_format.size);
+    uint8_t *p_depthed_a = v_depthed_a.data(),
+            *p_depthed_b = v_depthed_b.data();
     multiply_attributes(a_vertex_out.data(), p_depthed_a, a0.w, v_out_format);
     multiply_attributes(b_vertex_out.data(), p_depthed_b, b0.w, v_out_format);
     //
@@ -967,7 +988,11 @@ Temple::Bonfire::RenderContext::draw_lines(
             c_out.data(),
             weight,
             v_out_format);
-          multiply_attributes(c_out.data(), pixel_out.data(), pzo, v_out_format);
+          multiply_attributes(
+            c_out.data(),
+            pixel_out.data(),
+            pzo,
+            v_out_format);
           render_pixel_depth_wise(c, pixel_out.data());
         }
       }
@@ -994,7 +1019,11 @@ Temple::Bonfire::RenderContext::draw_lines(
             c_out.data(),
             weight,
             v_out_format);
-          multiply_attributes(c_out.data(), pixel_out.data(), pzo, v_out_format);
+          multiply_attributes(
+            c_out.data(),
+            pixel_out.data(),
+            pzo,
+            v_out_format);
           render_pixel_depth_wise(c, pixel_out.data());
         }
       }
@@ -1020,9 +1049,9 @@ Temple::Bonfire::RenderContext::draw_triangles(
     const Base::vec4_t& va(coords[indices[i]]);
     const Base::vec4_t& vb(coords[indices[i + 1]]);
     const Base::vec4_t& vc(coords[indices[i + 2]]);
-    const uint8_t*      p_data_a = &p_vertex_data[indices[i] * v_in_format.size];
-    const uint8_t*      p_data_b = &p_vertex_data[indices[i + 1] * v_in_format.size];
-    const uint8_t*      p_data_c = &p_vertex_data[indices[i + 2] * v_in_format.size];
+    const uint8_t* p_data_a = &p_vertex_data[indices[i] * v_in_format.size];
+    const uint8_t* p_data_b = &p_vertex_data[indices[i + 1] * v_in_format.size];
+    const uint8_t* p_data_c = &p_vertex_data[indices[i + 2] * v_in_format.size];
     //
     Base::vec4_t         a_world, b_world, c_world;
     std::vector<uint8_t> a_vertex_out(v_out_format.size),
@@ -1103,8 +1132,10 @@ Temple::Bonfire::RenderContext::draw_triangles(
       const Base::vec4_t& c_visible(view_passed_vertex_coords[j + 2]);
       //
       uint8_t* p_vertex_out_a = &view_passed_vertex_data[j * v_out_format.size];
-      uint8_t* p_vertex_out_b = &view_passed_vertex_data[(j + 1) * v_out_format.size];
-      uint8_t* p_vertex_out_c = &view_passed_vertex_data[(j + 2) * v_out_format.size];
+      uint8_t* p_vertex_out_b =
+        &view_passed_vertex_data[(j + 1) * v_out_format.size];
+      uint8_t* p_vertex_out_c =
+        &view_passed_vertex_data[(j + 2) * v_out_format.size];
       //
       Base::vec4_t a, b, c;
       a = process_vertex(a_visible);
@@ -1159,16 +1190,29 @@ Temple::Bonfire::RenderContext::draw_triangles(
       float                bottomy = sa.y;
       int                  idx = 0;
       std::vector<uint8_t> v_interpolated_ac(v_out_format.size),
-        v_interpolated_ab(v_out_format.size), v_interpolated_bc(v_out_format.size),
+        v_interpolated_ab(v_out_format.size),
+        v_interpolated_bc(v_out_format.size),
         v_interpolated_lr(v_out_format.size);
       std::vector<uint8_t> v_depthed_a(v_out_format.size),
         v_depthed_b(v_out_format.size), v_depthed_c(v_out_format.size),
         v_depthed_p(v_out_format.size);
       // divide attributes by original z - lesser attributes, that are located
       // further
-      multiply_attributes(p_vertex_out_a, v_depthed_a.data(), sa.w, v_out_format);
-      multiply_attributes(p_vertex_out_b, v_depthed_b.data(), sb.w, v_out_format);
-      multiply_attributes(p_vertex_out_c, v_depthed_c.data(), sc.w, v_out_format);
+      multiply_attributes(
+        p_vertex_out_a,
+        v_depthed_a.data(),
+        sa.w,
+        v_out_format);
+      multiply_attributes(
+        p_vertex_out_b,
+        v_depthed_b.data(),
+        sb.w,
+        v_out_format);
+      multiply_attributes(
+        p_vertex_out_c,
+        v_depthed_c.data(),
+        sc.w,
+        v_out_format);
       //
       if (leftToRight)
       {
@@ -1249,7 +1293,7 @@ Temple::Bonfire::RenderContext::draw_triangles(
           while (leftx < rightx)
           {
             float h_weight = (leftx - xbc[idx - xab.size()]) /
-                            (xac[idx] - xbc[idx - xab.size()]);
+                             (xac[idx] - xbc[idx - xab.size()]);
             interpolate_attributes(
               v_interpolated_bc.data(),
               v_interpolated_ac.data(),

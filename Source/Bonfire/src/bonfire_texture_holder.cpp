@@ -29,7 +29,8 @@ Temple::Bonfire::TextureHolder::add_texture(
 }
 
 Temple::Base::vec4_t
-Temple::Bonfire::TextureHolder::get_pixel(uint32_t texId, float u, float v) const
+Temple::Bonfire::TextureHolder::get_pixel(uint32_t texId, float u, float v)
+  const
 {
   Temple::Base::vec4_t pixel;
   pixel.a = 1.0f;

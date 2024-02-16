@@ -81,8 +81,8 @@ namespace Bonfire
     int                  m_width = 0;
     int                  m_height = 0;
     int                  m_bytes_per_pixel = 0;
-    Base::vec3_t         m_viewport_min = { 0.0f, 0.0f, 0.0f };
-    Base::vec3_t         m_viewport_max = { 0.0f, 0.0f, 0.0f };
+    Base::vec3_t         m_viewport_min = {0.0f, 0.0f, 0.0f};
+    Base::vec3_t         m_viewport_max = {0.0f, 0.0f, 0.0f};
     std::vector<uint8_t> m_descriptor_set;
     VertexShaderFunc     m_vsf = nullptr;
     PixelShaderFunc      m_psf = nullptr;
