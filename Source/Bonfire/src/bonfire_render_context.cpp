@@ -172,6 +172,12 @@ Temple::Bonfire::RenderContext::get_frame() const
   return m_data;
 }
 
+const unsigned int
+Temple::Bonfire::RenderContext::get_frame_size() const
+{
+  return m_width * m_height * m_bytes_per_pixel;
+}
+
 void
 Temple::Bonfire::RenderContext::resize(
   int width,

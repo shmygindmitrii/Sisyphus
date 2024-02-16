@@ -62,7 +62,7 @@ namespace Bonfire
     const std::vector<uint8_t>& builtins,
     const std::vector<uint8_t>& descriptor_set); // over single pixel
   //
-  using LogFunc = void (*)(const char* msg, size_t msg_length);
+  using LogFunc = void (*)(const char* msg, unsigned int msg_length);
   //
   struct Plane {
     Base::vec3_t normal;
@@ -104,6 +104,8 @@ namespace Bonfire
     RenderContext(int width, int height, int bytes_per_pixel);
     const uint8_t*
     get_frame() const;
+    const unsigned int
+    get_frame_size() const;
     void
     resize(int width, int height, int bytes_per_pixel);
     void
