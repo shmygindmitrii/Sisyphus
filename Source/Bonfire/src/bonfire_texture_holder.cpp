@@ -30,14 +30,13 @@ Temple::Bonfire::TextureHolder::add_texture(
 
 Temple::Base::vec4_t
 Temple::Bonfire::TextureHolder::get_pixel(uint32_t texId, float u, float v)
-  const
 {
   Temple::Base::vec4_t pixel;
   pixel.a = 1.0f;
   if (texId < m_textures.size())
   {
-    const Texture& tex = m_textures[texId];
-    return tex.get_pixel_color(u, v);
+    Texture* p_tex = &m_textures[texId];
+    pixel = p_tex->get_pixel_color(u, v);
   }
   return pixel;
 }
