@@ -7,27 +7,19 @@ namespace Temple
 namespace Bonfire
 {
 #pragma pack(push, 1)
-  struct col4u {
+  struct col4u_t {
     uint8_t r, g, b, a;
-    col4u();
-    col4u(uint8_t vr, uint8_t vg, uint8_t vb, uint8_t va);
-    col4u(const col4u& other);
-    col4u(col4u&& other);
-    col4u&
-    operator=(col4u&& other) noexcept;
-    col4u&
-    operator=(const col4u& other);
-    col4u
-    operator+(const col4u& other);
-    col4u
-    operator-(const col4u& other);
-    col4u
-    operator*(const col4u& other) const;
-    col4u
+    col4u_t
+    operator+(const col4u_t& other);
+    col4u_t
+    operator-(const col4u_t& other);
+    col4u_t
+    operator*(const col4u_t& other) const;
+    col4u_t
     operator*(float other);
   };
 #pragma pack(pop)
   Base::vec4_t
-  getFloatColor(const col4u& c);
+  get_color_vec4(const col4u_t& c);
 } // namespace Bonfire
 } // namespace Temple

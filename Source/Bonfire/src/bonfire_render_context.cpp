@@ -43,52 +43,52 @@ Temple::Bonfire::VertexFormat::VertexFormat(
 
 template <typename T>
 static inline void
-__interpolateAttribsTemplate(
-  const uint8_t*& aIn,
-  const uint8_t*& bIn,
-  uint8_t*&       cOut,
+interpolateAttribsTemplate(
+  const uint8_t*& a_in,
+  const uint8_t*& b_in,
+  uint8_t*&       c_out,
   float           weight)
 {
-  *(T*)cOut = (*(T*)bIn) * weight - (*(T*)aIn) * weight + *(T*)aIn;
-  aIn += sizeof(T);
-  bIn += sizeof(T);
-  cOut += sizeof(T);
+  *(T*)c_out = (*(T*)b_in) * weight - (*(T*)a_in) * weight + *(T*)a_in;
+  a_in += sizeof(T);
+  b_in += sizeof(T);
+  c_out += sizeof(T);
 }
 
 void
-Temple::Bonfire::interpolateAttributes(
-  const uint8_t*      aIn,
-  const uint8_t*      bIn,
-  uint8_t*            cOut,
+Temple::Bonfire::interpolate_attributes(
+  const uint8_t*      a_in,
+  const uint8_t*      b_in,
+  uint8_t*            c_out,
   float               weight,
   const VertexFormat& vf)
 {
-  // cOut should be enough to hold aIn or bIn (they are the same in terms of
+  // c_out should be enough to hold a_in or b_in (they are the same in terms of
   // size) weight is always from 0 to 1
   for (int i = 0; i < vf.attributes.size(); i++)
   {
     switch (vf.attributes[i])
     {
     case EVertexAttribType::FLOAT32:
-      __interpolateAttribsTemplate<float>(aIn, bIn, cOut, weight);
+      interpolateAttribsTemplate<float>(a_in, b_in, c_out, weight);
       break;
     case EVertexAttribType::INT32:
-      __interpolateAttribsTemplate<int32_t>(aIn, bIn, cOut, weight);
+      interpolateAttribsTemplate<int32_t>(a_in, b_in, c_out, weight);
       break;
     case EVertexAttribType::UINT8:
-      __interpolateAttribsTemplate<uint8_t>(aIn, bIn, cOut, weight);
+      interpolateAttribsTemplate<uint8_t>(a_in, b_in, c_out, weight);
       break;
     case EVertexAttribType::VEC2:
-      __interpolateAttribsTemplate<Base::vec2_t>(aIn, bIn, cOut, weight);
+      interpolateAttribsTemplate<Base::vec2_t>(a_in, b_in, c_out, weight);
       break;
     case EVertexAttribType::VEC3:
-      __interpolateAttribsTemplate<Base::vec3_t>(aIn, bIn, cOut, weight);
+      interpolateAttribsTemplate<Base::vec3_t>(a_in, b_in, c_out, weight);
       break;
     case EVertexAttribType::VEC4:
-      __interpolateAttribsTemplate<Base::vec4_t>(aIn, bIn, cOut, weight);
+      interpolateAttribsTemplate<Base::vec4_t>(a_in, b_in, c_out, weight);
       break;
     case EVertexAttribType::UV:
-      __interpolateAttribsTemplate<Base::vec2_t>(aIn, bIn, cOut, weight);
+      interpolateAttribsTemplate<Base::vec2_t>(a_in, b_in, c_out, weight);
       break;
     }
   }
@@ -96,17 +96,17 @@ Temple::Bonfire::interpolateAttributes(
 
 template <typename T>
 static inline void
-__multAttribsTemplate(const uint8_t*& aIn, uint8_t*& cOut, float mult)
+multAttribsTemplate(const uint8_t*& a_in, uint8_t*& c_out, float mult)
 {
-  *(T*)cOut = (*(T*)aIn) * mult;
-  aIn += sizeof(T);
-  cOut += sizeof(T);
+  *(T*)c_out = (*(T*)a_in) * mult;
+  a_in += sizeof(T);
+  c_out += sizeof(T);
 }
 
 void
-Temple::Bonfire::multiplyAttributes(
-  const uint8_t*      aIn,
-  uint8_t*            cOut,
+Temple::Bonfire::multiply_attributes(
+  const uint8_t*      a_in,
+  uint8_t*            c_out,
   float               mult,
   const VertexFormat& vf)
 {
@@ -115,25 +115,25 @@ Temple::Bonfire::multiplyAttributes(
     switch (vf.attributes[i])
     {
     case EVertexAttribType::FLOAT32:
-      __multAttribsTemplate<float>(aIn, cOut, mult);
+      multAttribsTemplate<float>(a_in, c_out, mult);
       break;
     case EVertexAttribType::INT32:
-      __multAttribsTemplate<int32_t>(aIn, cOut, mult);
+      multAttribsTemplate<int32_t>(a_in, c_out, mult);
       break;
     case EVertexAttribType::UINT8:
-      __multAttribsTemplate<uint8_t>(aIn, cOut, mult);
+      multAttribsTemplate<uint8_t>(a_in, c_out, mult);
       break;
     case EVertexAttribType::VEC2:
-      __multAttribsTemplate<Base::vec2_t>(aIn, cOut, mult);
+      multAttribsTemplate<Base::vec2_t>(a_in, c_out, mult);
       break;
     case EVertexAttribType::VEC3:
-      __multAttribsTemplate<Base::vec3_t>(aIn, cOut, mult);
+      multAttribsTemplate<Base::vec3_t>(a_in, c_out, mult);
       break;
     case EVertexAttribType::VEC4:
-      __multAttribsTemplate<Base::vec4_t>(aIn, cOut, mult);
+      multAttribsTemplate<Base::vec4_t>(a_in, c_out, mult);
       break;
     case EVertexAttribType::UV:
-      __multAttribsTemplate<Base::vec2_t>(aIn, cOut, mult);
+      multAttribsTemplate<Base::vec2_t>(a_in, c_out, mult);
       break;
     }
   }
@@ -152,149 +152,149 @@ Temple::Bonfire::Plane::Plane(const Base::vec3_t& _normal, float _offset)
 Temple::Bonfire::RenderContext::RenderContext(
   int width,
   int height,
-  int bytesPerPixel)
+  int bytes_per_pixel)
     : m_width(width)
     , m_height(height)
-    , m_bytesPerPixel(bytesPerPixel)
-    , m_depthWrite(true)
-    , m_depthTest(true)
+    , m_bytes_per_pixel(bytes_per_pixel)
+    , m_depth_write(true)
+    , m_depth_test(true)
 {
-  size_t fullSize = m_width * m_height * (size_t)m_bytesPerPixel;
-  assert(fullSize > 0);
-  m_data = new uint8_t[fullSize];
+  size_t full_size = m_width * m_height * (size_t)m_bytes_per_pixel;
+  assert(full_size > 0);
+  m_data = new uint8_t[full_size];
   m_depth = new float[m_width * m_height];
   m_builtins.resize(sizeof(Base::mat4_t) * 5);
 }
 
 const uint8_t*
-Temple::Bonfire::RenderContext::getFrame() const
+Temple::Bonfire::RenderContext::get_frame() const
 {
   return m_data;
 }
 
 void
-Temple::Bonfire::RenderContext::resize(int width, int height, int bytesPerPixel)
+Temple::Bonfire::RenderContext::resize(int width, int height, int bytes_per_pixel)
 {
-  size_t oldResolution = m_width * m_height;
-  size_t oldSize = oldResolution * (size_t)m_bytesPerPixel;
+  size_t old_resolution = m_width * m_height;
+  size_t old_size = old_resolution * (size_t)m_bytes_per_pixel;
   m_width = width;
   m_height = height;
-  m_bytesPerPixel = bytesPerPixel;
-  size_t curResolution = m_width * m_height;
-  size_t fullSize = curResolution * (size_t)m_bytesPerPixel;
-  assert(fullSize >= 0);
-  if (fullSize != oldSize)
+  m_bytes_per_pixel = bytes_per_pixel;
+  size_t cur_resolution = m_width * m_height;
+  size_t full_size = cur_resolution * (size_t)m_bytes_per_pixel;
+  assert(full_size >= 0);
+  if (full_size != old_size)
   {
     if (m_data != nullptr)
     {
       delete[] m_data;
       m_data = nullptr;
     }
-    if (fullSize > 0)
+    if (full_size > 0)
     {
-      m_data = new uint8_t[fullSize];
+      m_data = new uint8_t[full_size];
     }
   }
-  if (curResolution != oldResolution)
+  if (cur_resolution != old_resolution)
   {
     if (m_depth != nullptr)
     {
       delete[] m_depth;
       m_depth = nullptr;
     }
-    if (curResolution > 0)
+    if (cur_resolution > 0)
     {
-      m_depth = new float[curResolution];
+      m_depth = new float[cur_resolution];
     }
   }
 }
 
 void
-Temple::Bonfire::RenderContext::setViewport(
-  float xMin,
-  float yMin,
-  float zMin,
-  float xMax,
-  float yMax,
-  float zMax)
+Temple::Bonfire::RenderContext::set_viewport(
+  float x_min,
+  float y_min,
+  float z_min,
+  float x_max,
+  float y_max,
+  float z_max)
 {
-  m_viewportMin.x = xMin;
-  m_viewportMin.y = yMin;
-  m_viewportMin.z = zMin;
+  m_viewport_min.x = x_min;
+  m_viewport_min.y = y_min;
+  m_viewport_min.z = z_min;
 
-  m_viewportMax.x = xMax;
-  m_viewportMax.y = yMax;
-  m_viewportMax.z = zMax;
+  m_viewport_max.x = x_max;
+  m_viewport_max.y = y_max;
+  m_viewport_max.z = z_max;
 }
 
 void
-Temple::Bonfire::RenderContext::setDescriptorSet(
-  const std::vector<uint8_t>& descriptorSet)
+Temple::Bonfire::RenderContext::set_descriptor_set(
+  const std::vector<uint8_t>& descriptor_set)
 {
-  m_descriptorSet = descriptorSet;
+  m_descriptor_set = descriptor_set;
 }
 
 void
-Temple::Bonfire::RenderContext::setVertexShader(
-  Temple::Bonfire::vertexShaderFunc vsf)
+Temple::Bonfire::RenderContext::set_vertex_shader(
+  Temple::Bonfire::VertexShaderFunc vsf)
 {
   m_vsf = vsf;
 }
 
 void
-Temple::Bonfire::RenderContext::setPixelShader(
-  Temple::Bonfire::pixelShaderFunc psf)
+Temple::Bonfire::RenderContext::set_pixel_shader(
+  Temple::Bonfire::PixelShaderFunc psf)
 {
   m_psf = psf;
 }
 
 void
-Temple::Bonfire::RenderContext::setModelMatrix(const Base::mat4_t& m)
+Temple::Bonfire::RenderContext::set_model_matrix(const Base::mat4_t& m)
 {
-  m_modelMatrix = m;
-  m_modelViewMatrix = m_viewMatrix * m_modelMatrix;
-  m_transformMatrix = m_perspectiveMatrix * m_modelViewMatrix;
-  Base::replace_data(m_builtins, m_modelMatrix, 0);
-  Base::replace_data(m_builtins, m_modelViewMatrix, sizeof(Base::mat4_t) * 3);
-  Base::replace_data(m_builtins, m_transformMatrix, sizeof(Base::mat4_t) * 4);
+  m_model_matrix = m;
+  m_model_view_matrix = m_view_matrix * m_model_matrix;
+  m_transform_matrix = m_perspective_matrix * m_model_view_matrix;
+  Base::replace_data(m_builtins, m_model_matrix, 0);
+  Base::replace_data(m_builtins, m_model_view_matrix, sizeof(Base::mat4_t) * 3);
+  Base::replace_data(m_builtins, m_transform_matrix, sizeof(Base::mat4_t) * 4);
 }
 
 void
-Temple::Bonfire::RenderContext::setViewMatrix(const Base::mat4_t& m)
+Temple::Bonfire::RenderContext::set_view_matrix(const Base::mat4_t& m)
 {
-  m_viewMatrix = m;
-  m_modelViewMatrix = m_viewMatrix * m_modelMatrix;
-  m_transformMatrix = m_perspectiveMatrix * m_modelViewMatrix;
-  Base::replace_data(m_builtins, m_viewMatrix, sizeof(Base::mat4_t));
-  Base::replace_data(m_builtins, m_modelViewMatrix, sizeof(Base::mat4_t) * 3);
-  Base::replace_data(m_builtins, m_transformMatrix, sizeof(Base::mat4_t) * 4);
+  m_view_matrix = m;
+  m_model_view_matrix = m_view_matrix * m_model_matrix;
+  m_transform_matrix = m_perspective_matrix * m_model_view_matrix;
+  Base::replace_data(m_builtins, m_view_matrix, sizeof(Base::mat4_t));
+  Base::replace_data(m_builtins, m_model_view_matrix, sizeof(Base::mat4_t) * 3);
+  Base::replace_data(m_builtins, m_transform_matrix, sizeof(Base::mat4_t) * 4);
 }
 
 void
-Temple::Bonfire::RenderContext::setPerspectiveMatrix(const Base::mat4_t& m)
+Temple::Bonfire::RenderContext::set_perspective_matrix(const Base::mat4_t& m)
 {
-  m_perspectiveMatrix = m;
-  m_transformMatrix = m_perspectiveMatrix * m_modelViewMatrix;
-  Base::replace_data(m_builtins, m_perspectiveMatrix, sizeof(Base::mat4_t) * 2);
-  Base::replace_data(m_builtins, m_transformMatrix, sizeof(Base::mat4_t) * 4);
+  m_perspective_matrix = m;
+  m_transform_matrix = m_perspective_matrix * m_model_view_matrix;
+  Base::replace_data(m_builtins, m_perspective_matrix, sizeof(Base::mat4_t) * 2);
+  Base::replace_data(m_builtins, m_transform_matrix, sizeof(Base::mat4_t) * 4);
 }
 
 void
-Temple::Bonfire::RenderContext::setPerspective(
+Temple::Bonfire::RenderContext::set_perspective(
   float fov,
   float aspect,
   float znear,
   float zfar)
 {
   fov = fov * Temple::Base::pi / 180.0f;
-  Base::mat4_t perspectiveMatrix =
+  Base::mat4_t perspective_matrix =
     Base::mat4_t::calculate_projection_matrix(fov, aspect, znear, zfar);
-  this->setFrustum(fov, aspect, znear, zfar);
-  this->setPerspectiveMatrix(perspectiveMatrix);
+  this->set_frustum(fov, aspect, znear, zfar);
+  this->set_perspective_matrix(perspective_matrix);
 }
 
 void
-Temple::Bonfire::RenderContext::setFrustum(
+Temple::Bonfire::RenderContext::set_frustum(
   float fov,
   float aspect,
   float znear,
@@ -346,27 +346,8 @@ Temple::Bonfire::RenderContext::setFrustum(
   m_frustum.bounds[5].offset = -rightNormal.calculate_dot_product(r);
 }
 
-bool
-Temple::Bonfire::RenderContext::outOfSight(
-  const Base::vec4_t& a,
-  const Base::vec4_t& b,
-  const Base::vec4_t& c,
-  float               znear,
-  float               zfar,
-  float               aspect)
-{
-  if (
-    (a.z > zfar && b.z > zfar && c.z > zfar) ||
-    (a.z < znear && b.z < znear && c.z < znear))
-  {
-    // whole triangle is too close or too far
-    return true;
-  }
-  return false;
-}
-
 void
-Temple::Bonfire::RenderContext::putPixel(
+Temple::Bonfire::RenderContext::put_pixel(
   int                 x,
   int                 y,
   const Base::vec4_t& color)
@@ -376,7 +357,7 @@ Temple::Bonfire::RenderContext::putPixel(
   {
     return;
   }
-  int pixelIndex = y * m_width * m_bytesPerPixel + x * m_bytesPerPixel;
+  int pixelIndex = y * m_width * m_bytes_per_pixel + x * m_bytes_per_pixel;
   // please, take care about color content in advance - clamp if needed
   m_data[pixelIndex + 0] = (uint8_t)(color.b * 255.0f);
   m_data[pixelIndex + 1] = (uint8_t)(color.g * 255.0f);
@@ -385,11 +366,11 @@ Temple::Bonfire::RenderContext::putPixel(
 }
 
 void
-Temple::Bonfire::RenderContext::fill(const col4u& color)
+Temple::Bonfire::RenderContext::fill(const col4u_t& color)
 {
-  uint32_t colors = m_width * m_height * m_bytesPerPixel;
-  for (uint32_t i = 0; i < colors; i += m_bytesPerPixel)
-  { // fake m_bytesPerPixel - now always 4 and maybe will always be 4
+  uint32_t colors = m_width * m_height * m_bytes_per_pixel;
+  for (uint32_t i = 0; i < colors; i += m_bytes_per_pixel)
+  { // fake m_bytes_per_pixel - now always 4 and maybe will always be 4
     m_data[i + 0] = color.b;
     m_data[i + 1] = color.g;
     m_data[i + 2] = color.r;
@@ -398,40 +379,40 @@ Temple::Bonfire::RenderContext::fill(const col4u& color)
 }
 
 Temple::Base::vec4_t
-Temple::Bonfire::RenderContext::processVertex(const Base::vec4_t& v)
+Temple::Bonfire::RenderContext::process_vertex(const Base::vec4_t& v)
 {
-  Base::vec4_t c = m_perspectiveMatrix * v;
+  Base::vec4_t c = m_perspective_matrix * v;
 
   float w = c.w;
   c.w = 1.0f;
   c = c / w;
 
   Base::vec3_t crd {c.x, -c.y, c.z};
-  crd = (crd + 1.0f) * 0.5f * (m_viewportMax - m_viewportMin) + m_viewportMin;
+  crd = (crd + 1.0f) * 0.5f * (m_viewport_max - m_viewport_min) + m_viewport_min;
 
   return Base::vec4_t {crd.x, crd.y, crd.z, c.w};
 }
 
 void
-Temple::Bonfire::RenderContext::setDepthTest(bool flag)
+Temple::Bonfire::RenderContext::set_depth_test(bool flag)
 {
-  m_depthTest = flag;
+  m_depth_test = flag;
 }
 
 void
-Temple::Bonfire::RenderContext::setDepthWrite(bool flag)
+Temple::Bonfire::RenderContext::set_depth_write(bool flag)
 {
-  m_depthWrite = flag;
+  m_depth_write = flag;
 }
 
 void
-Temple::Bonfire::RenderContext::setBackfaceCulling(ECullingMode mode)
+Temple::Bonfire::RenderContext::set_backface_culling(ECullingMode mode)
 {
-  m_backFaceCulling = mode;
+  m_backface_culling = mode;
 }
 
 void
-Temple::Bonfire::RenderContext::clearDepth(float val)
+Temple::Bonfire::RenderContext::clear_depth(float val)
 {
   for (int i = 0; i < m_width * m_height; i++)
   {
@@ -440,42 +421,42 @@ Temple::Bonfire::RenderContext::clearDepth(float val)
 }
 
 void
-Temple::Bonfire::RenderContext::renderPixelDepthWise(
+Temple::Bonfire::RenderContext::render_pixel_depth_wise(
   const Base::vec4_t& p,
   const uint8_t*      data)
 {
-  int pixFlatIdx = ((int)p.y) * m_width + (int)p.x;
-  if (pixFlatIdx >= 0 && pixFlatIdx < m_width * m_height)
+  int pix_flat_idx = ((int)p.y) * m_width + (int)p.x;
+  if (pix_flat_idx >= 0 && pix_flat_idx < m_width * m_height)
   {
-    if (m_depthTest)
+    if (m_depth_test)
     {
-      if (p.z > m_depth[pixFlatIdx])
+      if (p.z > m_depth[pix_flat_idx])
       {
-        this->putPixel(
+        this->put_pixel(
           p.x,
           p.y,
-          this->m_psf(p, data, this->m_builtins, this->m_descriptorSet));
+          this->m_psf(p, data, this->m_builtins, this->m_descriptor_set));
       }
     }
     else
     {
-      this->putPixel(
+      this->put_pixel(
         p.x,
         p.y,
-        this->m_psf(p, data, this->m_builtins, this->m_descriptorSet));
+        this->m_psf(p, data, this->m_builtins, this->m_descriptor_set));
     }
-    if (m_depthWrite)
+    if (m_depth_write)
     {
-      if (p.z > m_depth[pixFlatIdx])
+      if (p.z > m_depth[pix_flat_idx])
       {
-        m_depth[pixFlatIdx] = p.z;
+        m_depth[pix_flat_idx] = p.z;
       }
     }
   }
 }
 
 static inline float
-getWeightBetween(float x, float y, float x0, float y0, float x1, float y1)
+get_weight_between(float x, float y, float x0, float y0, float x1, float y1)
 {
   float dx = x1 - x0;
   float dy = y1 - y0;
@@ -494,7 +475,7 @@ getWeightBetween(float x, float y, float x0, float y0, float x1, float y1)
 }
 
 static float
-segmentPlaneIntersection(
+segment_plane_intersection(
   const Temple::Base::vec3_t&   a,
   const Temple::Base::vec3_t&   b,
   const Temple::Bonfire::Plane& p)
@@ -506,7 +487,7 @@ segmentPlaneIntersection(
 }
 
 static inline float
-pointPlaneSide(const Temple::Base::vec3_t& a, const Temple::Bonfire::Plane& p)
+point_plane_side(const Temple::Base::vec3_t& a, const Temple::Bonfire::Plane& p)
 {
   // -value - under
   // 0 - on
@@ -516,43 +497,43 @@ pointPlaneSide(const Temple::Base::vec3_t& a, const Temple::Bonfire::Plane& p)
 }
 
 static void
-cullTriangleTwoPointOutside(
+cull_triangle_two_point_outside(
   const Temple::Base::vec4_t&          a,
   const Temple::Base::vec4_t&          b,
   const Temple::Base::vec4_t&          c,
-  const uint8_t*                       pDataA,
-  const uint8_t*                       pDataB,
-  const uint8_t*                       pDataC,
+  const uint8_t*                       p_data_a,
+  const uint8_t*                       p_data_b,
+  const uint8_t*                       p_data_c,
   const Temple::Bonfire::VertexFormat& vf,
   const Temple::Bonfire::Plane&        p,
-  std::vector<Temple::Base::vec4_t>&   passedVertexCoords,
-  std::vector<uint8_t>&                passedVertexData)
+  std::vector<Temple::Base::vec4_t>&   passed_vertex_coords,
+  std::vector<uint8_t>&                passed_vertex_data)
 {
   // a and b are outside
-  float cSide = pointPlaneSide(c.xyz, p);
-  if (fabs(cSide) <= Temple::Base::eps)
+  float c_side = point_plane_side(c.xyz, p);
+  if (fabs(c_side) <= Temple::Base::eps)
   {
     // c is on the plane, discard
   }
   else
   {
     // two outside and one point is inside
-    float                kA = segmentPlaneIntersection(c.xyz, a.xyz, p);
-    float                kB = segmentPlaneIntersection(c.xyz, b.xyz, p);
+    float                kA = segment_plane_intersection(c.xyz, a.xyz, p);
+    float                kB = segment_plane_intersection(c.xyz, b.xyz, p);
     std::vector<uint8_t> dataAK = {};
-    std::vector<uint8_t> dataBK = {};
+    std::vector<uint8_t> data_bk = {};
     dataAK.resize(vf.size);
-    dataBK.resize(vf.size);
-    Temple::Bonfire::interpolateAttributes(
-      pDataC,
-      pDataA,
+    data_bk.resize(vf.size);
+    Temple::Bonfire::interpolate_attributes(
+      p_data_c,
+      p_data_a,
       dataAK.data(),
       kA,
       vf);
-    Temple::Bonfire::interpolateAttributes(
-      pDataC,
-      pDataB,
-      dataBK.data(),
+    Temple::Bonfire::interpolate_attributes(
+      p_data_c,
+      p_data_b,
+      data_bk.data(),
       kB,
       vf);
     Temple::Base::vec4_t ak = (a - c) * kA + c;
@@ -560,158 +541,158 @@ cullTriangleTwoPointOutside(
     Temple::Base::vec4_t bk = (b - c) * kB + c;
     bk.w = b.w;
     //
-    passedVertexCoords.emplace_back(c);
-    passedVertexCoords.emplace_back(ak);
-    passedVertexCoords.emplace_back(bk);
-    Temple::Base::append_data(passedVertexData, pDataC, vf.size, 0);
-    Temple::Base::append_data(passedVertexData, dataAK.data(), vf.size, 0);
-    Temple::Base::append_data(passedVertexData, dataBK.data(), vf.size, 0);
+    passed_vertex_coords.emplace_back(c);
+    passed_vertex_coords.emplace_back(ak);
+    passed_vertex_coords.emplace_back(bk);
+    Temple::Base::append_data(passed_vertex_data, p_data_c, vf.size, 0);
+    Temple::Base::append_data(passed_vertex_data, dataAK.data(), vf.size, 0);
+    Temple::Base::append_data(passed_vertex_data, data_bk.data(), vf.size, 0);
   }
 }
 
 static void
-cullTriangleOnePointOutsideOneOn(
+cull_triangle_one_point_outside_one_on(
   const Temple::Base::vec4_t&          a,
   const Temple::Base::vec4_t&          b,
   const Temple::Base::vec4_t&          c,
-  const uint8_t*                       pDataA,
-  const uint8_t*                       pDataB,
-  const uint8_t*                       pDataC,
+  const uint8_t*                       p_data_a,
+  const uint8_t*                       p_data_b,
+  const uint8_t*                       p_data_c,
   const Temple::Bonfire::VertexFormat& vf,
   const Temple::Bonfire::Plane&        p,
-  std::vector<Temple::Base::vec4_t>&   passedVertexCoords,
-  std::vector<uint8_t>&                passedVertexData)
+  std::vector<Temple::Base::vec4_t>&   passed_vertex_coords,
+  std::vector<uint8_t>&                passed_vertex_data)
 {
   // a is outside and b is on the plane
-  float cSide = pointPlaneSide(c.xyz, p);
-  if (fabs(cSide) <= Temple::Base::eps)
+  float c_side = point_plane_side(c.xyz, p);
+  if (fabs(c_side) <= Temple::Base::eps)
   {
     // only segment is on the plane, we can discard it
   }
   else
   {
     // a is outside, b is on the plane, c is inside
-    float                kA = segmentPlaneIntersection(c.xyz, a.xyz, p);
-    std::vector<uint8_t> dataCK = {};
-    dataCK.resize(vf.size);
-    Temple::Bonfire::interpolateAttributes(
-      pDataC,
-      pDataA,
-      dataCK.data(),
+    float                kA = segment_plane_intersection(c.xyz, a.xyz, p);
+    std::vector<uint8_t> data_ck = {};
+    data_ck.resize(vf.size);
+    Temple::Bonfire::interpolate_attributes(
+      p_data_c,
+      p_data_a,
+      data_ck.data(),
       kA,
       vf);
     Temple::Base::vec4_t ck = (a - c) * kA + c;
     ck.w = c.w;
     //
-    passedVertexCoords.emplace_back(b);
-    passedVertexCoords.emplace_back(c);
-    passedVertexCoords.emplace_back(ck);
-    Temple::Base::append_data(passedVertexData, pDataB, vf.size, 0);
-    Temple::Base::append_data(passedVertexData, pDataC, vf.size, 0);
-    Temple::Base::append_data(passedVertexData, dataCK.data(), vf.size, 0);
+    passed_vertex_coords.emplace_back(b);
+    passed_vertex_coords.emplace_back(c);
+    passed_vertex_coords.emplace_back(ck);
+    Temple::Base::append_data(passed_vertex_data, p_data_b, vf.size, 0);
+    Temple::Base::append_data(passed_vertex_data, p_data_c, vf.size, 0);
+    Temple::Base::append_data(passed_vertex_data, data_ck.data(), vf.size, 0);
   }
 }
 
 static void
-cullTriangleOnePointOutside(
+cull_triangle_one_point_outside(
   const Temple::Base::vec4_t&          a,
   const Temple::Base::vec4_t&          b,
   const Temple::Base::vec4_t&          c,
-  const uint8_t*                       pDataA,
-  const uint8_t*                       pDataB,
-  const uint8_t*                       pDataC,
+  const uint8_t*                       p_data_a,
+  const uint8_t*                       p_data_b,
+  const uint8_t*                       p_data_c,
   const Temple::Bonfire::VertexFormat& vf,
   const Temple::Bonfire::Plane&        p,
-  std::vector<Temple::Base::vec4_t>&   passedVertexCoords,
-  std::vector<uint8_t>&                passedVertexData)
+  std::vector<Temple::Base::vec4_t>&   passed_vertex_coords,
+  std::vector<uint8_t>&                passed_vertex_data)
 {
   // a-point is outside
-  float bSide = pointPlaneSide(b.xyz, p);
-  float cSide = pointPlaneSide(c.xyz, p);
-  if (bSide > 0.0f)
+  float b_side = point_plane_side(b.xyz, p);
+  float c_side = point_plane_side(c.xyz, p);
+  if (b_side > 0.0f)
   {
     // a and b are outside
-    cullTriangleTwoPointOutside(
+    cull_triangle_two_point_outside(
       a,
       b,
       c,
-      pDataA,
-      pDataB,
-      pDataC,
+      p_data_a,
+      p_data_b,
+      p_data_c,
       vf,
       p,
-      passedVertexCoords,
-      passedVertexData);
+      passed_vertex_coords,
+      passed_vertex_data);
   }
   else
   {
-    if (cSide > 0.0f)
+    if (c_side > 0.0f)
     {
       // a and c are outside
-      cullTriangleTwoPointOutside(
+      cull_triangle_two_point_outside(
         a,
         c,
         b,
-        pDataA,
-        pDataC,
-        pDataB,
+        p_data_a,
+        p_data_c,
+        p_data_b,
         vf,
         p,
-        passedVertexCoords,
-        passedVertexData);
+        passed_vertex_coords,
+        passed_vertex_data);
     }
     else
     {
       // only one point is really outside
-      if (fabs(bSide) < Temple::Base::eps)
+      if (fabs(b_side) < Temple::Base::eps)
       {
         // b is on the plane
-        cullTriangleOnePointOutsideOneOn(
+        cull_triangle_one_point_outside_one_on(
           a,
           b,
           c,
-          pDataA,
-          pDataB,
-          pDataC,
+          p_data_a,
+          p_data_b,
+          p_data_c,
           vf,
           p,
-          passedVertexCoords,
-          passedVertexData);
+          passed_vertex_coords,
+          passed_vertex_data);
       }
-      else if (fabs(cSide) < Temple::Base::eps)
+      else if (fabs(c_side) < Temple::Base::eps)
       {
         // c is on the plane
-        cullTriangleOnePointOutsideOneOn(
+        cull_triangle_one_point_outside_one_on(
           a,
           c,
           b,
-          pDataA,
-          pDataC,
-          pDataB,
+          p_data_a,
+          p_data_c,
+          p_data_b,
           vf,
           p,
-          passedVertexCoords,
-          passedVertexData);
+          passed_vertex_coords,
+          passed_vertex_data);
       }
       else
       {
         // no point is on the plane, just one outside and two inside
-        float                kB = segmentPlaneIntersection(b.xyz, a.xyz, p);
-        float                kC = segmentPlaneIntersection(c.xyz, a.xyz, p);
-        std::vector<uint8_t> dataBK = {};
-        std::vector<uint8_t> dataCK = {};
-        dataBK.resize(vf.size);
-        dataCK.resize(vf.size);
-        Temple::Bonfire::interpolateAttributes(
-          pDataB,
-          pDataA,
-          dataBK.data(),
+        float                kB = segment_plane_intersection(b.xyz, a.xyz, p);
+        float                kC = segment_plane_intersection(c.xyz, a.xyz, p);
+        std::vector<uint8_t> data_bk = {};
+        std::vector<uint8_t> data_ck = {};
+        data_bk.resize(vf.size);
+        data_ck.resize(vf.size);
+        Temple::Bonfire::interpolate_attributes(
+          p_data_b,
+          p_data_a,
+          data_bk.data(),
           kB,
           vf);
-        Temple::Bonfire::interpolateAttributes(
-          pDataC,
-          pDataA,
-          dataCK.data(),
+        Temple::Bonfire::interpolate_attributes(
+          p_data_c,
+          p_data_a,
+          data_ck.data(),
           kC,
           vf);
         Temple::Base::vec4_t bk = (a - b) * kB + b;
@@ -719,99 +700,99 @@ cullTriangleOnePointOutside(
         Temple::Base::vec4_t ck = (a - c) * kC + c;
         ck.w = c.w;
         //
-        passedVertexCoords.emplace_back(b);
-        passedVertexCoords.emplace_back(c);
-        passedVertexCoords.emplace_back(bk);
-        Temple::Base::append_data(passedVertexData, pDataB, vf.size, 0);
-        Temple::Base::append_data(passedVertexData, pDataC, vf.size, 0);
-        Temple::Base::append_data(passedVertexData, dataBK.data(), vf.size, 0);
+        passed_vertex_coords.emplace_back(b);
+        passed_vertex_coords.emplace_back(c);
+        passed_vertex_coords.emplace_back(bk);
+        Temple::Base::append_data(passed_vertex_data, p_data_b, vf.size, 0);
+        Temple::Base::append_data(passed_vertex_data, p_data_c, vf.size, 0);
+        Temple::Base::append_data(passed_vertex_data, data_bk.data(), vf.size, 0);
         //
-        passedVertexCoords.emplace_back(c);
-        passedVertexCoords.emplace_back(ck);
-        passedVertexCoords.emplace_back(bk);
-        Temple::Base::append_data(passedVertexData, pDataC, vf.size, 0);
-        Temple::Base::append_data(passedVertexData, dataCK.data(), vf.size, 0);
-        Temple::Base::append_data(passedVertexData, dataBK.data(), vf.size, 0);
+        passed_vertex_coords.emplace_back(c);
+        passed_vertex_coords.emplace_back(ck);
+        passed_vertex_coords.emplace_back(bk);
+        Temple::Base::append_data(passed_vertex_data, p_data_c, vf.size, 0);
+        Temple::Base::append_data(passed_vertex_data, data_ck.data(), vf.size, 0);
+        Temple::Base::append_data(passed_vertex_data, data_bk.data(), vf.size, 0);
       }
     }
   }
 }
 
 static void
-cullTriangleByPlane(
+cull_triangle_by_plane(
   const Temple::Base::vec4_t&          a,
   const Temple::Base::vec4_t&          b,
   const Temple::Base::vec4_t&          c,
-  const uint8_t*                       pDataA,
-  const uint8_t*                       pDataB,
-  const uint8_t*                       pDataC,
+  const uint8_t*                       p_data_a,
+  const uint8_t*                       p_data_b,
+  const uint8_t*                       p_data_c,
   const Temple::Bonfire::VertexFormat& vf,
   const Temple::Bonfire::Plane&        p,
-  std::vector<Temple::Base::vec4_t>&   passedVertexCoords,
-  std::vector<uint8_t>&                passedVertexData)
+  std::vector<Temple::Base::vec4_t>&   passed_vertex_coords,
+  std::vector<uint8_t>&                passed_vertex_data)
 {
-  float aSide = pointPlaneSide(a.xyz, p);
-  float bSide = pointPlaneSide(b.xyz, p);
-  float cSide = pointPlaneSide(c.xyz, p);
+  float a_side = point_plane_side(a.xyz, p);
+  float b_side = point_plane_side(b.xyz, p);
+  float c_side = point_plane_side(c.xyz, p);
   // here we have many possible cases
-  if (aSide <= 0.0f && bSide <= 0.0f && cSide <= 0.0f)
+  if (a_side <= 0.0f && b_side <= 0.0f && c_side <= 0.0f)
   {
     // everything is under the plane, add whole triangle
-    passedVertexCoords.emplace_back(a);
-    passedVertexCoords.emplace_back(b);
-    passedVertexCoords.emplace_back(c);
-    Temple::Base::append_data(passedVertexData, pDataA, vf.size, 0);
-    Temple::Base::append_data(passedVertexData, pDataB, vf.size, 0);
-    Temple::Base::append_data(passedVertexData, pDataC, vf.size, 0);
+    passed_vertex_coords.emplace_back(a);
+    passed_vertex_coords.emplace_back(b);
+    passed_vertex_coords.emplace_back(c);
+    Temple::Base::append_data(passed_vertex_data, p_data_a, vf.size, 0);
+    Temple::Base::append_data(passed_vertex_data, p_data_b, vf.size, 0);
+    Temple::Base::append_data(passed_vertex_data, p_data_c, vf.size, 0);
   }
-  else if (aSide > 0.0f && bSide > 0.0f && cSide > 0.0f)
+  else if (a_side > 0.0f && b_side > 0.0f && c_side > 0.0f)
   {
     // skip, whole triangle is above
   }
   else
   {
     // here is intersection
-    if (aSide > 0.0f)
+    if (a_side > 0.0f)
     {
-      cullTriangleOnePointOutside(
+      cull_triangle_one_point_outside(
         a,
         b,
         c,
-        pDataA,
-        pDataB,
-        pDataC,
+        p_data_a,
+        p_data_b,
+        p_data_c,
         vf,
         p,
-        passedVertexCoords,
-        passedVertexData);
+        passed_vertex_coords,
+        passed_vertex_data);
     }
-    else if (bSide > 0.0f)
+    else if (b_side > 0.0f)
     {
-      cullTriangleOnePointOutside(
+      cull_triangle_one_point_outside(
         b,
         a,
         c,
-        pDataB,
-        pDataA,
-        pDataC,
+        p_data_b,
+        p_data_a,
+        p_data_c,
         vf,
         p,
-        passedVertexCoords,
-        passedVertexData);
+        passed_vertex_coords,
+        passed_vertex_data);
     }
-    else if (cSide > 0.0f)
+    else if (c_side > 0.0f)
     {
-      cullTriangleOnePointOutside(
+      cull_triangle_one_point_outside(
         c,
         a,
         b,
-        pDataC,
-        pDataA,
-        pDataB,
+        p_data_c,
+        p_data_a,
+        p_data_b,
         vf,
         p,
-        passedVertexCoords,
-        passedVertexData);
+        passed_vertex_coords,
+        passed_vertex_data);
     }
     else
     {
@@ -822,94 +803,94 @@ cullTriangleByPlane(
 }
 
 static void
-cullTrianglesByPlane(
-  std::vector<Temple::Base::vec4_t>&   inputVertexCoords,
-  const uint8_t*                       pData,
+cull_triangles_by_plane(
+  std::vector<Temple::Base::vec4_t>&   input_vertex_coords,
+  const uint8_t*                       p_data,
   const Temple::Bonfire::VertexFormat& vf,
   const Temple::Bonfire::Plane&        p,
-  std::vector<Temple::Base::vec4_t>&   passedVertexCoords,
-  std::vector<uint8_t>&                passedVertexData)
+  std::vector<Temple::Base::vec4_t>&   passed_vertex_coords,
+  std::vector<uint8_t>&                passed_vertex_data)
 {
-  for (int i = 0; i < inputVertexCoords.size(); i += 3)
+  for (int i = 0; i < input_vertex_coords.size(); i += 3)
   {
-    const Temple::Base::vec4_t& a = inputVertexCoords[i];
-    const Temple::Base::vec4_t& b = inputVertexCoords[i + 1];
-    const Temple::Base::vec4_t& c = inputVertexCoords[i + 2];
-    const uint8_t*              pDataA = pData + i * vf.size;
-    const uint8_t*              pDataB = pData + (i + 1) * vf.size;
-    const uint8_t*              pDataC = pData + (i + 2) * vf.size;
-    cullTriangleByPlane(
+    const Temple::Base::vec4_t& a = input_vertex_coords[i];
+    const Temple::Base::vec4_t& b = input_vertex_coords[i + 1];
+    const Temple::Base::vec4_t& c = input_vertex_coords[i + 2];
+    const uint8_t*              p_data_a = p_data + i * vf.size;
+    const uint8_t*              p_data_b = p_data + (i + 1) * vf.size;
+    const uint8_t*              p_data_c = p_data + (i + 2) * vf.size;
+    cull_triangle_by_plane(
       a,
       b,
       c,
-      pDataA,
-      pDataB,
-      pDataC,
+      p_data_a,
+      p_data_b,
+      p_data_c,
       vf,
       p,
-      passedVertexCoords,
-      passedVertexData);
+      passed_vertex_coords,
+      passed_vertex_data);
   }
 }
 
 void
-Temple::Bonfire::RenderContext::cullTriangleByFrustum(
+Temple::Bonfire::RenderContext::cull_triangle_by_frustum(
   const Base::vec4_t&        a,
   const Base::vec4_t&        b,
   const Base::vec4_t&        c,
-  const uint8_t*             aData,
-  const uint8_t*             bData,
-  const uint8_t*             cData,
+  const uint8_t*             p_data_a,
+  const uint8_t*             p_data_b,
+  const uint8_t*             p_data_c,
   const VertexFormat&        vf,
-  std::vector<Base::vec4_t>& passedVertexCoords,
-  std::vector<uint8_t>&      passedVertexData)
+  std::vector<Base::vec4_t>& passed_vertex_coords,
+  std::vector<uint8_t>&      passed_vertex_data)
 {
-  std::vector<Base::vec4_t> vertexPassedFront = {a, b, c};
-  std::vector<uint8_t>      dataPassedFront = {};
-  Base::append_data(dataPassedFront, aData, vf.size, 0);
-  Base::append_data(dataPassedFront, bData, vf.size, 0);
-  Base::append_data(dataPassedFront, cData, vf.size, 0);
-  std::vector<Base::vec4_t> vertexPassedBack = {};
-  std::vector<uint8_t>      dataPassedBack = {};
+  std::vector<Base::vec4_t> vertex_passed_front = {a, b, c};
+  std::vector<uint8_t>      data_passed_front = {};
+  Base::append_data(data_passed_front, p_data_a, vf.size, 0);
+  Base::append_data(data_passed_front, p_data_b, vf.size, 0);
+  Base::append_data(data_passed_front, p_data_c, vf.size, 0);
+  std::vector<Base::vec4_t> vertex_passed_back = {};
+  std::vector<uint8_t>      data_passed_back = {};
 
-  std::vector<Base::vec4_t>* pVertexPassedFront = &vertexPassedFront;
-  std::vector<Base::vec4_t>* pVertexPassedBack = &vertexPassedBack;
-  std::vector<uint8_t>*      pDataPassedFront = &dataPassedFront;
-  std::vector<uint8_t>*      pDataPassedBack = &dataPassedBack;
+  std::vector<Base::vec4_t>* p_vertex_passed_front = &vertex_passed_front;
+  std::vector<Base::vec4_t>* p_vertex_passed_back = &vertex_passed_back;
+  std::vector<uint8_t>*      p_data_passed_front = &data_passed_front;
+  std::vector<uint8_t>*      p_data_passed_back = &data_passed_back;
 
   for (int i = 0; i < 6; i++)
   {
     const Bonfire::Plane& p = this->m_frustum.bounds[i];
-    pVertexPassedBack->clear();
-    pDataPassedBack->clear();
-    cullTrianglesByPlane(
-      *pVertexPassedFront,
-      pDataPassedFront->data(),
+    p_vertex_passed_back->clear();
+    p_data_passed_back->clear();
+    cull_triangles_by_plane(
+      *p_vertex_passed_front,
+      p_data_passed_front->data(),
       vf,
       p,
-      *pVertexPassedBack,
-      *pDataPassedBack);
-    std::swap(pVertexPassedFront, pVertexPassedBack);
-    std::swap(pDataPassedFront, pDataPassedBack);
+      *p_vertex_passed_back,
+      *p_data_passed_back);
+    std::swap(p_vertex_passed_front, p_vertex_passed_back);
+    std::swap(p_data_passed_front, p_data_passed_back);
   }
-  for (int i = 0; i < pVertexPassedFront->size(); i++)
+  for (int i = 0; i < p_vertex_passed_front->size(); i++)
   {
-    passedVertexCoords.emplace_back((*pVertexPassedFront)[i]);
+    passed_vertex_coords.emplace_back((*p_vertex_passed_front)[i]);
     Temple::Base::append_data(
-      passedVertexData,
-      pDataPassedFront->data() + (vf.size * i),
+      passed_vertex_data,
+      p_data_passed_front->data() + (vf.size * i),
       vf.size,
       0);
   }
 }
 
 void
-Temple::Bonfire::RenderContext::drawLines(
+Temple::Bonfire::RenderContext::draw_lines(
   const std::vector<Base::vec4_t>& coords,
   const std::vector<int>&          indices,
-  const uint8_t*                   vertexData,
-  const VertexFormat&              vInFormat,
-  const VertexFormat&              vOutFormat)
+  const uint8_t*                   p_vertex_data,
+  const VertexFormat&              v_in_format,
+  const VertexFormat&              v_out_format)
 {
   if (indices.size() == 0 || indices.size() % 2 != 0)
   {
@@ -919,59 +900,59 @@ Temple::Bonfire::RenderContext::drawLines(
   {
     const Base::vec4_t& va = coords[indices[i]];
     const Base::vec4_t& vb = coords[indices[i + 1]];
-    const uint8_t*      aData = &vertexData[indices[i] * vInFormat.size];
-    const uint8_t*      bData = &vertexData[indices[i + 1] * vInFormat.size];
+    const uint8_t*      p_data_a = &p_vertex_data[indices[i] * v_in_format.size];
+    const uint8_t*      p_data_b = &p_vertex_data[indices[i + 1] * v_in_format.size];
     // draw single line here
     Base::vec4_t         a, b;
-    std::vector<uint8_t> aVertexOut(vOutFormat.size),
-      bVertexOut(vOutFormat.size);
+    std::vector<uint8_t> a_vertex_out(v_out_format.size),
+      b_vertex_out(v_out_format.size);
     this->m_vsf(
       va,
       a,
-      aVertexOut,
-      aData,
+      a_vertex_out,
+      p_data_a,
       this->m_builtins,
-      this->m_descriptorSet);
+      this->m_descriptor_set);
     this->m_vsf(
       vb,
       b,
-      bVertexOut,
-      bData,
+      b_vertex_out,
+      p_data_b,
       this->m_builtins,
-      this->m_descriptorSet);
+      this->m_descriptor_set);
     //
-    a = processVertex(a);
-    b = processVertex(b);
+    a = process_vertex(a);
+    b = process_vertex(b);
     // obtained vertex shader results and go to the pixel stage
     Base::vec4_t a0(a);
     Base::vec4_t b0(b);
     // perspective correct interpolation part - normalize by z first
-    std::vector<uint8_t> vDepthedA(vOutFormat.size), vDepthedB(vOutFormat.size);
-    uint8_t *vDepthedAPtr = vDepthedA.data(), *vDepthedBPtr = vDepthedB.data();
-    multiplyAttributes(aVertexOut.data(), vDepthedAPtr, a0.w, vOutFormat);
-    multiplyAttributes(bVertexOut.data(), vDepthedBPtr, b0.w, vOutFormat);
+    std::vector<uint8_t> v_depthed_a(v_out_format.size), v_depthed_b(v_out_format.size);
+    uint8_t *p_depthed_a = v_depthed_a.data(), *p_depthed_b = v_depthed_b.data();
+    multiply_attributes(a_vertex_out.data(), p_depthed_a, a0.w, v_out_format);
+    multiply_attributes(b_vertex_out.data(), p_depthed_b, b0.w, v_out_format);
     //
-    const uint8_t *aData0 = vDepthedAPtr, *bData0 = vDepthedBPtr;
+    const uint8_t *p_data_a0 = p_depthed_a, *p_data_b0 = p_depthed_b;
     if (a.y > b.y)
     {
       std::swap(a0, b0);
-      std::swap(aData0, bData0);
+      std::swap(p_data_a0, p_data_b0);
     }
     // a is bottom vertex and b is top vertex
-    float yDif = b0.y - a0.y;
-    float xDif = b0.x - a0.x;
-    if (fabs(yDif) < 0.001f && fabs(xDif) < 0.001f)
+    float y_dif = b0.y - a0.y;
+    float x_dif = b0.x - a0.x;
+    if (fabs(y_dif) < 0.001f && fabs(x_dif) < 0.001f)
     {
       // point
-      renderPixelDepthWise(a0, aData0);
+      render_pixel_depth_wise(a0, p_data_a0);
     }
     else
     {
-      std::vector<uint8_t> pixelOut(vOutFormat.size);
-      if (fabs(yDif) > fabs(xDif))
+      std::vector<uint8_t> pixel_out(v_out_format.size);
+      if (fabs(y_dif) > fabs(x_dif))
       {
-        float                slope = xDif / yDif;
-        std::vector<uint8_t> cOut(vOutFormat.size);
+        float                slope = x_dif / y_dif;
+        std::vector<uint8_t> c_out(v_out_format.size);
         Base::vec4_t         c;
         for (c.y = a0.y; c.y < b0.y; c.y += 1.0f)
         {
@@ -980,14 +961,14 @@ Temple::Bonfire::RenderContext::drawLines(
           c.w = (b0.w - a0.w) * weight + a0.w;
           float pzo = 1.0f / c.w;
           c.z = (b0.z - a0.z) * weight + a0.z;
-          interpolateAttributes(
-            aData0,
-            bData0,
-            cOut.data(),
+          interpolate_attributes(
+            p_data_a0,
+            p_data_b0,
+            c_out.data(),
             weight,
-            vOutFormat);
-          multiplyAttributes(cOut.data(), pixelOut.data(), pzo, vOutFormat);
-          renderPixelDepthWise(c, pixelOut.data());
+            v_out_format);
+          multiply_attributes(c_out.data(), pixel_out.data(), pzo, v_out_format);
+          render_pixel_depth_wise(c, pixel_out.data());
         }
       }
       else
@@ -995,10 +976,10 @@ Temple::Bonfire::RenderContext::drawLines(
         if (a0.x > b0.x)
         {
           std::swap(a0, b0);
-          std::swap(aData0, bData0);
+          std::swap(p_data_a0, p_data_b0);
         }
-        float                slope = yDif / xDif;
-        std::vector<uint8_t> cOut(vOutFormat.size);
+        float                slope = y_dif / x_dif;
+        std::vector<uint8_t> c_out(v_out_format.size);
         Base::vec4_t         c;
         for (c.x = a0.x; c.x < b0.x; c.x += 1.0f)
         {
@@ -1007,14 +988,14 @@ Temple::Bonfire::RenderContext::drawLines(
           c.w = (b0.w - a0.w) * weight + a0.w;
           float pzo = 1.0f / c.w;
           c.z = (b0.z - a0.z) * weight + a0.z;
-          interpolateAttributes(
-            aData0,
-            bData0,
-            cOut.data(),
+          interpolate_attributes(
+            p_data_a0,
+            p_data_b0,
+            c_out.data(),
             weight,
-            vOutFormat);
-          multiplyAttributes(cOut.data(), pixelOut.data(), pzo, vOutFormat);
-          renderPixelDepthWise(c, pixelOut.data());
+            v_out_format);
+          multiply_attributes(c_out.data(), pixel_out.data(), pzo, v_out_format);
+          render_pixel_depth_wise(c, pixel_out.data());
         }
       }
     }
@@ -1022,12 +1003,12 @@ Temple::Bonfire::RenderContext::drawLines(
 }
 
 void
-Temple::Bonfire::RenderContext::drawTriangles(
+Temple::Bonfire::RenderContext::draw_triangles(
   const std::vector<Base::vec4_t>& coords,
   const std::vector<int>&          indices,
-  const uint8_t*                   vertexData,
-  const VertexFormat&              vInFormat,
-  const VertexFormat&              vOutFormat)
+  const uint8_t*                   p_vertex_data,
+  const VertexFormat&              v_in_format,
+  const VertexFormat&              v_out_format)
 {
   if (indices.size() == 0 || indices.size() % 3 != 0)
   {
@@ -1039,62 +1020,62 @@ Temple::Bonfire::RenderContext::drawTriangles(
     const Base::vec4_t& va(coords[indices[i]]);
     const Base::vec4_t& vb(coords[indices[i + 1]]);
     const Base::vec4_t& vc(coords[indices[i + 2]]);
-    const uint8_t*      aData = &vertexData[indices[i] * vInFormat.size];
-    const uint8_t*      bData = &vertexData[indices[i + 1] * vInFormat.size];
-    const uint8_t*      cData = &vertexData[indices[i + 2] * vInFormat.size];
+    const uint8_t*      p_data_a = &p_vertex_data[indices[i] * v_in_format.size];
+    const uint8_t*      p_data_b = &p_vertex_data[indices[i + 1] * v_in_format.size];
+    const uint8_t*      p_data_c = &p_vertex_data[indices[i + 2] * v_in_format.size];
     //
-    Base::vec4_t         aWorld, bWorld, cWorld;
-    std::vector<uint8_t> aVertexOut(vOutFormat.size),
-      bVertexOut(vOutFormat.size), cVertexOut(vOutFormat.size);
+    Base::vec4_t         a_world, b_world, c_world;
+    std::vector<uint8_t> a_vertex_out(v_out_format.size),
+      b_vertex_out(v_out_format.size), c_vertex_out(v_out_format.size);
 
     this->m_vsf(
       va,
-      aWorld,
-      aVertexOut,
-      aData,
+      a_world,
+      a_vertex_out,
+      p_data_a,
       this->m_builtins,
-      this->m_descriptorSet);
+      this->m_descriptor_set);
     this->m_vsf(
       vb,
-      bWorld,
-      bVertexOut,
-      bData,
+      b_world,
+      b_vertex_out,
+      p_data_b,
       this->m_builtins,
-      this->m_descriptorSet);
+      this->m_descriptor_set);
     this->m_vsf(
       vc,
-      cWorld,
-      cVertexOut,
-      cData,
+      c_world,
+      c_vertex_out,
+      p_data_c,
       this->m_builtins,
-      this->m_descriptorSet);
+      this->m_descriptor_set);
 
     // backface culling
-    if (m_backFaceCulling != ECullingMode::None)
+    if (m_backface_culling != ECullingMode::None)
     {
-      Temple::Base::vec4_t side0, side1, outsideNormal;
-      switch (m_backFaceCulling)
+      Temple::Base::vec4_t side0, side1, outside_normal;
+      switch (m_backface_culling)
       {
       case ECullingMode::ClockWise:
-        side0 = cWorld - aWorld;
-        side1 = bWorld - cWorld;
-        outsideNormal = side0.calculate_cross_product(side1);
+        side0 = c_world - a_world;
+        side1 = b_world - c_world;
+        outside_normal = side0.calculate_cross_product(side1);
         break;
       case ECullingMode::CounterClockWise:
       default:
-        side0 = bWorld - aWorld;
-        side1 = cWorld - bWorld;
-        outsideNormal = side0.calculate_cross_product(side1);
+        side0 = b_world - a_world;
+        side1 = c_world - b_world;
+        outside_normal = side0.calculate_cross_product(side1);
         break;
       }
-      Base::vec4_t z = aWorld + bWorld + cWorld;
+      Base::vec4_t z = a_world + b_world + c_world;
       float        zlength = z.calculate_magnitude();
       if (zlength < Temple::Base::eps)
       {
         continue;
       }
       z = z * (1.0f / zlength);
-      Base::vec3_t n {outsideNormal.x, outsideNormal.y, outsideNormal.z};
+      Base::vec3_t n {outside_normal.x, outside_normal.y, outside_normal.z};
       n = n.calculate_normalized();
       if (z.xyz.calculate_dot_product(n) > 0.0f)
       {
@@ -1102,49 +1083,49 @@ Temple::Bonfire::RenderContext::drawTriangles(
       }
     }
     // frustum culling
-    std::vector<uint8_t>      viewPassedVertexData = {};
-    std::vector<Base::vec4_t> viewPassedVertexCoords = {};
-    this->cullTriangleByFrustum(
-      aWorld,
-      bWorld,
-      cWorld,
-      aVertexOut.data(),
-      bVertexOut.data(),
-      cVertexOut.data(),
-      vOutFormat,
-      viewPassedVertexCoords,
-      viewPassedVertexData);
+    std::vector<uint8_t>      view_passed_vertex_data = {};
+    std::vector<Base::vec4_t> view_passed_vertex_coords = {};
+    this->cull_triangle_by_frustum(
+      a_world,
+      b_world,
+      c_world,
+      a_vertex_out.data(),
+      b_vertex_out.data(),
+      c_vertex_out.data(),
+      v_out_format,
+      view_passed_vertex_coords,
+      view_passed_vertex_data);
     // rasterization
-    for (int j = 0; j < viewPassedVertexCoords.size(); j += 3)
+    for (int j = 0; j < view_passed_vertex_coords.size(); j += 3)
     {
-      const Base::vec4_t& aVisible(viewPassedVertexCoords[j]);
-      const Base::vec4_t& bVisible(viewPassedVertexCoords[j + 1]);
-      const Base::vec4_t& cVisible(viewPassedVertexCoords[j + 2]);
+      const Base::vec4_t& a_visible(view_passed_vertex_coords[j]);
+      const Base::vec4_t& b_visible(view_passed_vertex_coords[j + 1]);
+      const Base::vec4_t& c_visible(view_passed_vertex_coords[j + 2]);
       //
-      uint8_t* aVertexOutPtr = &viewPassedVertexData[j * vOutFormat.size];
-      uint8_t* bVertexOutPtr = &viewPassedVertexData[(j + 1) * vOutFormat.size];
-      uint8_t* cVertexOutPtr = &viewPassedVertexData[(j + 2) * vOutFormat.size];
+      uint8_t* p_vertex_out_a = &view_passed_vertex_data[j * v_out_format.size];
+      uint8_t* p_vertex_out_b = &view_passed_vertex_data[(j + 1) * v_out_format.size];
+      uint8_t* p_vertex_out_c = &view_passed_vertex_data[(j + 2) * v_out_format.size];
       //
       Base::vec4_t a, b, c;
-      a = processVertex(aVisible);
-      b = processVertex(bVisible);
-      c = processVertex(cVisible);
+      a = process_vertex(a_visible);
+      b = process_vertex(b_visible);
+      c = process_vertex(c_visible);
       //
       Base::vec4_t sa = a, sb = b, sc = c;
       if (sa.y > sc.y)
       {
         std::swap(sa, sc);
-        std::swap(aVertexOutPtr, cVertexOutPtr);
+        std::swap(p_vertex_out_a, p_vertex_out_c);
       }
       if (sa.y > sb.y)
       {
         std::swap(sa, sb);
-        std::swap(aVertexOutPtr, bVertexOutPtr);
+        std::swap(p_vertex_out_a, p_vertex_out_b);
       }
       if (sb.y > sc.y)
       {
         std::swap(sb, sc);
-        std::swap(bVertexOutPtr, cVertexOutPtr);
+        std::swap(p_vertex_out_b, p_vertex_out_c);
       }
       // get interpolated values - line coordinates, only one component
       std::vector<float> xab = Base::interpolate(sa.y, sa.x, sb.y, sb.x);
@@ -1177,17 +1158,17 @@ Temple::Bonfire::RenderContext::drawTriangles(
       }
       float                bottomy = sa.y;
       int                  idx = 0;
-      std::vector<uint8_t> vInterpolatedAC(vOutFormat.size),
-        vInterpolatedAB(vOutFormat.size), vInterpolatedBC(vOutFormat.size),
-        vInterpolatedLR(vOutFormat.size);
-      std::vector<uint8_t> vDepthedA(vOutFormat.size),
-        vDepthedB(vOutFormat.size), vDepthedC(vOutFormat.size),
-        vDepthedP(vOutFormat.size);
+      std::vector<uint8_t> v_interpolated_ac(v_out_format.size),
+        v_interpolated_ab(v_out_format.size), v_interpolated_bc(v_out_format.size),
+        v_interpolated_lr(v_out_format.size);
+      std::vector<uint8_t> v_depthed_a(v_out_format.size),
+        v_depthed_b(v_out_format.size), v_depthed_c(v_out_format.size),
+        v_depthed_p(v_out_format.size);
       // divide attributes by original z - lesser attributes, that are located
       // further
-      multiplyAttributes(aVertexOutPtr, vDepthedA.data(), sa.w, vOutFormat);
-      multiplyAttributes(bVertexOutPtr, vDepthedB.data(), sb.w, vOutFormat);
-      multiplyAttributes(cVertexOutPtr, vDepthedC.data(), sc.w, vOutFormat);
+      multiply_attributes(p_vertex_out_a, v_depthed_a.data(), sa.w, v_out_format);
+      multiply_attributes(p_vertex_out_b, v_depthed_b.data(), sb.w, v_out_format);
+      multiply_attributes(p_vertex_out_c, v_depthed_c.data(), sc.w, v_out_format);
       //
       if (leftToRight)
       {
@@ -1196,47 +1177,47 @@ Temple::Bonfire::RenderContext::drawTriangles(
         {
           float leftx = xab[idx];
           float rightx = xac[idx];
-          float vWeightAB =
-            getWeightBetween(leftx, bottomy, sa.x, sa.y, sb.x, sb.y);
-          float vWeightAC =
-            getWeightBetween(rightx, bottomy, sa.x, sa.y, sc.x, sc.y);
-          interpolateAttributes(
-            vDepthedA.data(),
-            vDepthedB.data(),
-            vInterpolatedAB.data(),
-            vWeightAB,
-            vOutFormat);
-          interpolateAttributes(
-            vDepthedA.data(),
-            vDepthedC.data(),
-            vInterpolatedAC.data(),
-            vWeightAC,
-            vOutFormat);
-          float lz = sa.z + (sb.z - sa.z) * vWeightAB;
-          float rz = sa.z + (sc.z - sa.z) * vWeightAC;
-          float lwo = sa.w + (sb.w - sa.w) * vWeightAB;
-          float rwo = sa.w + (sc.w - sa.w) * vWeightAC;
+          float v_weight_ab =
+            get_weight_between(leftx, bottomy, sa.x, sa.y, sb.x, sb.y);
+          float v_weight_ac =
+            get_weight_between(rightx, bottomy, sa.x, sa.y, sc.x, sc.y);
+          interpolate_attributes(
+            v_depthed_a.data(),
+            v_depthed_b.data(),
+            v_interpolated_ab.data(),
+            v_weight_ab,
+            v_out_format);
+          interpolate_attributes(
+            v_depthed_a.data(),
+            v_depthed_c.data(),
+            v_interpolated_ac.data(),
+            v_weight_ac,
+            v_out_format);
+          float lz = sa.z + (sb.z - sa.z) * v_weight_ab;
+          float rz = sa.z + (sc.z - sa.z) * v_weight_ac;
+          float lwo = sa.w + (sb.w - sa.w) * v_weight_ab;
+          float rwo = sa.w + (sc.w - sa.w) * v_weight_ac;
           while (leftx < rightx)
           {
-            float hWeight = (leftx - xab[idx]) / (xac[idx] - xab[idx]);
-            interpolateAttributes(
-              vInterpolatedAB.data(),
-              vInterpolatedAC.data(),
-              vInterpolatedLR.data(),
-              hWeight,
-              vOutFormat);
+            float h_weight = (leftx - xab[idx]) / (xac[idx] - xab[idx]);
+            interpolate_attributes(
+              v_interpolated_ab.data(),
+              v_interpolated_ac.data(),
+              v_interpolated_lr.data(),
+              h_weight,
+              v_out_format);
             c.x = leftx;
             c.y = bottomy;
-            c.z = lz + (rz - lz) * hWeight;
-            float pwo = lwo + (rwo - lwo) * hWeight;
+            c.z = lz + (rz - lz) * h_weight;
+            float pwo = lwo + (rwo - lwo) * h_weight;
             float pzo = 1.0f / pwo;
             c.w = pwo;
-            multiplyAttributes(
-              vInterpolatedLR.data(),
-              vDepthedP.data(),
+            multiply_attributes(
+              v_interpolated_lr.data(),
+              v_depthed_p.data(),
               pzo,
-              vOutFormat);
-            renderPixelDepthWise(c, vDepthedP.data());
+              v_out_format);
+            render_pixel_depth_wise(c, v_depthed_p.data());
             leftx += 1.0f;
           }
           bottomy += 1.0f;
@@ -1245,48 +1226,48 @@ Temple::Bonfire::RenderContext::drawTriangles(
         {
           float leftx = xbc[idx - xab.size()];
           float rightx = xac[idx];
-          float vWeightBC =
-            getWeightBetween(leftx, bottomy, sb.x, sb.y, sc.x, sc.y);
-          float vWeightAC =
-            getWeightBetween(rightx, bottomy, sa.x, sa.y, sc.x, sc.y);
-          interpolateAttributes(
-            vDepthedB.data(),
-            vDepthedC.data(),
-            vInterpolatedBC.data(),
-            vWeightBC,
-            vOutFormat);
-          interpolateAttributes(
-            vDepthedA.data(),
-            vDepthedC.data(),
-            vInterpolatedAC.data(),
-            vWeightAC,
-            vOutFormat);
-          float lz = sb.z + (sc.z - sb.z) * vWeightBC;
-          float rz = sa.z + (sc.z - sa.z) * vWeightAC;
-          float lwo = sb.w + (sc.w - sb.w) * vWeightBC;
-          float rwo = sa.w + (sc.w - sa.w) * vWeightAC;
+          float v_weight_bc =
+            get_weight_between(leftx, bottomy, sb.x, sb.y, sc.x, sc.y);
+          float v_weight_ac =
+            get_weight_between(rightx, bottomy, sa.x, sa.y, sc.x, sc.y);
+          interpolate_attributes(
+            v_depthed_b.data(),
+            v_depthed_c.data(),
+            v_interpolated_bc.data(),
+            v_weight_bc,
+            v_out_format);
+          interpolate_attributes(
+            v_depthed_a.data(),
+            v_depthed_c.data(),
+            v_interpolated_ac.data(),
+            v_weight_ac,
+            v_out_format);
+          float lz = sb.z + (sc.z - sb.z) * v_weight_bc;
+          float rz = sa.z + (sc.z - sa.z) * v_weight_ac;
+          float lwo = sb.w + (sc.w - sb.w) * v_weight_bc;
+          float rwo = sa.w + (sc.w - sa.w) * v_weight_ac;
           while (leftx < rightx)
           {
-            float hWeight = (leftx - xbc[idx - xab.size()]) /
+            float h_weight = (leftx - xbc[idx - xab.size()]) /
                             (xac[idx] - xbc[idx - xab.size()]);
-            interpolateAttributes(
-              vInterpolatedBC.data(),
-              vInterpolatedAC.data(),
-              vInterpolatedLR.data(),
-              hWeight,
-              vOutFormat);
+            interpolate_attributes(
+              v_interpolated_bc.data(),
+              v_interpolated_ac.data(),
+              v_interpolated_lr.data(),
+              h_weight,
+              v_out_format);
             c.x = leftx;
             c.y = bottomy;
-            c.z = lz + (rz - lz) * hWeight;
-            float pwo = lwo + (rwo - lwo) * hWeight;
+            c.z = lz + (rz - lz) * h_weight;
+            float pwo = lwo + (rwo - lwo) * h_weight;
             float pzo = 1.0f / pwo;
             c.w = pwo;
-            multiplyAttributes(
-              vInterpolatedLR.data(),
-              vDepthedP.data(),
+            multiply_attributes(
+              v_interpolated_lr.data(),
+              v_depthed_p.data(),
               pzo,
-              vOutFormat);
-            renderPixelDepthWise(c, vDepthedP.data());
+              v_out_format);
+            render_pixel_depth_wise(c, v_depthed_p.data());
             leftx += 1.0f;
           }
           bottomy += 1.0f;
@@ -1299,47 +1280,47 @@ Temple::Bonfire::RenderContext::drawTriangles(
         {
           float leftx = xac[idx];
           float rightx = xab[idx];
-          float vWeightAC =
-            getWeightBetween(leftx, bottomy, sa.x, sa.y, sc.x, sc.y);
-          float vWeightAB =
-            getWeightBetween(rightx, bottomy, sa.x, sa.y, sb.x, sb.y);
-          interpolateAttributes(
-            vDepthedA.data(),
-            vDepthedB.data(),
-            vInterpolatedAB.data(),
-            vWeightAB,
-            vOutFormat);
-          interpolateAttributes(
-            vDepthedA.data(),
-            vDepthedC.data(),
-            vInterpolatedAC.data(),
-            vWeightAC,
-            vOutFormat);
-          float lz = sa.z + (sc.z - sa.z) * vWeightAC;
-          float rz = sa.z + (sb.z - sa.z) * vWeightAB;
-          float lwo = sa.w + (sc.w - sa.w) * vWeightAC;
-          float rwo = sa.w + (sb.w - sa.w) * vWeightAB;
+          float v_weight_ac =
+            get_weight_between(leftx, bottomy, sa.x, sa.y, sc.x, sc.y);
+          float v_weight_ab =
+            get_weight_between(rightx, bottomy, sa.x, sa.y, sb.x, sb.y);
+          interpolate_attributes(
+            v_depthed_a.data(),
+            v_depthed_b.data(),
+            v_interpolated_ab.data(),
+            v_weight_ab,
+            v_out_format);
+          interpolate_attributes(
+            v_depthed_a.data(),
+            v_depthed_c.data(),
+            v_interpolated_ac.data(),
+            v_weight_ac,
+            v_out_format);
+          float lz = sa.z + (sc.z - sa.z) * v_weight_ac;
+          float rz = sa.z + (sb.z - sa.z) * v_weight_ab;
+          float lwo = sa.w + (sc.w - sa.w) * v_weight_ac;
+          float rwo = sa.w + (sb.w - sa.w) * v_weight_ab;
           while (leftx < rightx)
           {
-            float hWeight = (leftx - xac[idx]) / (xab[idx] - xac[idx]);
-            interpolateAttributes(
-              vInterpolatedAC.data(),
-              vInterpolatedAB.data(),
-              vInterpolatedLR.data(),
-              hWeight,
-              vOutFormat);
+            float h_weight = (leftx - xac[idx]) / (xab[idx] - xac[idx]);
+            interpolate_attributes(
+              v_interpolated_ac.data(),
+              v_interpolated_ab.data(),
+              v_interpolated_lr.data(),
+              h_weight,
+              v_out_format);
             c.x = leftx;
             c.y = bottomy;
-            c.z = lz + (rz - lz) * hWeight;
-            float pwo = lwo + (rwo - lwo) * hWeight;
+            c.z = lz + (rz - lz) * h_weight;
+            float pwo = lwo + (rwo - lwo) * h_weight;
             float pzo = 1.0f / pwo;
             c.w = pwo;
-            multiplyAttributes(
-              vInterpolatedLR.data(),
-              vDepthedP.data(),
+            multiply_attributes(
+              v_interpolated_lr.data(),
+              v_depthed_p.data(),
               pzo,
-              vOutFormat);
-            renderPixelDepthWise(c, vDepthedP.data());
+              v_out_format);
+            render_pixel_depth_wise(c, v_depthed_p.data());
             leftx += 1.0f;
           }
           bottomy += 1.0f;
@@ -1348,48 +1329,48 @@ Temple::Bonfire::RenderContext::drawTriangles(
         {
           float leftx = xac[idx];
           float rightx = xbc[idx - xab.size()];
-          float vWeightAC =
-            getWeightBetween(leftx, bottomy, sa.x, sa.y, sc.x, sc.y);
-          float vWeightBC =
-            getWeightBetween(rightx, bottomy, sb.x, sb.y, sc.x, sc.y);
-          interpolateAttributes(
-            vDepthedB.data(),
-            vDepthedC.data(),
-            vInterpolatedBC.data(),
-            vWeightBC,
-            vOutFormat);
-          interpolateAttributes(
-            vDepthedA.data(),
-            vDepthedC.data(),
-            vInterpolatedAC.data(),
-            vWeightAC,
-            vOutFormat);
-          float lz = sa.z + (sc.z - sa.z) * vWeightAC;
-          float rz = sb.z + (sc.z - sb.z) * vWeightBC;
-          float lwo = sa.w + (sc.w - sa.w) * vWeightAC;
-          float rwo = sb.w + (sc.w - sb.w) * vWeightBC;
+          float v_weight_ac =
+            get_weight_between(leftx, bottomy, sa.x, sa.y, sc.x, sc.y);
+          float v_weight_bc =
+            get_weight_between(rightx, bottomy, sb.x, sb.y, sc.x, sc.y);
+          interpolate_attributes(
+            v_depthed_b.data(),
+            v_depthed_c.data(),
+            v_interpolated_bc.data(),
+            v_weight_bc,
+            v_out_format);
+          interpolate_attributes(
+            v_depthed_a.data(),
+            v_depthed_c.data(),
+            v_interpolated_ac.data(),
+            v_weight_ac,
+            v_out_format);
+          float lz = sa.z + (sc.z - sa.z) * v_weight_ac;
+          float rz = sb.z + (sc.z - sb.z) * v_weight_bc;
+          float lwo = sa.w + (sc.w - sa.w) * v_weight_ac;
+          float rwo = sb.w + (sc.w - sb.w) * v_weight_bc;
           while (leftx < rightx)
           {
-            float hWeight =
+            float h_weight =
               (leftx - xac[idx]) / (xbc[idx - xab.size()] - xac[idx]);
-            interpolateAttributes(
-              vInterpolatedAC.data(),
-              vInterpolatedBC.data(),
-              vInterpolatedLR.data(),
-              hWeight,
-              vOutFormat);
+            interpolate_attributes(
+              v_interpolated_ac.data(),
+              v_interpolated_bc.data(),
+              v_interpolated_lr.data(),
+              h_weight,
+              v_out_format);
             c.x = leftx;
             c.y = bottomy;
-            c.z = lz + (rz - lz) * hWeight;
-            float pwo = lwo + (rwo - lwo) * hWeight;
+            c.z = lz + (rz - lz) * h_weight;
+            float pwo = lwo + (rwo - lwo) * h_weight;
             float pzo = 1.0f / pwo;
             c.w = pwo;
-            multiplyAttributes(
-              vInterpolatedLR.data(),
-              vDepthedP.data(),
+            multiply_attributes(
+              v_interpolated_lr.data(),
+              v_depthed_p.data(),
               pzo,
-              vOutFormat);
-            renderPixelDepthWise(c, vDepthedP.data());
+              v_out_format);
+            render_pixel_depth_wise(c, v_depthed_p.data());
             leftx += 1.0f;
           }
           bottomy += 1.0f;
@@ -1407,7 +1388,7 @@ Temple::Bonfire::RenderContext::drawTriangles(
 }
 
 void
-Temple::Bonfire::RenderContext::setLogFunc(logFunc log)
+Temple::Bonfire::RenderContext::set_log_func(LogFunc log)
 {
   m_log = log;
 }

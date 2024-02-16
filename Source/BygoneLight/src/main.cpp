@@ -35,27 +35,27 @@ std::vector<uint8_t>              g_modelVertAttribs;
 static uint32_t                   mosaicTexture;
 
 //
-static Temple::Bonfire::col4u              red {255, 0, 0, 255};
-static Temple::Bonfire::col4u              green {0, 255, 0, 255};
-static Temple::Bonfire::col4u              blue {0, 0, 255, 255};
-static Temple::Bonfire::col4u              yellow {200, 200, 0, 255};
-static Temple::Bonfire::col4u              pink {200, 154, 165, 255};
-static Temple::Bonfire::col4u              turquoise {0, 154, 154, 255};
-static Temple::Bonfire::col4u              orange {205, 88, 0, 255};
-static Temple::Bonfire::col4u              violet {107, 0, 215, 255};
-static std::vector<Temple::Bonfire::col4u> defaultColorsU =
+static Temple::Bonfire::col4u_t              red {255, 0, 0, 255};
+static Temple::Bonfire::col4u_t              green {0, 255, 0, 255};
+static Temple::Bonfire::col4u_t              blue {0, 0, 255, 255};
+static Temple::Bonfire::col4u_t              yellow {200, 200, 0, 255};
+static Temple::Bonfire::col4u_t              pink {200, 154, 165, 255};
+static Temple::Bonfire::col4u_t              turquoise {0, 154, 154, 255};
+static Temple::Bonfire::col4u_t              orange {205, 88, 0, 255};
+static Temple::Bonfire::col4u_t              violet {107, 0, 215, 255};
+static std::vector<Temple::Bonfire::col4u_t> defaultColorsU =
   {red, green, blue, yellow, pink, turquoise, orange, violet};
 static std::vector<Temple::Base::vec4_t> defaultColors = {
-  Temple::Bonfire::getFloatColor(red),
-  Temple::Bonfire::getFloatColor(green),
-  Temple::Bonfire::getFloatColor(blue),
-  Temple::Bonfire::getFloatColor(yellow),
-  Temple::Bonfire::getFloatColor(pink),
-  Temple::Bonfire::getFloatColor(turquoise),
-  Temple::Bonfire::getFloatColor(orange),
-  Temple::Bonfire::getFloatColor(violet)};
-static Temple::Bonfire::col4u bgColor {15, 15, 35, 255};
-static Temple::Bonfire::col4u lineColor {0, 150, 0, 255};
+  Temple::Bonfire::get_color_vec4(red),
+  Temple::Bonfire::get_color_vec4(green),
+  Temple::Bonfire::get_color_vec4(blue),
+  Temple::Bonfire::get_color_vec4(yellow),
+  Temple::Bonfire::get_color_vec4(pink),
+  Temple::Bonfire::get_color_vec4(turquoise),
+  Temple::Bonfire::get_color_vec4(orange),
+  Temple::Bonfire::get_color_vec4(violet)};
+static Temple::Bonfire::col4u_t bgColor {15, 15, 35, 255};
+static Temple::Bonfire::col4u_t lineColor {0, 150, 0, 255};
 
 static HANDLE s_hWinConsoleOutput = 0;
 
@@ -75,7 +75,7 @@ draw(HWND hWnd)
   if (!_logInited)
   {
     _logInited = true;
-    renderContext.setLogFunc(PrintToWinConsole);
+    renderContext.set_log_func(PrintToWinConsole);
   }
 
   // Prepare BITMAPINFO
@@ -97,11 +97,11 @@ draw(HWND hWnd)
 
   HDC hdc = GetDC(hWnd);
 
-  renderContext.setViewport(0, 0, 0, width, height, 1);
+  renderContext.set_viewport(0, 0, 0, width, height, 1);
   // setScissor(0, 0, width, height);
 
   // begin straight filling of color buffer
-  renderContext.clearDepth(0.0f);
+  renderContext.clear_depth(0.0f);
   renderContext.fill(bgColor); // fill background and also clear screen
   Temple::Base::vec4_t              a {-0.0f, -0.0f, +0.2f, +1.0f};
   Temple::Base::vec4_t              b {-0.7f, -0.7f, +0.2f, +1.0f};
@@ -112,9 +112,9 @@ draw(HWND hWnd)
   Temple::Base::vec3_t              normal {0.0f, 0.0f, -1.0f};
   std::vector<Temple::Base::vec4_t> abc = {a, b, c};
   std::vector<uint8_t>              abcTriangleAttribs;
-  Temple::Base::vec4_t              fred = Temple::Bonfire::getFloatColor(red);
-  Temple::Base::vec4_t fgreen = Temple::Bonfire::getFloatColor(green);
-  Temple::Base::vec4_t fblue = Temple::Bonfire::getFloatColor(blue);
+  Temple::Base::vec4_t              fred = Temple::Bonfire::get_color_vec4(red);
+  Temple::Base::vec4_t fgreen = Temple::Bonfire::get_color_vec4(green);
+  Temple::Base::vec4_t fblue = Temple::Bonfire::get_color_vec4(blue);
   Temple::Base::append_data(abcTriangleAttribs, fred);
   Temple::Base::append_data(abcTriangleAttribs, uv0);
   Temple::Base::append_data(abcTriangleAttribs, normal);
@@ -167,11 +167,11 @@ draw(HWND hWnd)
   mTranslation.r1.w = 0.3f; // y-shift
   mTranslation.r2.w = 0.7f; // z-shift
 
-  renderContext.setModelMatrix(mTranslation * mRotation * mScale);
-  renderContext.setViewMatrix(
+  renderContext.set_model_matrix(mTranslation * mRotation * mScale);
+  renderContext.set_view_matrix(
     Temple::Base::mat4_t::get_identity_matrix()); // not really used yet
-  renderContext.setPerspective(90.0f, width / (float)height, 0.4f, 100.0f);
-  renderContext.setBackfaceCulling(
+  renderContext.set_perspective(90.0f, width / (float)height, 0.4f, 100.0f);
+  renderContext.set_backface_culling(
     Temple::Bonfire::ECullingMode::CounterClockWise);
 
   std::vector<uint8_t> descriptorSet;
@@ -196,8 +196,8 @@ draw(HWND hWnd)
   Temple::Base::vec3_t lightDirection {-1.0f, 0.0f, 1.0f};
   Temple::Base::append_data(descriptorSet, lightDirection);
 
-  renderContext.setDescriptorSet(descriptorSet);
-  renderContext.setVertexShader(
+  renderContext.set_descriptor_set(descriptorSet);
+  renderContext.set_vertex_shader(
     [](
       const Temple::Base::vec4_t& inp,
       Temple::Base::vec4_t&       out,
@@ -247,7 +247,7 @@ draw(HWND hWnd)
         &normal,
         sizeof(Temple::Base::vec3_t));
     });
-  renderContext.setPixelShader(
+  renderContext.set_pixel_shader(
     [](
       const Temple::Base::vec4_t& inp,
       const uint8_t*              perPixelData,
@@ -337,7 +337,7 @@ draw(HWND hWnd)
       return finalColor.clamp(0.0f, 1.0f);
     });
 
-  renderContext.drawTriangles(
+  renderContext.draw_triangles(
     g_modelVerts,
     g_modelInds,
     reinterpret_cast<const uint8_t*>(g_modelVertAttribs.data()),
@@ -359,7 +359,7 @@ draw(HWND hWnd)
     0,
     0,
     height,
-    (unsigned char*)renderContext.getFrame(),
+    (unsigned char*)renderContext.get_frame(),
     &bmi,
     DIB_RGB_COLORS);
   HRESULT hr = DwmFlush();
@@ -410,7 +410,7 @@ wWinMain(
     for (int j = 0; j < 3; j++)
     {
       int                  vertIdx = face.indices[j].position - 1;
-      int                  uvIdx = face.indices[j].texture - 1;
+      int                  uvIdx = face.indices[j].Texture - 1;
       int                  normalIdx = face.indices[j].normal - 1;
       Temple::Base::vec4_t pos {
         objFile->coord[vertIdx].x,
