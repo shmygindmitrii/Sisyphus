@@ -946,8 +946,8 @@ Temple::Bonfire::RenderContext::draw_lines(
       this->m_builtins,
       this->m_descriptor_set);
     //
-    a = process_vertex(a);
-    b = process_vertex(b);
+    a = this->process_vertex(a);
+    b = this->process_vertex(b);
     // obtained vertex shader results and go to the pixel stage
     Base::vec4_t a0(a);
     Base::vec4_t b0(b);
@@ -971,7 +971,7 @@ Temple::Bonfire::RenderContext::draw_lines(
     if (fabs(y_dif) < 0.001f && fabs(x_dif) < 0.001f)
     {
       // point
-      render_pixel_depth_wise(a0, p_data_a0);
+      this->render_pixel_depth_wise(a0, p_data_a0);
     }
     else
     {
@@ -999,7 +999,7 @@ Temple::Bonfire::RenderContext::draw_lines(
             pixel_out.data(),
             pzo,
             v_out_format);
-          render_pixel_depth_wise(c, pixel_out.data());
+          this->render_pixel_depth_wise(c, pixel_out.data());
         }
       }
       else
@@ -1030,7 +1030,7 @@ Temple::Bonfire::RenderContext::draw_lines(
             pixel_out.data(),
             pzo,
             v_out_format);
-          render_pixel_depth_wise(c, pixel_out.data());
+          this->render_pixel_depth_wise(c, pixel_out.data());
         }
       }
     }
@@ -1062,7 +1062,7 @@ Temple::Bonfire::RenderContext::draw_triangles(
     Base::vec4_t         a_world, b_world, c_world;
     std::vector<uint8_t> a_vertex_out(v_out_format.size),
       b_vertex_out(v_out_format.size), c_vertex_out(v_out_format.size);
-
+    // obtain output coordinates in view space and output vertex attributes
     this->m_vsf(
       va,
       a_world,
@@ -1104,7 +1104,7 @@ Temple::Bonfire::RenderContext::draw_triangles(
         break;
       }
       Base::vec4_t z = a_world + b_world + c_world;
-      float        zlength = z.calculate_magnitude();
+      float        zlength = a_world.calculate_magnitude();
       if (zlength < Temple::Base::eps)
       {
         continue;
@@ -1144,9 +1144,9 @@ Temple::Bonfire::RenderContext::draw_triangles(
         &view_passed_vertex_data[(j + 2) * v_out_format.size];
       //
       Base::vec4_t a, b, c;
-      a = process_vertex(a_visible);
-      b = process_vertex(b_visible);
-      c = process_vertex(c_visible);
+      a = this->process_vertex(a_visible);
+      b = this->process_vertex(b_visible);
+      c = this->process_vertex(c_visible);
       //
       Base::vec4_t sa = a, sb = b, sc = c;
       if (sa.y > sc.y)
@@ -1267,7 +1267,7 @@ Temple::Bonfire::RenderContext::draw_triangles(
               v_depthed_p.data(),
               pzo,
               v_out_format);
-            render_pixel_depth_wise(c, v_depthed_p.data());
+            this->render_pixel_depth_wise(c, v_depthed_p.data());
             leftx += 1.0f;
           }
           bottomy += 1.0f;
@@ -1317,7 +1317,7 @@ Temple::Bonfire::RenderContext::draw_triangles(
               v_depthed_p.data(),
               pzo,
               v_out_format);
-            render_pixel_depth_wise(c, v_depthed_p.data());
+            this->render_pixel_depth_wise(c, v_depthed_p.data());
             leftx += 1.0f;
           }
           bottomy += 1.0f;
@@ -1370,7 +1370,7 @@ Temple::Bonfire::RenderContext::draw_triangles(
               v_depthed_p.data(),
               pzo,
               v_out_format);
-            render_pixel_depth_wise(c, v_depthed_p.data());
+            this->render_pixel_depth_wise(c, v_depthed_p.data());
             leftx += 1.0f;
           }
           bottomy += 1.0f;
@@ -1420,7 +1420,7 @@ Temple::Bonfire::RenderContext::draw_triangles(
               v_depthed_p.data(),
               pzo,
               v_out_format);
-            render_pixel_depth_wise(c, v_depthed_p.data());
+            this->render_pixel_depth_wise(c, v_depthed_p.data());
             leftx += 1.0f;
           }
           bottomy += 1.0f;

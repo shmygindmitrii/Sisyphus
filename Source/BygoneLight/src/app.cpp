@@ -176,10 +176,10 @@ temple_application_init(void* data)
             v /= v.calculate_magnitude();
           }
           // diffuse
-          float vDotn = v.calculate_dot_product(*p_normal);
-          if (vDotn > 0)
+          float v_dot_n = v.calculate_dot_product(*p_normal);
+          if (v_dot_n > 0)
           {
-            diffuse_illumination += vDotn * (*p_illumination);
+            diffuse_illumination += v_dot_n * (*p_illumination);
             // specular
             Base::vec3_t vp =
               v - (*p_normal) * v.calculate_dot_product(*p_normal);
@@ -187,10 +187,10 @@ temple_application_init(void* data)
             r = r.calculate_normalized();
             Base::vec3_t d = (*p_camera_position) - pixel_position;
             d = d.calculate_normalized();
-            float dDotR = d.calculate_dot_product(r);
-            if (dDotR > 0)
+            float d_dot_r = d.calculate_dot_product(r);
+            if (d_dot_r > 0)
             {
-              specular_illumination += pow(dDotR, 16.0f) * (*p_illumination);
+              specular_illumination += pow(d_dot_r, 16.0f) * (*p_illumination);
             }
           }
           p_light_type = reinterpret_cast<const int*>(p_light_crd + 1);
@@ -226,8 +226,8 @@ temple_application_init(void* data)
     for (int j = 0; j < 3; j++)
     {
       int          vert_idx = face.indices[j].position - 1;
-      int          uvIdx = face.indices[j].texture - 1;
-      int          normalIdx = face.indices[j].normal - 1;
+      int          uv_idx = face.indices[j].texture - 1;
+      int          normal_idx = face.indices[j].normal - 1;
       Base::vec4_t pos {
         obj_file->coord[vert_idx].x,
         obj_file->coord[vert_idx].y,
@@ -236,8 +236,8 @@ temple_application_init(void* data)
       s_model_verts.push_back(pos);
       s_model_inds.push_back(gidx++);
       Base::append_data(s_model_vertex_attribs, colors[vert_idx]);
-      Base::append_data(s_model_vertex_attribs, obj_file->uv[uvIdx]);
-      Base::append_data(s_model_vertex_attribs, obj_file->normal[normalIdx]);
+      Base::append_data(s_model_vertex_attribs, obj_file->uv[uv_idx]);
+      Base::append_data(s_model_vertex_attribs, obj_file->normal[normal_idx]);
     }
   }
 }
