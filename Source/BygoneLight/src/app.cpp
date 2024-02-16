@@ -269,12 +269,21 @@ extern "C"
     float* p_init_data_f = reinterpret_cast<float*>(p_update_data_i);
     float dtime = *p_init_data_f++;
     //
-    float angley = 30.0f / 360.0f * 2.0f * Base::pi;
-    float anglez = 10.0f / 360.0f * 2.0f * Base::pi;
+    static float current_time = 0.0f;
+    static float period_time = 5.0f; // in seconds
+    current_time += dtime;
+    float rotation_degree = current_time / period_time;
+    if (rotation_degree > 1.0f) {
+      rotation_degree -= 1.0f;
+      current_time -= period_time;
+    }
+    float angle = 2.0f * Base::pi * rotation_degree;
+    //float angley = 30.0f / 360.0f * 2.0f * Base::pi;
+    //float anglez = 10.0f / 360.0f * 2.0f * Base::pi;
     const Base::mat4_t rot_matrix_y =
-      Base::mat4_t::calculate_rotation_matrix_around_y(angley);
+      Base::mat4_t::calculate_rotation_matrix_around_y(angle);
     const Base::mat4_t rot_matrix_z =
-      Base::mat4_t::calculate_rotation_matrix_around_z(anglez);
+      Base::mat4_t::calculate_rotation_matrix_around_z(angle);
     Base::mat4_t rotation_matrix = rot_matrix_y * rot_matrix_z;
 
     Base::mat4_t scale_matrix = Base::mat4_t::get_identity_matrix();
