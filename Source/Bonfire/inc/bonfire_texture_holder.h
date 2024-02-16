@@ -10,7 +10,7 @@ namespace Temple
 namespace Bonfire
 {
   class TextureHolder {
-    std::vector<texture>  m_textures;
+    std::vector<Texture>  m_textures;
     static TextureHolder* s_instance;
 
   public:

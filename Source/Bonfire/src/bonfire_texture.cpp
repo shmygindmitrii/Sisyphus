@@ -1,12 +1,12 @@
 #include "bonfire_texture.h"
 
-Temple::Bonfire::texture::texture()
+Temple::Bonfire::Texture::Texture()
     : width(0)
     , height(0)
     , channels(0)
 {}
 
-Temple::Bonfire::texture::texture(
+Temple::Bonfire::Texture::Texture(
   const uint8_t* d,
   uint32_t       w,
   uint32_t       h,
@@ -20,7 +20,7 @@ Temple::Bonfire::texture::texture(
 }
 
 Temple::Base::vec4_t
-Temple::Bonfire::texture::getPixel(float u, float v) const
+Temple::Bonfire::Texture::get_pixel_color(float u, float v) const
 {
   Temple::Base::vec4_t pixel;
   int                  iu = u * width;

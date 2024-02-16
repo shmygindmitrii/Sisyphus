@@ -24,7 +24,7 @@ Temple::Bonfire::TextureHolder::add_texture(
   uint32_t       h,
   uint32_t       ch)
 {
-  m_textures.push_back(texture(pixelData, w, h, ch));
+  m_textures.push_back(Texture(pixelData, w, h, ch));
   return m_textures.size() - 1;
 }
 
@@ -35,8 +35,8 @@ Temple::Bonfire::TextureHolder::get_pixel(uint32_t texId, float u, float v) cons
   pixel.a = 1.0f;
   if (texId < m_textures.size())
   {
-    const texture& tex = m_textures[texId];
-    return tex.getPixel(u, v);
+    const Texture& tex = m_textures[texId];
+    return tex.get_pixel_color(u, v);
   }
   return pixel;
 }
@@ -46,7 +46,7 @@ Temple::Bonfire::TextureHolder::save_texture(const char* path, int texId)
 {
   if (texId >= 0 && texId < m_textures.size())
   {
-    const texture& tex = m_textures[texId];
+    const Texture& tex = m_textures[texId];
     stbi_write_png(
       path,
       tex.width,

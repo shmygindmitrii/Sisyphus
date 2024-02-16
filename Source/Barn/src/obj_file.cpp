@@ -30,7 +30,7 @@ Temple::Barn::read_obj_model_file(const char* filename)
     }
     else if (prefix == "vt")
     {
-      // texture
+      // Texture
       Base::vec2_t t;
       iss >> t.u >> t.v;
       obj_ptr->uv.push_back(t);
@@ -62,7 +62,7 @@ Temple::Barn::read_obj_model_file(const char* filename)
         if (getline(vertex_stream, index, '/'))
         {
           idx = std::stoi(index);
-          face.indices[face_vert_idx].texture = idx;
+          face.indices[face_vert_idx].Texture = idx;
         }
 
         // Normal index
