@@ -40,16 +40,15 @@ PrintToWinConsole(const char* pMessage, unsigned int size)
   WriteConsoleA(s_hWinConsoleOutput, pMessage, size, &iCharsWritten, NULL);
 }
 
-struct update_info_t 
-{
-  int width, height, bpp;
+struct update_info_t {
+  int   width, height, bpp;
   float dt;
 };
 
 void
 draw(HWND hWnd)
 {
-  RECT                                  rect;
+  RECT rect;
 
   // Prepare BITMAPINFO
   BITMAPINFO bmi;
@@ -70,23 +69,25 @@ draw(HWND hWnd)
   HDC hdc = GetDC(hWnd);
 
   static long long nanoseconds_prev = 0;
-  auto      curTime = std::chrono::high_resolution_clock::now();
-  auto      duration = curTime.time_since_epoch();
-  long long nanoseconds =
+  auto             curTime = std::chrono::high_resolution_clock::now();
+  auto             duration = curTime.time_since_epoch();
+  long long        nanoseconds =
     std::chrono::duration_cast<std::chrono::nanoseconds>(duration).count();
   long long nanoseconds_passed = nanoseconds - nanoseconds_prev;
-  float dt = nanoseconds_passed / 1000000000.0f;
+  float     dt = nanoseconds_passed / 1000000000.0f;
   if (nanoseconds_prev == 0)
   {
     dt = 0.0f;
   }
   nanoseconds_prev = nanoseconds;
-  update_info_t upd{ width, height, 4, dt};
+  update_info_t upd {width, height, 4, dt};
   temple_application_update(&upd);
-  
+
   static std::vector<uint8_t> frame_data = {};
   frame_data.resize(width * height * 4);
-  temple_application_get_frame(frame_data.data(), static_cast<unsigned int>(frame_data.size()));
+  temple_application_get_frame(
+    frame_data.data(),
+    static_cast<unsigned int>(frame_data.size()));
 
   SetDIBitsToDevice(
     hdc,
@@ -129,7 +130,7 @@ wWinMain(
   {
     return FALSE;
   }
-  
+
   // software renderer application is inside
   temple_application_init(nullptr);
   temple_application_set_log_function(PrintToWinConsole);
