@@ -5,8 +5,8 @@
 TEST_CASE("Temple::Base::mat3_t tests", "[Base::mat3_t]")
 {
   Temple::Base::mat3_t
-    defaultMatrix {1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f, 8.0f, 9.0f};
-  Temple::Base::mat3_t zeroMatrix = {};
+    default_matrix {1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f, 8.0f, 9.0f};
+  Temple::Base::mat3_t zero_matrix = {};
   SECTION("mat3_t default constructor - all values should be zero")
   {
     Temple::Base::mat3_t M = {};
@@ -24,7 +24,7 @@ TEST_CASE("Temple::Base::mat3_t tests", "[Base::mat3_t]")
        EQUAL_FLOATS(3.0f, M(0, 2)) && EQUAL_FLOATS(4.0f, M(1, 0)) &&
        EQUAL_FLOATS(5.0f, M(1, 1)) && EQUAL_FLOATS(6.0f, M(1, 2)) &&
        EQUAL_FLOATS(7.0f, M(2, 0)) && EQUAL_FLOATS(8.0f, M(2, 1)) &&
-       EQUAL_FLOATS(9.0f, M(2, 2)) && M == defaultMatrix));
+       EQUAL_FLOATS(9.0f, M(2, 2)) && M == default_matrix));
   }
   SECTION("mat3_t constructor with 3 vec3_t (rows)")
   {
@@ -32,24 +32,24 @@ TEST_CASE("Temple::Base::mat3_t tests", "[Base::mat3_t]")
     Temple::Base::vec3_t b {4.0f, 5.0f, 6.0f};
     Temple::Base::vec3_t c {7.0f, 8.0f, 9.0f};
     Temple::Base::mat3_t M {a.x, a.y, a.z, b.x, b.y, b.z, c.x, c.y, c.z};
-    REQUIRE(M == defaultMatrix);
+    REQUIRE(M == default_matrix);
   }
   SECTION("mat3_t constructor with another mat3_t&")
   {
     Temple::Base::mat3_t
       N {1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f, 8.0f, 9.0f};
     Temple::Base::mat3_t M = N;
-    REQUIRE((M == defaultMatrix && M == N));
+    REQUIRE((M == default_matrix && M == N));
   }
   SECTION("mat3_t inequality")
   {
-    Temple::Base::mat3_t M(defaultMatrix);
+    Temple::Base::mat3_t M(default_matrix);
     M(0, 0) += 0.001f;
-    REQUIRE(M != defaultMatrix);
+    REQUIRE(M != default_matrix);
   }
   SECTION("Simple mat3_t arythmetic operations")
   {
-    Temple::Base::mat3_t M(defaultMatrix);
+    Temple::Base::mat3_t M(default_matrix);
     Temple::Base::mat3_t N = 2.0f * M;
     Temple::Base::mat3_t
       M2 {2.0f, 4.0f, 6.0f, 8.0f, 10.0f, 12.0f, 14.0f, 16.0f, 18.0f};
@@ -57,15 +57,15 @@ TEST_CASE("Temple::Base::mat3_t tests", "[Base::mat3_t]")
     M *= 2.0f;
     REQUIRE(M == M2);
     N = M / 2.0f;
-    REQUIRE(N == defaultMatrix);
+    REQUIRE(N == default_matrix);
     M /= 2.0f;
-    REQUIRE(M == defaultMatrix);
-    M -= defaultMatrix;
-    REQUIRE(M == zeroMatrix);
-    M += defaultMatrix;
-    REQUIRE(M == defaultMatrix);
+    REQUIRE(M == default_matrix);
+    M -= default_matrix;
+    REQUIRE(M == zero_matrix);
+    M += default_matrix;
+    REQUIRE(M == default_matrix);
     M = 2.0f * M - N;
-    REQUIRE(M == defaultMatrix);
+    REQUIRE(M == default_matrix);
     N *= 0.5f;
     M = M + 3.0f * M - N / 0.25f;
     REQUIRE(M == 4.0f * N);
@@ -181,7 +181,7 @@ TEST_CASE("Temple::Base::mat3_t tests", "[Base::mat3_t]")
 
 TEST_CASE("Temple::Base::mat4_t tests", "[Base::mat4_t]")
 {
-  Temple::Base::mat4_t defaultMatrix {
+  Temple::Base::mat4_t default_matrix {
     1.0f,
     2.0f,
     3.0f,
@@ -198,7 +198,7 @@ TEST_CASE("Temple::Base::mat4_t tests", "[Base::mat4_t]")
     14.0f,
     15.0f,
     16.0f};
-  Temple::Base::mat4_t zeroMatrix;
+  Temple::Base::mat4_t zero_matrix = {};
   SECTION("mat4_t default constructor - all values should be zero")
   {
     Temple::Base::mat4_t M = {};
@@ -236,7 +236,7 @@ TEST_CASE("Temple::Base::mat4_t tests", "[Base::mat4_t]")
        EQUAL_FLOATS(11.0f, M(2, 2)) && EQUAL_FLOATS(12.0f, M(2, 3)) &&
        EQUAL_FLOATS(13.0f, M(3, 0)) && EQUAL_FLOATS(14.0f, M(3, 1)) &&
        EQUAL_FLOATS(15.0f, M(3, 2)) && EQUAL_FLOATS(16.0f, M(3, 3)) &&
-       M == defaultMatrix));
+       M == default_matrix));
   }
   SECTION("mat4_t constructor with 4 vec4_t (rows)")
   {
@@ -261,7 +261,7 @@ TEST_CASE("Temple::Base::mat4_t tests", "[Base::mat4_t]")
       d.y,
       d.z,
       d.w};
-    REQUIRE(M == defaultMatrix);
+    REQUIRE(M == default_matrix);
   }
   SECTION("mat4_t constructor with another mat4_t&")
   {
@@ -283,17 +283,17 @@ TEST_CASE("Temple::Base::mat4_t tests", "[Base::mat4_t]")
       15.0f,
       16.0f};
     Temple::Base::mat4_t M = N;
-    REQUIRE((M == defaultMatrix && M == N));
+    REQUIRE((M == default_matrix && M == N));
   }
   SECTION("mat4_t inequality")
   {
-    Temple::Base::mat4_t M = defaultMatrix;
+    Temple::Base::mat4_t M = default_matrix;
     M(0, 0) += 0.001f;
-    REQUIRE(M != defaultMatrix);
+    REQUIRE(M != default_matrix);
   }
   SECTION("Simple mat4_t arythmetic operations")
   {
-    Temple::Base::mat4_t M(defaultMatrix);
+    Temple::Base::mat4_t M(default_matrix);
     Temple::Base::mat4_t N = 2.0f * M;
     Temple::Base::mat4_t M2 {
       2.0f,
@@ -316,15 +316,15 @@ TEST_CASE("Temple::Base::mat4_t tests", "[Base::mat4_t]")
     M *= 2.0f;
     REQUIRE(M == M2);
     N = M / 2.0f;
-    REQUIRE(N == defaultMatrix);
+    REQUIRE(N == default_matrix);
     M /= 2.0f;
-    REQUIRE(M == defaultMatrix);
-    M -= defaultMatrix;
-    REQUIRE(M == zeroMatrix);
-    M += defaultMatrix;
-    REQUIRE(M == defaultMatrix);
+    REQUIRE(M == default_matrix);
+    M -= default_matrix;
+    REQUIRE(M == zero_matrix);
+    M += default_matrix;
+    REQUIRE(M == default_matrix);
     M = 2.0f * M - N;
-    REQUIRE(M == defaultMatrix);
+    REQUIRE(M == default_matrix);
     N *= 0.5f;
     M = M + 3.0f * M - N / 0.25f;
     REQUIRE(M == 4.0f * N);
@@ -535,21 +535,21 @@ TEST_CASE("Temple::Base::mat4_t tests", "[Base::mat4_t]")
   {
     SECTION("  Example 1")
     {
-      float                zNear = 10.0f;
-      float                zFar = 100.0f;
+      float                z_near = 10.0f;
+      float                z_far = 100.0f;
       Temple::Base::mat4_t proj =
         Temple::Base::mat4_t::calculate_projection_matrix(
           90.0 * Temple::Base::pi / 180.0f,
           1.0f,
-          zNear,
-          zFar);
-      Temple::Base::vec4_t pNear {0.0f, 0.0f, zNear, 1.0f};
-      Temple::Base::vec4_t pFar {0.0f, 0.0f, zFar, 1.0f};
-      Temple::Base::vec4_t pNearProjected = proj * pNear;
-      Temple::Base::vec4_t pFarProjected = proj * pFar;
+          z_near,
+          z_far);
+      Temple::Base::vec4_t v_near {0.0f, 0.0f, z_near, 1.0f};
+      Temple::Base::vec4_t v_far {0.0f, 0.0f, z_far, 1.0f};
+      Temple::Base::vec4_t v_near_projected = proj * v_near;
+      Temple::Base::vec4_t v_far_projected = proj * v_far;
       REQUIRE(
-        (EQUAL_FLOATS(pNearProjected.z / pNearProjected.w, 1.0f) &&
-         EQUAL_FLOATS(pFarProjected.z, 0.0f)));
+        (EQUAL_FLOATS(v_near_projected.z / v_near_projected.w, 1.0f) &&
+         EQUAL_FLOATS(v_far_projected.z, 0.0f)));
     }
   }
 }
