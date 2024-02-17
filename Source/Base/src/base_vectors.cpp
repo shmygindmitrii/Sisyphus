@@ -11,8 +11,8 @@
 std::ostream&
 Temple::Base::operator<<(std::ostream& os, const Temple::Base::vec2_t& v)
 {
-  os << std::fixed << std::setprecision(4) << '[' << v.x << ' ' << v.y << ']';
-  return os;
+    os << std::fixed << std::setprecision(4) << '[' << v.x << ' ' << v.y << ']';
+    return os;
 }
 
 // vec3_t
@@ -20,9 +20,8 @@ Temple::Base::operator<<(std::ostream& os, const Temple::Base::vec2_t& v)
 std::ostream&
 Temple::Base::operator<<(std::ostream& os, const Temple::Base::vec3_t& v)
 {
-  os << std::fixed << std::setprecision(4) << '[' << v.x << ' ' << v.y << ' '
-     << v.z << ']';
-  return os;
+    os << std::fixed << std::setprecision(4) << '[' << v.x << ' ' << v.y << ' ' << v.z << ']';
+    return os;
 }
 
 
@@ -31,7 +30,6 @@ Temple::Base::operator<<(std::ostream& os, const Temple::Base::vec3_t& v)
 std::ostream&
 Temple::Base::operator<<(std::ostream& os, const Temple::Base::vec4_t& v)
 {
-  os << std::fixed << std::setprecision(4) << '[' << v.x << ' ' << v.y << ' '
-     << v.z << ' ' << v.w << ']';
-  return os;
+    os << std::fixed << std::setprecision(4) << '[' << v.x << ' ' << v.y << ' ' << v.z << ' ' << v.w << ']';
+    return os;
 }
