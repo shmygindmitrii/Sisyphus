@@ -84,27 +84,27 @@ temple_application_init(void* data)
            const uint8_t* per_vertex_data, const std::vector<uint8_t>& builtins,
            const std::vector<uint8_t>& descriptor_set)
         {
-            const Base::mat4_t* p_model_view_matrix = reinterpret_cast<const Base::mat4_t*>(builtins.data());
-            const Base::mat4_t* p_transform = p_model_view_matrix + 4;
-            out = (*p_model_view_matrix) * inp;
+            const Base::mat4_t* model_view_matrix_ptr = reinterpret_cast<const Base::mat4_t*>(builtins.data());
+            const Base::mat4_t* transform_ptr = model_view_matrix_ptr + 4;
+            out = (*model_view_matrix_ptr) * inp;
             // almost rasterized coord is found - need to divide by w and make x,y fit
             // to viewport in another function
-            const Base::vec4_t* p_color = reinterpret_cast<const Base::vec4_t*>(per_vertex_data);
-            const Base::vec2_t* p_tex = reinterpret_cast<const Base::vec2_t*>(p_color + 1);
-            const Base::vec3_t* p_normal = reinterpret_cast<const Base::vec3_t*>(p_tex + 1);
+            const Base::vec4_t* color_ptr = reinterpret_cast<const Base::vec4_t*>(per_vertex_data);
+            const Base::vec2_t* tex_ptr = reinterpret_cast<const Base::vec2_t*>(color_ptr + 1);
+            const Base::vec3_t* normal_ptr = reinterpret_cast<const Base::vec3_t*>(tex_ptr + 1);
             int                 offset = 0;
             // rotate position
             Base::vec4_t pos = out;
             memcpy(per_vertex_out.data() + offset, &pos, sizeof(Base::vec4_t));
             offset += sizeof(Base::vec4_t);
             //
-            memcpy(per_vertex_out.data() + offset, p_color, sizeof(Base::vec4_t));
+            memcpy(per_vertex_out.data() + offset, color_ptr, sizeof(Base::vec4_t));
             offset += sizeof(Base::vec4_t);
-            memcpy(per_vertex_out.data() + offset, p_tex, sizeof(Base::vec2_t));
+            memcpy(per_vertex_out.data() + offset, tex_ptr, sizeof(Base::vec2_t));
             offset += sizeof(Base::vec2_t);
             // rotate normal
-            Base::vec4_t normal {p_normal->x, p_normal->y, p_normal->z, 0.0f};
-            normal = (*p_model_view_matrix) * normal;
+            Base::vec4_t normal {normal_ptr->x, normal_ptr->y, normal_ptr->z, 0.0f};
+            normal = (*model_view_matrix_ptr) * normal;
             normal = normal.calculate_normalized();
             memcpy(per_vertex_out.data() + offset, &normal, sizeof(Base::vec3_t));
         });
@@ -112,66 +112,66 @@ temple_application_init(void* data)
         [](const Base::vec4_t& inp, const uint8_t* per_pixel_data, const std::vector<uint8_t>& builtins,
            const std::vector<uint8_t>& descriptor_set) -> Base::vec4_t
         {
-            const Base::vec4_t* p_pos = reinterpret_cast<const Base::vec4_t*>(per_pixel_data);
-            const Base::vec4_t* p_pixel_color = reinterpret_cast<const Base::vec4_t*>(p_pos + 1);
-            const Base::vec2_t* p_tex = reinterpret_cast<const Base::vec2_t*>(p_pixel_color + 1);
-            const Base::vec3_t* p_normal = reinterpret_cast<const Base::vec3_t*>(p_tex + 1);
+            const Base::vec4_t* pos_ptr = reinterpret_cast<const Base::vec4_t*>(per_pixel_data);
+            const Base::vec4_t* pixel_color_ptr = reinterpret_cast<const Base::vec4_t*>(pos_ptr + 1);
+            const Base::vec2_t* tex_ptr = reinterpret_cast<const Base::vec2_t*>(pixel_color_ptr + 1);
+            const Base::vec3_t* normal_ptr = reinterpret_cast<const Base::vec3_t*>(tex_ptr + 1);
             // per-pixel
-            Base::vec4_t tex_color = Bonfire::TextureHolder::instance()->get_pixel(0, p_tex->u, p_tex->v);
+            Base::vec4_t tex_color = Bonfire::TextureHolder::instance()->get_pixel(0, tex_ptr->u, tex_ptr->v);
             // illumination
-            const Base::vec3_t* p_camera_position = reinterpret_cast<const Base::vec3_t*>(descriptor_set.data());
-            const int*          p_light_count = reinterpret_cast<const int*>(p_camera_position + 1);
-            const int*          p_light_type = p_light_count + 1;
-            Base::vec3_t        pixel_position {p_pos->x, p_pos->y, p_pos->z};
+            const Base::vec3_t* camera_position_ptr = reinterpret_cast<const Base::vec3_t*>(descriptor_set.data());
+            const int*          light_count_ptr = reinterpret_cast<const int*>(camera_position_ptr + 1);
+            const int*          light_type_ptr = light_count_ptr + 1;
+            Base::vec3_t        pixel_position {pos_ptr->x, pos_ptr->y, pos_ptr->z};
             float               ambient_illumination = 0.0f, diffuse_illumination = 0.0f, specular_illumination = 0.0f;
-            for (int i = 0; i < *p_light_count; i++)
+            for (int i = 0; i < *light_count_ptr; i++)
             {
-                const float* p_illumination = reinterpret_cast<const float*>(p_light_type + 1);
-                if ((*p_light_type) == 0)
+                const float* illumination_ptr = reinterpret_cast<const float*>(light_type_ptr + 1);
+                if ((*light_type_ptr) == 0)
                 {
                     // ambient
-                    ambient_illumination += *p_illumination;
-                    p_light_type = reinterpret_cast<const int*>(p_illumination + 1);
+                    ambient_illumination += *illumination_ptr;
+                    light_type_ptr = reinterpret_cast<const int*>(illumination_ptr + 1);
                 }
                 else
                 {
-                    const Base::vec3_t* p_light_crd = reinterpret_cast<const Base::vec3_t*>(p_illumination + 1);
+                    const Base::vec3_t* light_crd_ptr = reinterpret_cast<const Base::vec3_t*>(illumination_ptr + 1);
                     Base::vec3_t        v;
-                    if ((*p_light_type) == 1)
+                    if ((*light_type_ptr) == 1)
                     {
                         // point light
-                        v = (*p_light_crd) - pixel_position;
+                        v = (*light_crd_ptr) - pixel_position;
                         v = v.calculate_normalized();
                     }
                     else
                     {
                         // directed light
-                        v = -(*p_light_crd);
+                        v = -(*light_crd_ptr);
                         v /= v.calculate_magnitude();
                     }
                     // diffuse
-                    float v_dot_n = v.calculate_dot_product(*p_normal);
+                    float v_dot_n = v.calculate_dot_product(*normal_ptr);
                     if (v_dot_n > 0)
                     {
-                        diffuse_illumination += v_dot_n * (*p_illumination);
+                        diffuse_illumination += v_dot_n * (*illumination_ptr);
                         // specular
-                        Base::vec3_t vp = v - (*p_normal) * v.calculate_dot_product(*p_normal);
+                        Base::vec3_t vp = v - (*normal_ptr) * v.calculate_dot_product(*normal_ptr);
                         Base::vec3_t r = v - vp * 2.0f;
                         r = r.calculate_normalized();
-                        Base::vec3_t d = (*p_camera_position) - pixel_position;
+                        Base::vec3_t d = (*camera_position_ptr) - pixel_position;
                         d = d.calculate_normalized();
                         float d_dot_r = d.calculate_dot_product(r);
                         if (d_dot_r > 0)
                         {
-                            specular_illumination += pow(d_dot_r, 16.0f) * (*p_illumination);
+                            specular_illumination += pow(d_dot_r, 16.0f) * (*illumination_ptr);
                         }
                     }
-                    p_light_type = reinterpret_cast<const int*>(p_light_crd + 1);
+                    light_type_ptr = reinterpret_cast<const int*>(light_crd_ptr + 1);
                 }
             }
             float        illumination = ambient_illumination + diffuse_illumination + specular_illumination;
             Base::vec4_t illumination_vec {illumination, illumination, illumination, 1.0f};
-            Base::vec4_t final_color = (*p_pixel_color) * tex_color * illumination_vec;
+            Base::vec4_t final_color = (*pixel_color_ptr) * tex_color * illumination_vec;
             return final_color.clamp(0.0f, 1.0f);
         });
     // load model and texture
@@ -209,12 +209,12 @@ temple_application_init(void* data)
 void
 temple_application_update(void* data)
 {
-    int*   p_update_data_i = reinterpret_cast<int*>(data);
-    int    width = *p_update_data_i++;
-    int    height = *p_update_data_i++;
-    int    bpp = *p_update_data_i++;
-    float* p_init_data_f = reinterpret_cast<float*>(p_update_data_i);
-    float  dtime = *p_init_data_f++;
+    int*   update_data_i_ptr = reinterpret_cast<int*>(data);
+    int    width = *update_data_i_ptr++;
+    int    height = *update_data_i_ptr++;
+    int    bpp = *update_data_i_ptr++;
+    float* init_data_f_ptr = reinterpret_cast<float*>(update_data_i_ptr);
+    float  dtime = *init_data_f_ptr++;
     //
     static float current_time = 0.0f;
     static float period_time = 5.0f; // in seconds
@@ -299,11 +299,11 @@ temple_application_close()
 }
 
 void
-temple_application_get_frame(void* p_data, unsigned int data_size)
+temple_application_get_frame(void* data_ptr, unsigned int data_size)
 {
     unsigned int frame_size = s_render_context.get_frame_size();
     assert(frame_size <= data_size);
     const void* frame_data = s_render_context.get_frame();
-    memcpy(p_data, frame_data, frame_size);
+    memcpy(data_ptr, frame_data, frame_size);
 }
 }

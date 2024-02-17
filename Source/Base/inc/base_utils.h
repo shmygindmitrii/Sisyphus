@@ -31,10 +31,10 @@ namespace Base
         memcpy(&v[offset], (void*)&data, sizeof(T));
     }
     void
-    append_data(std::vector<uint8_t>& v, const uint8_t* p_data, const int src_size, const int src_offset);
+    append_data(std::vector<uint8_t>& v, const uint8_t* data_ptr, const int src_size, const int src_offset);
     void
     replace_data(
-        std::vector<uint8_t>& v, const uint8_t* p_data, const int dest_offset, const int src_size,
+        std::vector<uint8_t>& v, const uint8_t* data_ptr, const int dest_offset, const int src_size,
         const int src_offset);
 } // namespace Base
 } // namespace Temple

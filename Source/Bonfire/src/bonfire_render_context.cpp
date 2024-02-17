@@ -458,9 +458,9 @@ point_plane_side(const Temple::Base::vec3_t& a, const Temple::Bonfire::Plane& p)
 static void
 cull_triangle_two_point_outside(
     const Temple::Base::vec4_t& a, const Temple::Base::vec4_t& b, const Temple::Base::vec4_t& c,
-    const uint8_t* p_data_a, const uint8_t* p_data_b, const uint8_t* p_data_c, const Temple::Bonfire::VertexFormat& vf,
-    const Temple::Bonfire::Plane& p, std::vector<Temple::Base::vec4_t>& passed_vertex_coords,
-    std::vector<uint8_t>& passed_vertex_data)
+    const uint8_t* data_a_ptr, const uint8_t* data_b_ptr, const uint8_t* data_c_ptr,
+    const Temple::Bonfire::VertexFormat& vf, const Temple::Bonfire::Plane& p,
+    std::vector<Temple::Base::vec4_t>& passed_vertex_coords, std::vector<uint8_t>& passed_vertex_data)
 {
     // a and b are outside
     float c_side = point_plane_side(c.xyz, p);
@@ -477,8 +477,8 @@ cull_triangle_two_point_outside(
         std::vector<uint8_t> data_bk = {};
         dataAK.resize(vf.size);
         data_bk.resize(vf.size);
-        Temple::Bonfire::interpolate_attributes(p_data_c, p_data_a, dataAK.data(), kA, vf);
-        Temple::Bonfire::interpolate_attributes(p_data_c, p_data_b, data_bk.data(), kB, vf);
+        Temple::Bonfire::interpolate_attributes(data_c_ptr, data_a_ptr, dataAK.data(), kA, vf);
+        Temple::Bonfire::interpolate_attributes(data_c_ptr, data_b_ptr, data_bk.data(), kB, vf);
         Temple::Base::vec4_t ak = (a - c) * kA + c;
         ak.w = c.w;
         Temple::Base::vec4_t bk = (b - c) * kB + c;
@@ -487,7 +487,7 @@ cull_triangle_two_point_outside(
         passed_vertex_coords.emplace_back(c);
         passed_vertex_coords.emplace_back(ak);
         passed_vertex_coords.emplace_back(bk);
-        Temple::Base::append_data(passed_vertex_data, p_data_c, vf.size, 0);
+        Temple::Base::append_data(passed_vertex_data, data_c_ptr, vf.size, 0);
         Temple::Base::append_data(passed_vertex_data, dataAK.data(), vf.size, 0);
         Temple::Base::append_data(passed_vertex_data, data_bk.data(), vf.size, 0);
     }
@@ -496,9 +496,9 @@ cull_triangle_two_point_outside(
 static void
 cull_triangle_one_point_outside_one_on(
     const Temple::Base::vec4_t& a, const Temple::Base::vec4_t& b, const Temple::Base::vec4_t& c,
-    const uint8_t* p_data_a, const uint8_t* p_data_b, const uint8_t* p_data_c, const Temple::Bonfire::VertexFormat& vf,
-    const Temple::Bonfire::Plane& p, std::vector<Temple::Base::vec4_t>& passed_vertex_coords,
-    std::vector<uint8_t>& passed_vertex_data)
+    const uint8_t* data_a_ptr, const uint8_t* data_b_ptr, const uint8_t* data_c_ptr,
+    const Temple::Bonfire::VertexFormat& vf, const Temple::Bonfire::Plane& p,
+    std::vector<Temple::Base::vec4_t>& passed_vertex_coords, std::vector<uint8_t>& passed_vertex_data)
 {
     // a is outside and b is on the plane
     float c_side = point_plane_side(c.xyz, p);
@@ -512,15 +512,15 @@ cull_triangle_one_point_outside_one_on(
         float                kA = segment_plane_intersection(c.xyz, a.xyz, p);
         std::vector<uint8_t> data_ck = {};
         data_ck.resize(vf.size);
-        Temple::Bonfire::interpolate_attributes(p_data_c, p_data_a, data_ck.data(), kA, vf);
+        Temple::Bonfire::interpolate_attributes(data_c_ptr, data_a_ptr, data_ck.data(), kA, vf);
         Temple::Base::vec4_t ck = (a - c) * kA + c;
         ck.w = c.w;
         //
         passed_vertex_coords.emplace_back(b);
         passed_vertex_coords.emplace_back(c);
         passed_vertex_coords.emplace_back(ck);
-        Temple::Base::append_data(passed_vertex_data, p_data_b, vf.size, 0);
-        Temple::Base::append_data(passed_vertex_data, p_data_c, vf.size, 0);
+        Temple::Base::append_data(passed_vertex_data, data_b_ptr, vf.size, 0);
+        Temple::Base::append_data(passed_vertex_data, data_c_ptr, vf.size, 0);
         Temple::Base::append_data(passed_vertex_data, data_ck.data(), vf.size, 0);
     }
 }
@@ -528,9 +528,9 @@ cull_triangle_one_point_outside_one_on(
 static void
 cull_triangle_one_point_outside(
     const Temple::Base::vec4_t& a, const Temple::Base::vec4_t& b, const Temple::Base::vec4_t& c,
-    const uint8_t* p_data_a, const uint8_t* p_data_b, const uint8_t* p_data_c, const Temple::Bonfire::VertexFormat& vf,
-    const Temple::Bonfire::Plane& p, std::vector<Temple::Base::vec4_t>& passed_vertex_coords,
-    std::vector<uint8_t>& passed_vertex_data)
+    const uint8_t* data_a_ptr, const uint8_t* data_b_ptr, const uint8_t* data_c_ptr,
+    const Temple::Bonfire::VertexFormat& vf, const Temple::Bonfire::Plane& p,
+    std::vector<Temple::Base::vec4_t>& passed_vertex_coords, std::vector<uint8_t>& passed_vertex_data)
 {
     // a-point is outside
     float b_side = point_plane_side(b.xyz, p);
@@ -539,7 +539,7 @@ cull_triangle_one_point_outside(
     {
         // a and b are outside
         cull_triangle_two_point_outside(
-            a, b, c, p_data_a, p_data_b, p_data_c, vf, p, passed_vertex_coords, passed_vertex_data);
+            a, b, c, data_a_ptr, data_b_ptr, data_c_ptr, vf, p, passed_vertex_coords, passed_vertex_data);
     }
     else
     {
@@ -547,7 +547,7 @@ cull_triangle_one_point_outside(
         {
             // a and c are outside
             cull_triangle_two_point_outside(
-                a, c, b, p_data_a, p_data_c, p_data_b, vf, p, passed_vertex_coords, passed_vertex_data);
+                a, c, b, data_a_ptr, data_c_ptr, data_b_ptr, vf, p, passed_vertex_coords, passed_vertex_data);
         }
         else
         {
@@ -556,13 +556,13 @@ cull_triangle_one_point_outside(
             {
                 // b is on the plane
                 cull_triangle_one_point_outside_one_on(
-                    a, b, c, p_data_a, p_data_b, p_data_c, vf, p, passed_vertex_coords, passed_vertex_data);
+                    a, b, c, data_a_ptr, data_b_ptr, data_c_ptr, vf, p, passed_vertex_coords, passed_vertex_data);
             }
             else if (fabs(c_side) < Temple::Base::eps)
             {
                 // c is on the plane
                 cull_triangle_one_point_outside_one_on(
-                    a, c, b, p_data_a, p_data_c, p_data_b, vf, p, passed_vertex_coords, passed_vertex_data);
+                    a, c, b, data_a_ptr, data_c_ptr, data_b_ptr, vf, p, passed_vertex_coords, passed_vertex_data);
             }
             else
             {
@@ -573,8 +573,8 @@ cull_triangle_one_point_outside(
                 std::vector<uint8_t> data_ck = {};
                 data_bk.resize(vf.size);
                 data_ck.resize(vf.size);
-                Temple::Bonfire::interpolate_attributes(p_data_b, p_data_a, data_bk.data(), kB, vf);
-                Temple::Bonfire::interpolate_attributes(p_data_c, p_data_a, data_ck.data(), kC, vf);
+                Temple::Bonfire::interpolate_attributes(data_b_ptr, data_a_ptr, data_bk.data(), kB, vf);
+                Temple::Bonfire::interpolate_attributes(data_c_ptr, data_a_ptr, data_ck.data(), kC, vf);
                 Temple::Base::vec4_t bk = (a - b) * kB + b;
                 bk.w = b.w;
                 Temple::Base::vec4_t ck = (a - c) * kC + c;
@@ -583,14 +583,14 @@ cull_triangle_one_point_outside(
                 passed_vertex_coords.emplace_back(b);
                 passed_vertex_coords.emplace_back(c);
                 passed_vertex_coords.emplace_back(bk);
-                Temple::Base::append_data(passed_vertex_data, p_data_b, vf.size, 0);
-                Temple::Base::append_data(passed_vertex_data, p_data_c, vf.size, 0);
+                Temple::Base::append_data(passed_vertex_data, data_b_ptr, vf.size, 0);
+                Temple::Base::append_data(passed_vertex_data, data_c_ptr, vf.size, 0);
                 Temple::Base::append_data(passed_vertex_data, data_bk.data(), vf.size, 0);
                 //
                 passed_vertex_coords.emplace_back(c);
                 passed_vertex_coords.emplace_back(ck);
                 passed_vertex_coords.emplace_back(bk);
-                Temple::Base::append_data(passed_vertex_data, p_data_c, vf.size, 0);
+                Temple::Base::append_data(passed_vertex_data, data_c_ptr, vf.size, 0);
                 Temple::Base::append_data(passed_vertex_data, data_ck.data(), vf.size, 0);
                 Temple::Base::append_data(passed_vertex_data, data_bk.data(), vf.size, 0);
             }
@@ -601,9 +601,9 @@ cull_triangle_one_point_outside(
 static void
 cull_triangle_by_plane(
     const Temple::Base::vec4_t& a, const Temple::Base::vec4_t& b, const Temple::Base::vec4_t& c,
-    const uint8_t* p_data_a, const uint8_t* p_data_b, const uint8_t* p_data_c, const Temple::Bonfire::VertexFormat& vf,
-    const Temple::Bonfire::Plane& p, std::vector<Temple::Base::vec4_t>& passed_vertex_coords,
-    std::vector<uint8_t>& passed_vertex_data)
+    const uint8_t* data_a_ptr, const uint8_t* data_b_ptr, const uint8_t* data_c_ptr,
+    const Temple::Bonfire::VertexFormat& vf, const Temple::Bonfire::Plane& p,
+    std::vector<Temple::Base::vec4_t>& passed_vertex_coords, std::vector<uint8_t>& passed_vertex_data)
 {
     float a_side = point_plane_side(a.xyz, p);
     float b_side = point_plane_side(b.xyz, p);
@@ -615,9 +615,9 @@ cull_triangle_by_plane(
         passed_vertex_coords.emplace_back(a);
         passed_vertex_coords.emplace_back(b);
         passed_vertex_coords.emplace_back(c);
-        Temple::Base::append_data(passed_vertex_data, p_data_a, vf.size, 0);
-        Temple::Base::append_data(passed_vertex_data, p_data_b, vf.size, 0);
-        Temple::Base::append_data(passed_vertex_data, p_data_c, vf.size, 0);
+        Temple::Base::append_data(passed_vertex_data, data_a_ptr, vf.size, 0);
+        Temple::Base::append_data(passed_vertex_data, data_b_ptr, vf.size, 0);
+        Temple::Base::append_data(passed_vertex_data, data_c_ptr, vf.size, 0);
     }
     else if (a_side > 0.0f && b_side > 0.0f && c_side > 0.0f)
     {
@@ -629,17 +629,17 @@ cull_triangle_by_plane(
         if (a_side > 0.0f)
         {
             cull_triangle_one_point_outside(
-                a, b, c, p_data_a, p_data_b, p_data_c, vf, p, passed_vertex_coords, passed_vertex_data);
+                a, b, c, data_a_ptr, data_b_ptr, data_c_ptr, vf, p, passed_vertex_coords, passed_vertex_data);
         }
         else if (b_side > 0.0f)
         {
             cull_triangle_one_point_outside(
-                b, a, c, p_data_b, p_data_a, p_data_c, vf, p, passed_vertex_coords, passed_vertex_data);
+                b, a, c, data_b_ptr, data_a_ptr, data_c_ptr, vf, p, passed_vertex_coords, passed_vertex_data);
         }
         else if (c_side > 0.0f)
         {
             cull_triangle_one_point_outside(
-                c, a, b, p_data_c, p_data_a, p_data_b, vf, p, passed_vertex_coords, passed_vertex_data);
+                c, a, b, data_c_ptr, data_a_ptr, data_b_ptr, vf, p, passed_vertex_coords, passed_vertex_data);
         }
         else
         {
@@ -651,7 +651,7 @@ cull_triangle_by_plane(
 
 static void
 cull_triangles_by_plane(
-    std::vector<Temple::Base::vec4_t>& input_vertex_coords, const uint8_t* p_data,
+    std::vector<Temple::Base::vec4_t>& input_vertex_coords, const uint8_t* data_ptr,
     const Temple::Bonfire::VertexFormat& vf, const Temple::Bonfire::Plane& p,
     std::vector<Temple::Base::vec4_t>& passed_vertex_coords, std::vector<uint8_t>& passed_vertex_data)
 {
@@ -660,52 +660,54 @@ cull_triangles_by_plane(
         const Temple::Base::vec4_t& a = input_vertex_coords[i];
         const Temple::Base::vec4_t& b = input_vertex_coords[i + 1];
         const Temple::Base::vec4_t& c = input_vertex_coords[i + 2];
-        const uint8_t*              p_data_a = p_data + i * vf.size;
-        const uint8_t*              p_data_b = p_data + (i + 1) * vf.size;
-        const uint8_t*              p_data_c = p_data + (i + 2) * vf.size;
-        cull_triangle_by_plane(a, b, c, p_data_a, p_data_b, p_data_c, vf, p, passed_vertex_coords, passed_vertex_data);
+        const uint8_t*              data_a_ptr = data_ptr + i * vf.size;
+        const uint8_t*              data_b_ptr = data_ptr + (i + 1) * vf.size;
+        const uint8_t*              data_c_ptr = data_ptr + (i + 2) * vf.size;
+        cull_triangle_by_plane(
+            a, b, c, data_a_ptr, data_b_ptr, data_c_ptr, vf, p, passed_vertex_coords, passed_vertex_data);
     }
 }
 
 void
 Temple::Bonfire::RenderContext::cull_triangle_by_frustum(
-    const Base::vec4_t& a, const Base::vec4_t& b, const Base::vec4_t& c, const uint8_t* p_data_a,
-    const uint8_t* p_data_b, const uint8_t* p_data_c, const VertexFormat& vf,
+    const Base::vec4_t& a, const Base::vec4_t& b, const Base::vec4_t& c, const uint8_t* data_a_ptr,
+    const uint8_t* data_b_ptr, const uint8_t* data_c_ptr, const VertexFormat& vf,
     std::vector<Base::vec4_t>& passed_vertex_coords, std::vector<uint8_t>& passed_vertex_data)
 {
     std::vector<Base::vec4_t> vertex_passed_front = {a, b, c};
     std::vector<uint8_t>      data_passed_front = {};
-    Base::append_data(data_passed_front, p_data_a, vf.size, 0);
-    Base::append_data(data_passed_front, p_data_b, vf.size, 0);
-    Base::append_data(data_passed_front, p_data_c, vf.size, 0);
+    Base::append_data(data_passed_front, data_a_ptr, vf.size, 0);
+    Base::append_data(data_passed_front, data_b_ptr, vf.size, 0);
+    Base::append_data(data_passed_front, data_c_ptr, vf.size, 0);
     std::vector<Base::vec4_t> vertex_passed_back = {};
     std::vector<uint8_t>      data_passed_back = {};
 
-    std::vector<Base::vec4_t>* p_vertex_passed_front = &vertex_passed_front;
-    std::vector<Base::vec4_t>* p_vertex_passed_back = &vertex_passed_back;
-    std::vector<uint8_t>*      p_data_passed_front = &data_passed_front;
-    std::vector<uint8_t>*      p_data_passed_back = &data_passed_back;
+    std::vector<Base::vec4_t>* vertex_passed_front_ptr = &vertex_passed_front;
+    std::vector<Base::vec4_t>* vertex_passed_back_ptr = &vertex_passed_back;
+    std::vector<uint8_t>*      data_passed_front_ptr = &data_passed_front;
+    std::vector<uint8_t>*      data_passed_back_ptr = &data_passed_back;
 
     for (int i = 0; i < 6; i++)
     {
         const Bonfire::Plane& p = this->m_frustum.bounds[i];
-        p_vertex_passed_back->clear();
-        p_data_passed_back->clear();
+        vertex_passed_back_ptr->clear();
+        data_passed_back_ptr->clear();
         cull_triangles_by_plane(
-            *p_vertex_passed_front, p_data_passed_front->data(), vf, p, *p_vertex_passed_back, *p_data_passed_back);
-        std::swap(p_vertex_passed_front, p_vertex_passed_back);
-        std::swap(p_data_passed_front, p_data_passed_back);
+            *vertex_passed_front_ptr, data_passed_front_ptr->data(), vf, p, *vertex_passed_back_ptr,
+            *data_passed_back_ptr);
+        std::swap(vertex_passed_front_ptr, vertex_passed_back_ptr);
+        std::swap(data_passed_front_ptr, data_passed_back_ptr);
     }
-    for (int i = 0; i < p_vertex_passed_front->size(); i++)
+    for (int i = 0; i < vertex_passed_front_ptr->size(); i++)
     {
-        passed_vertex_coords.emplace_back((*p_vertex_passed_front)[i]);
-        Temple::Base::append_data(passed_vertex_data, p_data_passed_front->data() + (vf.size * i), vf.size, 0);
+        passed_vertex_coords.emplace_back((*vertex_passed_front_ptr)[i]);
+        Temple::Base::append_data(passed_vertex_data, data_passed_front_ptr->data() + (vf.size * i), vf.size, 0);
     }
 }
 
 void
 Temple::Bonfire::RenderContext::draw_lines(
-    const std::vector<Base::vec4_t>& coords, const std::vector<int>& indices, const uint8_t* p_vertex_data,
+    const std::vector<Base::vec4_t>& coords, const std::vector<int>& indices, const uint8_t* vertex_data_ptr,
     const VertexFormat& v_in_format, const VertexFormat& v_out_format)
 {
     if (indices.size() == 0 || indices.size() % 2 != 0)
@@ -716,13 +718,13 @@ Temple::Bonfire::RenderContext::draw_lines(
     {
         const Base::vec4_t& va = coords[indices[i]];
         const Base::vec4_t& vb = coords[indices[i + 1]];
-        const uint8_t*      p_data_a = &p_vertex_data[indices[i] * v_in_format.size];
-        const uint8_t*      p_data_b = &p_vertex_data[indices[i + 1] * v_in_format.size];
+        const uint8_t*      data_a_ptr = &vertex_data_ptr[indices[i] * v_in_format.size];
+        const uint8_t*      data_b_ptr = &vertex_data_ptr[indices[i + 1] * v_in_format.size];
         // draw single line here
         Base::vec4_t         a, b;
         std::vector<uint8_t> a_vertex_out(v_out_format.size), b_vertex_out(v_out_format.size);
-        this->m_vsf(va, a, a_vertex_out, p_data_a, this->m_builtins, this->m_descriptor_set);
-        this->m_vsf(vb, b, b_vertex_out, p_data_b, this->m_builtins, this->m_descriptor_set);
+        this->m_vsf(va, a, a_vertex_out, data_a_ptr, this->m_builtins, this->m_descriptor_set);
+        this->m_vsf(vb, b, b_vertex_out, data_b_ptr, this->m_builtins, this->m_descriptor_set);
         //
         a = this->process_vertex(a);
         b = this->process_vertex(b);
@@ -731,15 +733,15 @@ Temple::Bonfire::RenderContext::draw_lines(
         Base::vec4_t b0(b);
         // perspective correct interpolation part - normalize by z first
         std::vector<uint8_t> v_depthed_a(v_out_format.size), v_depthed_b(v_out_format.size);
-        uint8_t *            p_depthed_a = v_depthed_a.data(), *p_depthed_b = v_depthed_b.data();
-        multiply_attributes(a_vertex_out.data(), p_depthed_a, a0.w, v_out_format);
-        multiply_attributes(b_vertex_out.data(), p_depthed_b, b0.w, v_out_format);
+        uint8_t *            depthed_a_ptr = v_depthed_a.data(), *depthed_b_ptr = v_depthed_b.data();
+        multiply_attributes(a_vertex_out.data(), depthed_a_ptr, a0.w, v_out_format);
+        multiply_attributes(b_vertex_out.data(), depthed_b_ptr, b0.w, v_out_format);
         //
-        const uint8_t *p_data_a0 = p_depthed_a, *p_data_b0 = p_depthed_b;
+        const uint8_t *data_a0_ptr = depthed_a_ptr, *data_b0_ptr = depthed_b_ptr;
         if (a.y > b.y)
         {
             std::swap(a0, b0);
-            std::swap(p_data_a0, p_data_b0);
+            std::swap(data_a0_ptr, data_b0_ptr);
         }
         // a is bottom vertex and b is top vertex
         float y_dif = b0.y - a0.y;
@@ -747,7 +749,7 @@ Temple::Bonfire::RenderContext::draw_lines(
         if (fabs(y_dif) < 0.001f && fabs(x_dif) < 0.001f)
         {
             // point
-            this->render_pixel_depth_wise(a0, p_data_a0);
+            this->render_pixel_depth_wise(a0, data_a0_ptr);
         }
         else
         {
@@ -764,7 +766,7 @@ Temple::Bonfire::RenderContext::draw_lines(
                     c.w = (b0.w - a0.w) * weight + a0.w;
                     float pzo = 1.0f / c.w;
                     c.z = (b0.z - a0.z) * weight + a0.z;
-                    interpolate_attributes(p_data_a0, p_data_b0, c_out.data(), weight, v_out_format);
+                    interpolate_attributes(data_a0_ptr, data_b0_ptr, c_out.data(), weight, v_out_format);
                     multiply_attributes(c_out.data(), pixel_out.data(), pzo, v_out_format);
                     this->render_pixel_depth_wise(c, pixel_out.data());
                 }
@@ -774,7 +776,7 @@ Temple::Bonfire::RenderContext::draw_lines(
                 if (a0.x > b0.x)
                 {
                     std::swap(a0, b0);
-                    std::swap(p_data_a0, p_data_b0);
+                    std::swap(data_a0_ptr, data_b0_ptr);
                 }
                 float                slope = y_dif / x_dif;
                 std::vector<uint8_t> c_out(v_out_format.size);
@@ -786,7 +788,7 @@ Temple::Bonfire::RenderContext::draw_lines(
                     c.w = (b0.w - a0.w) * weight + a0.w;
                     float pzo = 1.0f / c.w;
                     c.z = (b0.z - a0.z) * weight + a0.z;
-                    interpolate_attributes(p_data_a0, p_data_b0, c_out.data(), weight, v_out_format);
+                    interpolate_attributes(data_a0_ptr, data_b0_ptr, c_out.data(), weight, v_out_format);
                     multiply_attributes(c_out.data(), pixel_out.data(), pzo, v_out_format);
                     this->render_pixel_depth_wise(c, pixel_out.data());
                 }
@@ -797,7 +799,7 @@ Temple::Bonfire::RenderContext::draw_lines(
 
 void
 Temple::Bonfire::RenderContext::draw_triangles(
-    const std::vector<Base::vec4_t>& coords, const std::vector<int>& indices, const uint8_t* p_vertex_data,
+    const std::vector<Base::vec4_t>& coords, const std::vector<int>& indices, const uint8_t* vertex_data_ptr,
     const VertexFormat& v_in_format, const VertexFormat& v_out_format)
 {
     if (indices.size() == 0 || indices.size() % 3 != 0)
@@ -810,17 +812,17 @@ Temple::Bonfire::RenderContext::draw_triangles(
         const Base::vec4_t& va(coords[indices[i]]);
         const Base::vec4_t& vb(coords[indices[i + 1]]);
         const Base::vec4_t& vc(coords[indices[i + 2]]);
-        const uint8_t*      p_data_a = &p_vertex_data[indices[i] * v_in_format.size];
-        const uint8_t*      p_data_b = &p_vertex_data[indices[i + 1] * v_in_format.size];
-        const uint8_t*      p_data_c = &p_vertex_data[indices[i + 2] * v_in_format.size];
+        const uint8_t*      data_a_ptr = &vertex_data_ptr[indices[i] * v_in_format.size];
+        const uint8_t*      data_b_ptr = &vertex_data_ptr[indices[i + 1] * v_in_format.size];
+        const uint8_t*      data_c_ptr = &vertex_data_ptr[indices[i + 2] * v_in_format.size];
         //
         Base::vec4_t         a_world, b_world, c_world;
         std::vector<uint8_t> a_vertex_out(v_out_format.size), b_vertex_out(v_out_format.size),
             c_vertex_out(v_out_format.size);
         // obtain output coordinates in view space and output vertex attributes
-        this->m_vsf(va, a_world, a_vertex_out, p_data_a, this->m_builtins, this->m_descriptor_set);
-        this->m_vsf(vb, b_world, b_vertex_out, p_data_b, this->m_builtins, this->m_descriptor_set);
-        this->m_vsf(vc, c_world, c_vertex_out, p_data_c, this->m_builtins, this->m_descriptor_set);
+        this->m_vsf(va, a_world, a_vertex_out, data_a_ptr, this->m_builtins, this->m_descriptor_set);
+        this->m_vsf(vb, b_world, b_vertex_out, data_b_ptr, this->m_builtins, this->m_descriptor_set);
+        this->m_vsf(vc, c_world, c_vertex_out, data_c_ptr, this->m_builtins, this->m_descriptor_set);
 
         // backface culling
         if (m_backface_culling != ECullingMode::None)
@@ -867,9 +869,9 @@ Temple::Bonfire::RenderContext::draw_triangles(
             const Base::vec4_t& b_visible(view_passed_vertex_coords[j + 1]);
             const Base::vec4_t& c_visible(view_passed_vertex_coords[j + 2]);
             //
-            uint8_t* p_vertex_out_a = &view_passed_vertex_data[j * v_out_format.size];
-            uint8_t* p_vertex_out_b = &view_passed_vertex_data[(j + 1) * v_out_format.size];
-            uint8_t* p_vertex_out_c = &view_passed_vertex_data[(j + 2) * v_out_format.size];
+            uint8_t* vertex_out_a_ptr = &view_passed_vertex_data[j * v_out_format.size];
+            uint8_t* vertex_out_b_ptr = &view_passed_vertex_data[(j + 1) * v_out_format.size];
+            uint8_t* vertex_out_c_ptr = &view_passed_vertex_data[(j + 2) * v_out_format.size];
             //
             Base::vec4_t a, b, c;
             a = this->process_vertex(a_visible);
@@ -880,17 +882,17 @@ Temple::Bonfire::RenderContext::draw_triangles(
             if (sa.y > sc.y)
             {
                 std::swap(sa, sc);
-                std::swap(p_vertex_out_a, p_vertex_out_c);
+                std::swap(vertex_out_a_ptr, vertex_out_c_ptr);
             }
             if (sa.y > sb.y)
             {
                 std::swap(sa, sb);
-                std::swap(p_vertex_out_a, p_vertex_out_b);
+                std::swap(vertex_out_a_ptr, vertex_out_b_ptr);
             }
             if (sb.y > sc.y)
             {
                 std::swap(sb, sc);
-                std::swap(p_vertex_out_b, p_vertex_out_c);
+                std::swap(vertex_out_b_ptr, vertex_out_c_ptr);
             }
             // get interpolated values - line coordinates, only one component
             std::vector<float> xab = Base::interpolate(sa.y, sa.x, sb.y, sb.x);
@@ -927,9 +929,9 @@ Temple::Bonfire::RenderContext::draw_triangles(
                 v_depthed_c(v_out_format.size), v_depthed_p(v_out_format.size);
             // divide attributes by original z - lesser attributes, that are located
             // further
-            multiply_attributes(p_vertex_out_a, v_depthed_a.data(), sa.w, v_out_format);
-            multiply_attributes(p_vertex_out_b, v_depthed_b.data(), sb.w, v_out_format);
-            multiply_attributes(p_vertex_out_c, v_depthed_c.data(), sc.w, v_out_format);
+            multiply_attributes(vertex_out_a_ptr, v_depthed_a.data(), sa.w, v_out_format);
+            multiply_attributes(vertex_out_b_ptr, v_depthed_b.data(), sb.w, v_out_format);
+            multiply_attributes(vertex_out_c_ptr, v_depthed_c.data(), sc.w, v_out_format);
             //
             if (leftToRight)
             {

@@ -23,17 +23,17 @@ Temple::Base::interpolate(float x0, float y0, float x1, float y1)
 }
 
 void
-Temple::Base::append_data(std::vector<uint8_t>& v, const uint8_t* p_data, const int src_size, const int src_offset)
+Temple::Base::append_data(std::vector<uint8_t>& v, const uint8_t* data_ptr, const int src_size, const int src_offset)
 {
     int oldSize = v.size();
     v.resize(oldSize + src_size);
-    memcpy(&v[oldSize], p_data + src_offset, src_size);
+    memcpy(&v[oldSize], data_ptr + src_offset, src_size);
 }
 
 void
 Temple::Base::replace_data(
-    std::vector<uint8_t>& v, const uint8_t* p_data, const int dest_offset, const int src_size, const int src_offset)
+    std::vector<uint8_t>& v, const uint8_t* data_ptr, const int dest_offset, const int src_size, const int src_offset)
 {
     assert(dest_offset + src_size <= v.size());
-    memcpy(&v[dest_offset], p_data + src_offset, src_size);
+    memcpy(&v[dest_offset], data_ptr + src_offset, src_size);
 }

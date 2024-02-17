@@ -30,8 +30,8 @@ Temple::Bonfire::TextureHolder::get_pixel(uint32_t texId, float u, float v)
     pixel.a = 1.0f;
     if (texId < m_textures.size())
     {
-        Texture* p_tex = &m_textures[texId];
-        pixel = p_tex->get_pixel_color(u, v);
+        Texture* tex_ptr = &m_textures[texId];
+        pixel = tex_ptr->get_pixel_color(u, v);
     }
     return pixel;
 }
