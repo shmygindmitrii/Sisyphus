@@ -1,13 +1,13 @@
 #include "bonfire_render_context.h"
 #include "base_utils.h"
 
+#include <algorithm>
+#include <cassert>
 #include <cstdint>
 #include <cstring>
-#include <cassert>
-#include <algorithm>
 #include <vector>
 
-Temple::Bonfire::VertexFormat::VertexFormat(const std::vector<Temple::Bonfire::EVertexAttribType>& attribs)
+Sisyphus::Render::VertexFormat::VertexFormat(const std::vector<Sisyphus::Render::EVertexAttribType>& attribs)
 {
     size = 0;
     for (int i = 0; i < attribs.size(); i++)
@@ -51,7 +51,7 @@ interpolateAttribsTemplate(const uint8_t*& a_in, const uint8_t*& b_in, uint8_t*&
 }
 
 void
-Temple::Bonfire::interpolate_attributes(
+Sisyphus::Render::interpolate_attributes(
     const uint8_t* a_in, const uint8_t* b_in, uint8_t* c_out, float weight, const VertexFormat& vf)
 {
     // c_out should be enough to hold a_in or b_in (they are the same in terms of
@@ -95,7 +95,7 @@ multAttribsTemplate(const uint8_t*& a_in, uint8_t*& c_out, float mult)
 }
 
 void
-Temple::Bonfire::multiply_attributes(const uint8_t* a_in, uint8_t* c_out, float mult, const VertexFormat& vf)
+Sisyphus::Render::multiply_attributes(const uint8_t* a_in, uint8_t* c_out, float mult, const VertexFormat& vf)
 {
     for (int i = 0; i < vf.attributes.size(); i++)
     {
@@ -126,17 +126,17 @@ Temple::Bonfire::multiply_attributes(const uint8_t* a_in, uint8_t* c_out, float 
     }
 }
 
-Temple::Bonfire::Plane::Plane()
+Sisyphus::Render::Plane::Plane()
     : normal(Base::vec3_t {0.0f, 0.0f, 1.0f})
     , offset(0.0f)
 {}
 
-Temple::Bonfire::Plane::Plane(const Base::vec3_t& _normal, float _offset)
+Sisyphus::Render::Plane::Plane(const Base::vec3_t& _normal, float _offset)
     : normal(_normal)
     , offset(_offset)
 {}
 
-Temple::Bonfire::RenderContext::RenderContext(int width, int height, int bytes_per_pixel)
+Sisyphus::Render::RenderContext::RenderContext(int width, int height, int bytes_per_pixel)
     : m_width(width)
     , m_height(height)
     , m_bytes_per_pixel(bytes_per_pixel)
@@ -151,19 +151,19 @@ Temple::Bonfire::RenderContext::RenderContext(int width, int height, int bytes_p
 }
 
 const uint8_t*
-Temple::Bonfire::RenderContext::get_frame() const
+Sisyphus::Render::RenderContext::get_frame() const
 {
     return m_data;
 }
 
 const unsigned int
-Temple::Bonfire::RenderContext::get_frame_size() const
+Sisyphus::Render::RenderContext::get_frame_size() const
 {
     return m_width * m_height * m_bytes_per_pixel;
 }
 
 void
-Temple::Bonfire::RenderContext::resize(int width, int height, int bytes_per_pixel)
+Sisyphus::Render::RenderContext::resize(int width, int height, int bytes_per_pixel)
 {
     size_t old_resolution = m_width * m_height;
     size_t old_size = old_resolution * (size_t)m_bytes_per_pixel;
@@ -200,7 +200,7 @@ Temple::Bonfire::RenderContext::resize(int width, int height, int bytes_per_pixe
 }
 
 void
-Temple::Bonfire::RenderContext::set_viewport(
+Sisyphus::Render::RenderContext::set_viewport(
     float x_min, float y_min, float z_min, float x_max, float y_max, float z_max)
 {
     m_viewport_min.x = x_min;
@@ -213,25 +213,25 @@ Temple::Bonfire::RenderContext::set_viewport(
 }
 
 void
-Temple::Bonfire::RenderContext::set_descriptor_set(const std::vector<uint8_t>& descriptor_set)
+Sisyphus::Render::RenderContext::set_descriptor_set(const std::vector<uint8_t>& descriptor_set)
 {
     m_descriptor_set = descriptor_set;
 }
 
 void
-Temple::Bonfire::RenderContext::set_vertex_shader(Temple::Bonfire::VertexShaderFunc vsf)
+Sisyphus::Render::RenderContext::set_vertex_shader(Sisyphus::Render::VertexShaderFunc vsf)
 {
     m_vsf = vsf;
 }
 
 void
-Temple::Bonfire::RenderContext::set_pixel_shader(Temple::Bonfire::PixelShaderFunc psf)
+Sisyphus::Render::RenderContext::set_pixel_shader(Sisyphus::Render::PixelShaderFunc psf)
 {
     m_psf = psf;
 }
 
 void
-Temple::Bonfire::RenderContext::set_model_matrix(const Base::mat4_t& m)
+Sisyphus::Render::RenderContext::set_model_matrix(const Base::mat4_t& m)
 {
     m_model_matrix = m;
     m_model_view_matrix = m_view_matrix * m_model_matrix;
@@ -242,7 +242,7 @@ Temple::Bonfire::RenderContext::set_model_matrix(const Base::mat4_t& m)
 }
 
 void
-Temple::Bonfire::RenderContext::set_view_matrix(const Base::mat4_t& m)
+Sisyphus::Render::RenderContext::set_view_matrix(const Base::mat4_t& m)
 {
     m_view_matrix = m;
     m_model_view_matrix = m_view_matrix * m_model_matrix;
@@ -253,7 +253,7 @@ Temple::Bonfire::RenderContext::set_view_matrix(const Base::mat4_t& m)
 }
 
 void
-Temple::Bonfire::RenderContext::set_perspective_matrix(const Base::mat4_t& m)
+Sisyphus::Render::RenderContext::set_perspective_matrix(const Base::mat4_t& m)
 {
     m_perspective_matrix = m;
     m_transform_matrix = m_perspective_matrix * m_model_view_matrix;
@@ -262,16 +262,16 @@ Temple::Bonfire::RenderContext::set_perspective_matrix(const Base::mat4_t& m)
 }
 
 void
-Temple::Bonfire::RenderContext::set_perspective(float fov, float aspect, float znear, float zfar)
+Sisyphus::Render::RenderContext::set_perspective(float fov, float aspect, float znear, float zfar)
 {
-    fov = fov * Temple::Base::pi / 180.0f;
+    fov = fov * Sisyphus::Base::pi / 180.0f;
     Base::mat4_t perspective_matrix = Base::mat4_t::calculate_projection_matrix(fov, aspect, znear, zfar);
     this->set_frustum(fov, aspect, znear, zfar);
     this->set_perspective_matrix(perspective_matrix);
 }
 
 void
-Temple::Bonfire::RenderContext::set_frustum(float fov, float aspect, float znear, float zfar)
+Sisyphus::Render::RenderContext::set_frustum(float fov, float aspect, float znear, float zfar)
 {
     // create 6 planes that forms frustum in view coordinates
     // znear plane
@@ -320,7 +320,7 @@ Temple::Bonfire::RenderContext::set_frustum(float fov, float aspect, float znear
 }
 
 void
-Temple::Bonfire::RenderContext::put_pixel(int x, int y, const Base::vec4_t& color)
+Sisyphus::Render::RenderContext::put_pixel(int x, int y, const Base::vec4_t& color)
 {
     // color - from 0 to 1 each component
     if (x < 0 || x >= m_width || y < 0 || y >= m_height)
@@ -336,7 +336,7 @@ Temple::Bonfire::RenderContext::put_pixel(int x, int y, const Base::vec4_t& colo
 }
 
 void
-Temple::Bonfire::RenderContext::fill(const col4u_t& color)
+Sisyphus::Render::RenderContext::fill(const col4u_t& color)
 {
     uint32_t colors = m_width * m_height * m_bytes_per_pixel;
     for (uint32_t i = 0; i < colors; i += m_bytes_per_pixel)
@@ -348,8 +348,8 @@ Temple::Bonfire::RenderContext::fill(const col4u_t& color)
     }
 }
 
-Temple::Base::vec4_t
-Temple::Bonfire::RenderContext::process_vertex(const Base::vec4_t& v)
+Sisyphus::Base::vec4_t
+Sisyphus::Render::RenderContext::process_vertex(const Base::vec4_t& v)
 {
     Base::vec4_t c = m_perspective_matrix * v;
 
@@ -364,25 +364,25 @@ Temple::Bonfire::RenderContext::process_vertex(const Base::vec4_t& v)
 }
 
 void
-Temple::Bonfire::RenderContext::set_depth_test(bool flag)
+Sisyphus::Render::RenderContext::set_depth_test(bool flag)
 {
     m_depth_test = flag;
 }
 
 void
-Temple::Bonfire::RenderContext::set_depth_write(bool flag)
+Sisyphus::Render::RenderContext::set_depth_write(bool flag)
 {
     m_depth_write = flag;
 }
 
 void
-Temple::Bonfire::RenderContext::set_backface_culling(ECullingMode mode)
+Sisyphus::Render::RenderContext::set_backface_culling(ECullingMode mode)
 {
     m_backface_culling = mode;
 }
 
 void
-Temple::Bonfire::RenderContext::clear_depth(float val)
+Sisyphus::Render::RenderContext::clear_depth(float val)
 {
     for (int i = 0; i < m_width * m_height; i++)
     {
@@ -391,7 +391,7 @@ Temple::Bonfire::RenderContext::clear_depth(float val)
 }
 
 void
-Temple::Bonfire::RenderContext::render_pixel_depth_wise(const Base::vec4_t& p, const uint8_t* data)
+Sisyphus::Render::RenderContext::render_pixel_depth_wise(const Base::vec4_t& p, const uint8_t* data)
 {
     int pix_flat_idx = ((int)p.y) * m_width + (int)p.x;
     if (pix_flat_idx >= 0 && pix_flat_idx < m_width * m_height)
@@ -438,15 +438,15 @@ get_weight_between(float x, float y, float x0, float y0, float x1, float y1)
 
 static float
 segment_plane_intersection(
-    const Temple::Base::vec3_t& a, const Temple::Base::vec3_t& b, const Temple::Bonfire::Plane& p)
+    const Sisyphus::Base::vec3_t& a, const Sisyphus::Base::vec3_t& b, const Sisyphus::Render::Plane& p)
 {
-    const Temple::Base::vec3_t ab = b - a;
-    float                      k = (-p.normal.calculate_dot_product(a) - p.offset) / p.normal.calculate_dot_product(ab);
+    const Sisyphus::Base::vec3_t ab = b - a;
+    float k = (-p.normal.calculate_dot_product(a) - p.offset) / p.normal.calculate_dot_product(ab);
     return k;
 }
 
 static inline float
-point_plane_side(const Temple::Base::vec3_t& a, const Temple::Bonfire::Plane& p)
+point_plane_side(const Sisyphus::Base::vec3_t& a, const Sisyphus::Render::Plane& p)
 {
     // -value - under
     // 0 - on
@@ -457,14 +457,14 @@ point_plane_side(const Temple::Base::vec3_t& a, const Temple::Bonfire::Plane& p)
 
 static void
 cull_triangle_two_point_outside(
-    const Temple::Base::vec4_t& a, const Temple::Base::vec4_t& b, const Temple::Base::vec4_t& c,
+    const Sisyphus::Base::vec4_t& a, const Sisyphus::Base::vec4_t& b, const Sisyphus::Base::vec4_t& c,
     const uint8_t* data_a_ptr, const uint8_t* data_b_ptr, const uint8_t* data_c_ptr,
-    const Temple::Bonfire::VertexFormat& vf, const Temple::Bonfire::Plane& p,
-    std::vector<Temple::Base::vec4_t>& passed_vertex_coords, std::vector<uint8_t>& passed_vertex_data)
+    const Sisyphus::Render::VertexFormat& vf, const Sisyphus::Render::Plane& p,
+    std::vector<Sisyphus::Base::vec4_t>& passed_vertex_coords, std::vector<uint8_t>& passed_vertex_data)
 {
     // a and b are outside
     float c_side = point_plane_side(c.xyz, p);
-    if (fabs(c_side) <= Temple::Base::eps)
+    if (fabs(c_side) <= Sisyphus::Base::eps)
     {
         // c is on the plane, discard
     }
@@ -477,32 +477,32 @@ cull_triangle_two_point_outside(
         std::vector<uint8_t> data_bk = {};
         dataAK.resize(vf.size);
         data_bk.resize(vf.size);
-        Temple::Bonfire::interpolate_attributes(data_c_ptr, data_a_ptr, dataAK.data(), kA, vf);
-        Temple::Bonfire::interpolate_attributes(data_c_ptr, data_b_ptr, data_bk.data(), kB, vf);
-        Temple::Base::vec4_t ak = (a - c) * kA + c;
+        Sisyphus::Render::interpolate_attributes(data_c_ptr, data_a_ptr, dataAK.data(), kA, vf);
+        Sisyphus::Render::interpolate_attributes(data_c_ptr, data_b_ptr, data_bk.data(), kB, vf);
+        Sisyphus::Base::vec4_t ak = (a - c) * kA + c;
         ak.w = c.w;
-        Temple::Base::vec4_t bk = (b - c) * kB + c;
+        Sisyphus::Base::vec4_t bk = (b - c) * kB + c;
         bk.w = b.w;
         //
         passed_vertex_coords.emplace_back(c);
         passed_vertex_coords.emplace_back(ak);
         passed_vertex_coords.emplace_back(bk);
-        Temple::Base::append_data(passed_vertex_data, data_c_ptr, vf.size, 0);
-        Temple::Base::append_data(passed_vertex_data, dataAK.data(), vf.size, 0);
-        Temple::Base::append_data(passed_vertex_data, data_bk.data(), vf.size, 0);
+        Sisyphus::Base::append_data(passed_vertex_data, data_c_ptr, vf.size, 0);
+        Sisyphus::Base::append_data(passed_vertex_data, dataAK.data(), vf.size, 0);
+        Sisyphus::Base::append_data(passed_vertex_data, data_bk.data(), vf.size, 0);
     }
 }
 
 static void
 cull_triangle_one_point_outside_one_on(
-    const Temple::Base::vec4_t& a, const Temple::Base::vec4_t& b, const Temple::Base::vec4_t& c,
+    const Sisyphus::Base::vec4_t& a, const Sisyphus::Base::vec4_t& b, const Sisyphus::Base::vec4_t& c,
     const uint8_t* data_a_ptr, const uint8_t* data_b_ptr, const uint8_t* data_c_ptr,
-    const Temple::Bonfire::VertexFormat& vf, const Temple::Bonfire::Plane& p,
-    std::vector<Temple::Base::vec4_t>& passed_vertex_coords, std::vector<uint8_t>& passed_vertex_data)
+    const Sisyphus::Render::VertexFormat& vf, const Sisyphus::Render::Plane& p,
+    std::vector<Sisyphus::Base::vec4_t>& passed_vertex_coords, std::vector<uint8_t>& passed_vertex_data)
 {
     // a is outside and b is on the plane
     float c_side = point_plane_side(c.xyz, p);
-    if (fabs(c_side) <= Temple::Base::eps)
+    if (fabs(c_side) <= Sisyphus::Base::eps)
     {
         // only segment is on the plane, we can discard it
     }
@@ -512,25 +512,25 @@ cull_triangle_one_point_outside_one_on(
         float                kA = segment_plane_intersection(c.xyz, a.xyz, p);
         std::vector<uint8_t> data_ck = {};
         data_ck.resize(vf.size);
-        Temple::Bonfire::interpolate_attributes(data_c_ptr, data_a_ptr, data_ck.data(), kA, vf);
-        Temple::Base::vec4_t ck = (a - c) * kA + c;
+        Sisyphus::Render::interpolate_attributes(data_c_ptr, data_a_ptr, data_ck.data(), kA, vf);
+        Sisyphus::Base::vec4_t ck = (a - c) * kA + c;
         ck.w = c.w;
         //
         passed_vertex_coords.emplace_back(b);
         passed_vertex_coords.emplace_back(c);
         passed_vertex_coords.emplace_back(ck);
-        Temple::Base::append_data(passed_vertex_data, data_b_ptr, vf.size, 0);
-        Temple::Base::append_data(passed_vertex_data, data_c_ptr, vf.size, 0);
-        Temple::Base::append_data(passed_vertex_data, data_ck.data(), vf.size, 0);
+        Sisyphus::Base::append_data(passed_vertex_data, data_b_ptr, vf.size, 0);
+        Sisyphus::Base::append_data(passed_vertex_data, data_c_ptr, vf.size, 0);
+        Sisyphus::Base::append_data(passed_vertex_data, data_ck.data(), vf.size, 0);
     }
 }
 
 static void
 cull_triangle_one_point_outside(
-    const Temple::Base::vec4_t& a, const Temple::Base::vec4_t& b, const Temple::Base::vec4_t& c,
+    const Sisyphus::Base::vec4_t& a, const Sisyphus::Base::vec4_t& b, const Sisyphus::Base::vec4_t& c,
     const uint8_t* data_a_ptr, const uint8_t* data_b_ptr, const uint8_t* data_c_ptr,
-    const Temple::Bonfire::VertexFormat& vf, const Temple::Bonfire::Plane& p,
-    std::vector<Temple::Base::vec4_t>& passed_vertex_coords, std::vector<uint8_t>& passed_vertex_data)
+    const Sisyphus::Render::VertexFormat& vf, const Sisyphus::Render::Plane& p,
+    std::vector<Sisyphus::Base::vec4_t>& passed_vertex_coords, std::vector<uint8_t>& passed_vertex_data)
 {
     // a-point is outside
     float b_side = point_plane_side(b.xyz, p);
@@ -552,13 +552,13 @@ cull_triangle_one_point_outside(
         else
         {
             // only one point is really outside
-            if (fabs(b_side) < Temple::Base::eps)
+            if (fabs(b_side) < Sisyphus::Base::eps)
             {
                 // b is on the plane
                 cull_triangle_one_point_outside_one_on(
                     a, b, c, data_a_ptr, data_b_ptr, data_c_ptr, vf, p, passed_vertex_coords, passed_vertex_data);
             }
-            else if (fabs(c_side) < Temple::Base::eps)
+            else if (fabs(c_side) < Sisyphus::Base::eps)
             {
                 // c is on the plane
                 cull_triangle_one_point_outside_one_on(
@@ -573,26 +573,26 @@ cull_triangle_one_point_outside(
                 std::vector<uint8_t> data_ck = {};
                 data_bk.resize(vf.size);
                 data_ck.resize(vf.size);
-                Temple::Bonfire::interpolate_attributes(data_b_ptr, data_a_ptr, data_bk.data(), kB, vf);
-                Temple::Bonfire::interpolate_attributes(data_c_ptr, data_a_ptr, data_ck.data(), kC, vf);
-                Temple::Base::vec4_t bk = (a - b) * kB + b;
+                Sisyphus::Render::interpolate_attributes(data_b_ptr, data_a_ptr, data_bk.data(), kB, vf);
+                Sisyphus::Render::interpolate_attributes(data_c_ptr, data_a_ptr, data_ck.data(), kC, vf);
+                Sisyphus::Base::vec4_t bk = (a - b) * kB + b;
                 bk.w = b.w;
-                Temple::Base::vec4_t ck = (a - c) * kC + c;
+                Sisyphus::Base::vec4_t ck = (a - c) * kC + c;
                 ck.w = c.w;
                 //
                 passed_vertex_coords.emplace_back(b);
                 passed_vertex_coords.emplace_back(c);
                 passed_vertex_coords.emplace_back(bk);
-                Temple::Base::append_data(passed_vertex_data, data_b_ptr, vf.size, 0);
-                Temple::Base::append_data(passed_vertex_data, data_c_ptr, vf.size, 0);
-                Temple::Base::append_data(passed_vertex_data, data_bk.data(), vf.size, 0);
+                Sisyphus::Base::append_data(passed_vertex_data, data_b_ptr, vf.size, 0);
+                Sisyphus::Base::append_data(passed_vertex_data, data_c_ptr, vf.size, 0);
+                Sisyphus::Base::append_data(passed_vertex_data, data_bk.data(), vf.size, 0);
                 //
                 passed_vertex_coords.emplace_back(c);
                 passed_vertex_coords.emplace_back(ck);
                 passed_vertex_coords.emplace_back(bk);
-                Temple::Base::append_data(passed_vertex_data, data_c_ptr, vf.size, 0);
-                Temple::Base::append_data(passed_vertex_data, data_ck.data(), vf.size, 0);
-                Temple::Base::append_data(passed_vertex_data, data_bk.data(), vf.size, 0);
+                Sisyphus::Base::append_data(passed_vertex_data, data_c_ptr, vf.size, 0);
+                Sisyphus::Base::append_data(passed_vertex_data, data_ck.data(), vf.size, 0);
+                Sisyphus::Base::append_data(passed_vertex_data, data_bk.data(), vf.size, 0);
             }
         }
     }
@@ -600,10 +600,10 @@ cull_triangle_one_point_outside(
 
 static void
 cull_triangle_by_plane(
-    const Temple::Base::vec4_t& a, const Temple::Base::vec4_t& b, const Temple::Base::vec4_t& c,
+    const Sisyphus::Base::vec4_t& a, const Sisyphus::Base::vec4_t& b, const Sisyphus::Base::vec4_t& c,
     const uint8_t* data_a_ptr, const uint8_t* data_b_ptr, const uint8_t* data_c_ptr,
-    const Temple::Bonfire::VertexFormat& vf, const Temple::Bonfire::Plane& p,
-    std::vector<Temple::Base::vec4_t>& passed_vertex_coords, std::vector<uint8_t>& passed_vertex_data)
+    const Sisyphus::Render::VertexFormat& vf, const Sisyphus::Render::Plane& p,
+    std::vector<Sisyphus::Base::vec4_t>& passed_vertex_coords, std::vector<uint8_t>& passed_vertex_data)
 {
     float a_side = point_plane_side(a.xyz, p);
     float b_side = point_plane_side(b.xyz, p);
@@ -615,9 +615,9 @@ cull_triangle_by_plane(
         passed_vertex_coords.emplace_back(a);
         passed_vertex_coords.emplace_back(b);
         passed_vertex_coords.emplace_back(c);
-        Temple::Base::append_data(passed_vertex_data, data_a_ptr, vf.size, 0);
-        Temple::Base::append_data(passed_vertex_data, data_b_ptr, vf.size, 0);
-        Temple::Base::append_data(passed_vertex_data, data_c_ptr, vf.size, 0);
+        Sisyphus::Base::append_data(passed_vertex_data, data_a_ptr, vf.size, 0);
+        Sisyphus::Base::append_data(passed_vertex_data, data_b_ptr, vf.size, 0);
+        Sisyphus::Base::append_data(passed_vertex_data, data_c_ptr, vf.size, 0);
     }
     else if (a_side > 0.0f && b_side > 0.0f && c_side > 0.0f)
     {
@@ -651,25 +651,25 @@ cull_triangle_by_plane(
 
 static void
 cull_triangles_by_plane(
-    std::vector<Temple::Base::vec4_t>& input_vertex_coords, const uint8_t* data_ptr,
-    const Temple::Bonfire::VertexFormat& vf, const Temple::Bonfire::Plane& p,
-    std::vector<Temple::Base::vec4_t>& passed_vertex_coords, std::vector<uint8_t>& passed_vertex_data)
+    std::vector<Sisyphus::Base::vec4_t>& input_vertex_coords, const uint8_t* data_ptr,
+    const Sisyphus::Render::VertexFormat& vf, const Sisyphus::Render::Plane& p,
+    std::vector<Sisyphus::Base::vec4_t>& passed_vertex_coords, std::vector<uint8_t>& passed_vertex_data)
 {
     for (int i = 0; i < input_vertex_coords.size(); i += 3)
     {
-        const Temple::Base::vec4_t& a = input_vertex_coords[i];
-        const Temple::Base::vec4_t& b = input_vertex_coords[i + 1];
-        const Temple::Base::vec4_t& c = input_vertex_coords[i + 2];
-        const uint8_t*              data_a_ptr = data_ptr + i * vf.size;
-        const uint8_t*              data_b_ptr = data_ptr + (i + 1) * vf.size;
-        const uint8_t*              data_c_ptr = data_ptr + (i + 2) * vf.size;
+        const Sisyphus::Base::vec4_t& a = input_vertex_coords[i];
+        const Sisyphus::Base::vec4_t& b = input_vertex_coords[i + 1];
+        const Sisyphus::Base::vec4_t& c = input_vertex_coords[i + 2];
+        const uint8_t*                data_a_ptr = data_ptr + i * vf.size;
+        const uint8_t*                data_b_ptr = data_ptr + (i + 1) * vf.size;
+        const uint8_t*                data_c_ptr = data_ptr + (i + 2) * vf.size;
         cull_triangle_by_plane(
             a, b, c, data_a_ptr, data_b_ptr, data_c_ptr, vf, p, passed_vertex_coords, passed_vertex_data);
     }
 }
 
 void
-Temple::Bonfire::RenderContext::cull_triangle_by_frustum(
+Sisyphus::Render::RenderContext::cull_triangle_by_frustum(
     const Base::vec4_t& a, const Base::vec4_t& b, const Base::vec4_t& c, const uint8_t* data_a_ptr,
     const uint8_t* data_b_ptr, const uint8_t* data_c_ptr, const VertexFormat& vf,
     std::vector<Base::vec4_t>& passed_vertex_coords, std::vector<uint8_t>& passed_vertex_data)
@@ -689,7 +689,7 @@ Temple::Bonfire::RenderContext::cull_triangle_by_frustum(
 
     for (int i = 0; i < 6; i++)
     {
-        const Bonfire::Plane& p = this->m_frustum.bounds[i];
+        const Render::Plane& p = this->m_frustum.bounds[i];
         vertex_passed_back_ptr->clear();
         data_passed_back_ptr->clear();
         cull_triangles_by_plane(
@@ -701,12 +701,13 @@ Temple::Bonfire::RenderContext::cull_triangle_by_frustum(
     for (int i = 0; i < vertex_passed_front_ptr->size(); i++)
     {
         passed_vertex_coords.emplace_back((*vertex_passed_front_ptr)[i]);
-        Temple::Base::append_data(passed_vertex_data, data_passed_front_ptr->data() + (vf.size * i), vf.size, 0);
+        Sisyphus::Base::append_data(passed_vertex_data, data_passed_front_ptr->data() + (vf.size * i), vf.size, 0);
     }
 }
 
+
 void
-Temple::Bonfire::RenderContext::draw_lines(
+Sisyphus::Render::RenderContext::draw_lines(
     const std::vector<Base::vec4_t>& coords, const std::vector<int>& indices, const uint8_t* vertex_data_ptr,
     const VertexFormat& v_in_format, const VertexFormat& v_out_format)
 {
@@ -798,7 +799,7 @@ Temple::Bonfire::RenderContext::draw_lines(
 }
 
 void
-Temple::Bonfire::RenderContext::draw_triangles(
+Sisyphus::Render::RenderContext::draw_triangles(
     const std::vector<Base::vec4_t>& coords, const std::vector<int>& indices, const uint8_t* vertex_data_ptr,
     const VertexFormat& v_in_format, const VertexFormat& v_out_format)
 {
@@ -827,7 +828,7 @@ Temple::Bonfire::RenderContext::draw_triangles(
         // backface culling
         if (m_backface_culling != ECullingMode::None)
         {
-            Temple::Base::vec4_t side0, side1, outside_normal;
+            Sisyphus::Base::vec4_t side0, side1, outside_normal;
             switch (m_backface_culling)
             {
             case ECullingMode::ClockWise:
@@ -844,7 +845,7 @@ Temple::Bonfire::RenderContext::draw_triangles(
             }
             Base::vec4_t z = a_world + b_world + c_world;
             float        zlength = a_world.calculate_magnitude();
-            if (zlength < Temple::Base::eps)
+            if (zlength < Sisyphus::Base::eps)
             {
                 continue;
             }
@@ -1081,12 +1082,12 @@ Temple::Bonfire::RenderContext::draw_triangles(
 }
 
 void
-Temple::Bonfire::RenderContext::set_log_func(LogFunc log)
+Sisyphus::Render::RenderContext::set_log_func(LogFunc log)
 {
     m_log = log;
 }
 
-Temple::Bonfire::RenderContext::~RenderContext()
+Sisyphus::Render::RenderContext::~RenderContext()
 {
     delete[] m_data;
     m_data = nullptr;

@@ -1,7 +1,7 @@
 #include "bonfire_color.h"
 
-Temple::Bonfire::col4u_t
-Temple::Bonfire::col4u_t::operator+(const col4u_t& other)
+Sisyphus::Render::col4u_t
+Sisyphus::Render::col4u_t::operator+(const col4u_t& other)
 {
     col4u_t res;
     res.r = (uint8_t)((r + (int)other.r) % 256);
@@ -11,8 +11,8 @@ Temple::Bonfire::col4u_t::operator+(const col4u_t& other)
     return res;
 }
 
-Temple::Bonfire::col4u_t
-Temple::Bonfire::col4u_t::operator-(const col4u_t& other)
+Sisyphus::Render::col4u_t
+Sisyphus::Render::col4u_t::operator-(const col4u_t& other)
 {
     col4u_t res;
     res.r = (uint8_t)(r - (int)other.r >= 0 ? r - (int)other.r : 0);
@@ -22,8 +22,8 @@ Temple::Bonfire::col4u_t::operator-(const col4u_t& other)
     return res;
 }
 
-Temple::Bonfire::col4u_t
-Temple::Bonfire::col4u_t::operator*(const col4u_t& other) const
+Sisyphus::Render::col4u_t
+Sisyphus::Render::col4u_t::operator*(const col4u_t& other) const
 {
     col4u_t res;
     res.r = (uint8_t)(r * other.r >= 0 ? r * other.r : 0);
@@ -33,8 +33,8 @@ Temple::Bonfire::col4u_t::operator*(const col4u_t& other) const
     return res;
 }
 
-Temple::Bonfire::col4u_t
-Temple::Bonfire::col4u_t::operator*(float other)
+Sisyphus::Render::col4u_t
+Sisyphus::Render::col4u_t::operator*(float other)
 {
     col4u_t res;
     res.r = (uint8_t)(((int)(r * other)) % 256);
@@ -44,8 +44,8 @@ Temple::Bonfire::col4u_t::operator*(float other)
     return res;
 }
 
-Temple::Base::vec4_t
-Temple::Bonfire::get_color_vec4(const col4u_t& c)
+Sisyphus::Base::vec4_t
+Sisyphus::Render::get_color_vec4(const col4u_t& c)
 {
     return Base::vec4_t {c.r / 255.f, c.g / 255.f, c.b / 255.f, c.a / 255.f};
 }

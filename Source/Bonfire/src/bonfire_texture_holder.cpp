@@ -4,29 +4,29 @@
 #include "stb_image_write.h"
 #endif
 
-Temple::Bonfire::TextureHolder* Temple::Bonfire::TextureHolder::s_instance = nullptr;
+Sisyphus::Render::TextureHolder* Sisyphus::Render::TextureHolder::s_instance = nullptr;
 
-Temple::Bonfire::TextureHolder*
-Temple::Bonfire::TextureHolder::instance()
+Sisyphus::Render::TextureHolder*
+Sisyphus::Render::TextureHolder::instance()
 {
     if (s_instance == nullptr)
     {
-        s_instance = new Temple::Bonfire::TextureHolder();
+        s_instance = new Sisyphus::Render::TextureHolder();
     }
     return s_instance;
 }
 
 uint32_t
-Temple::Bonfire::TextureHolder::add_texture(const uint8_t* pixelData, uint32_t w, uint32_t h, uint32_t ch)
+Sisyphus::Render::TextureHolder::add_texture(const uint8_t* pixelData, uint32_t w, uint32_t h, uint32_t ch)
 {
     m_textures.push_back(Texture(pixelData, w, h, ch));
     return m_textures.size() - 1;
 }
 
-Temple::Base::vec4_t
-Temple::Bonfire::TextureHolder::get_pixel(uint32_t texId, float u, float v)
+Sisyphus::Base::vec4_t
+Sisyphus::Render::TextureHolder::get_pixel(uint32_t texId, float u, float v)
 {
-    Temple::Base::vec4_t pixel;
+    Sisyphus::Base::vec4_t pixel;
     pixel.a = 1.0f;
     if (texId < m_textures.size())
     {
@@ -37,7 +37,7 @@ Temple::Bonfire::TextureHolder::get_pixel(uint32_t texId, float u, float v)
 }
 
 void
-Temple::Bonfire::TextureHolder::save_texture(const char* path, int texId)
+Sisyphus::Render::TextureHolder::save_texture(const char* path, int texId)
 {
     if (texId >= 0 && texId < m_textures.size())
     {

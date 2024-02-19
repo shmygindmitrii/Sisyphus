@@ -5,7 +5,7 @@
 #include <vector>
 #include <memory>
 
-namespace Temple
+namespace Sisyphus
 {
 namespace Barn
 {
@@ -27,4 +27,4 @@ namespace Barn
     std::shared_ptr<ObjFile>
     read_obj_model_file(const char* path);
 } // namespace Barn
-} // namespace Temple
+} // namespace Sisyphus

@@ -5,9 +5,9 @@
 #include "bonfire_texture.h"
 #include "bonfire_color.h"
 
-namespace Temple
+namespace Sisyphus
 {
-namespace Bonfire
+namespace Render
 {
     class TextureHolder {
         std::vector<Texture>  m_textures;
@@ -25,5 +25,5 @@ namespace Bonfire
         save_texture(const char* path, int texId);
 #endif
     };
-} // namespace Bonfire
-} // namespace Temple
+} // namespace Render
+} // namespace Sisyphus

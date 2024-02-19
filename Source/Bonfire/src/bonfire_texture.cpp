@@ -1,12 +1,12 @@
 #include "bonfire_texture.h"
 
-Temple::Bonfire::Texture::Texture()
+Sisyphus::Render::Texture::Texture()
     : width(0)
     , height(0)
     , channels(0)
 {}
 
-Temple::Bonfire::Texture::Texture(const uint8_t* d, uint32_t w, uint32_t h, uint32_t ch)
+Sisyphus::Render::Texture::Texture(const uint8_t* d, uint32_t w, uint32_t h, uint32_t ch)
 {
     width = w;
     height = h;
@@ -15,13 +15,13 @@ Temple::Bonfire::Texture::Texture(const uint8_t* d, uint32_t w, uint32_t h, uint
     memcpy(data.data(), d, w * h * ch);
 }
 
-Temple::Base::vec4_t
-Temple::Bonfire::Texture::get_pixel_color(float u, float v) const
+Sisyphus::Base::vec4_t
+Sisyphus::Render::Texture::get_pixel_color(float u, float v) const
 {
-    Temple::Base::vec4_t pixel;
-    int                  iu = u * width;
-    int                  iv = (1.0f - v) * height;
-    uint32_t             idx = iv * width * channels + iu * channels;
+    Sisyphus::Base::vec4_t pixel;
+    int                    iu = u * width;
+    int                    iv = (1.0f - v) * height;
+    uint32_t               idx = iv * width * channels + iu * channels;
     pixel.a = 1.0f;
     if (idx < width * height * channels)
     {

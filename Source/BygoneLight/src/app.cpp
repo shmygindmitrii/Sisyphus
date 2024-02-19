@@ -7,26 +7,26 @@
 #include "win_tex_loader.h"
 #include "obj_file.h"
 
-using namespace Temple;
+using namespace Sisyphus;
 
-static Bonfire::col4u_t              s_red {255, 0, 0, 255};
-static Bonfire::col4u_t              s_green {0, 255, 0, 255};
-static Bonfire::col4u_t              s_blue {0, 0, 255, 255};
-static Bonfire::col4u_t              s_yellow {200, 200, 0, 255};
-static Bonfire::col4u_t              s_pink {200, 154, 165, 255};
-static Bonfire::col4u_t              s_turquoise {0, 154, 154, 255};
-static Bonfire::col4u_t              s_orange {205, 88, 0, 255};
-static Bonfire::col4u_t              s_violet {107, 0, 215, 255};
-static std::vector<Bonfire::col4u_t> s_default_colors_u = {s_red,  s_green,     s_blue,   s_yellow,
-                                                           s_pink, s_turquoise, s_orange, s_violet};
-static std::vector<Base::vec4_t>     s_default_colors = {
-    Bonfire::get_color_vec4(s_red),    Bonfire::get_color_vec4(s_green), Bonfire::get_color_vec4(s_blue),
-    Bonfire::get_color_vec4(s_yellow), Bonfire::get_color_vec4(s_pink),  Bonfire::get_color_vec4(s_turquoise),
-    Bonfire::get_color_vec4(s_orange), Bonfire::get_color_vec4(s_violet)};
-static Bonfire::col4u_t s_bg_color {15, 15, 35, 255};
-static Bonfire::col4u_t s_line_color {0, 150, 0, 255};
+static Render::col4u_t              s_red {255, 0, 0, 255};
+static Render::col4u_t              s_green {0, 255, 0, 255};
+static Render::col4u_t              s_blue {0, 0, 255, 255};
+static Render::col4u_t              s_yellow {200, 200, 0, 255};
+static Render::col4u_t              s_pink {200, 154, 165, 255};
+static Render::col4u_t              s_turquoise {0, 154, 154, 255};
+static Render::col4u_t              s_orange {205, 88, 0, 255};
+static Render::col4u_t              s_violet {107, 0, 215, 255};
+static std::vector<Render::col4u_t> s_default_colors_u = {s_red,  s_green,     s_blue,   s_yellow,
+                                                          s_pink, s_turquoise, s_orange, s_violet};
+static std::vector<Base::vec4_t>    s_default_colors = {
+    Render::get_color_vec4(s_red),    Render::get_color_vec4(s_green), Render::get_color_vec4(s_blue),
+    Render::get_color_vec4(s_yellow), Render::get_color_vec4(s_pink),  Render::get_color_vec4(s_turquoise),
+    Render::get_color_vec4(s_orange), Render::get_color_vec4(s_violet)};
+static Render::col4u_t s_bg_color {15, 15, 35, 255};
+static Render::col4u_t s_line_color {0, 150, 0, 255};
 
-static Bonfire::RenderContext s_render_context(1, 1, 4);
+static Render::RenderContext s_render_context(1, 1, 4);
 
 static std::vector<Base::vec4_t> s_abc = {};
 static std::vector<int>          s_abc_line_indices = {0, 1, 1, 2, 2, 0};
@@ -37,17 +37,17 @@ std::vector<Base::vec4_t> s_model_verts;
 std::vector<int>          s_model_inds;
 std::vector<uint8_t>      s_model_vertex_attribs;
 
-static Bonfire::VertexFormat s_vertex_output_format({
-    Bonfire::EVertexAttribType::VEC4, // position
-    Bonfire::EVertexAttribType::VEC4, // color
-    Bonfire::EVertexAttribType::VEC2, // tex
-    Bonfire::EVertexAttribType::VEC3, // normal
+static Render::VertexFormat s_vertex_output_format({
+    Render::EVertexAttribType::VEC4, // position
+    Render::EVertexAttribType::VEC4, // color
+    Render::EVertexAttribType::VEC2, // tex
+    Render::EVertexAttribType::VEC3, // normal
 });
 
-static Bonfire::VertexFormat s_vertex_input_format({
-    Bonfire::EVertexAttribType::VEC4, // color
-    Bonfire::EVertexAttribType::VEC2, // tex
-    Bonfire::EVertexAttribType::VEC3, // normal
+static Render::VertexFormat s_vertex_input_format({
+    Render::EVertexAttribType::VEC4, // color
+    Render::EVertexAttribType::VEC2, // tex
+    Render::EVertexAttribType::VEC3, // normal
 });
 
 extern "C"
@@ -63,9 +63,9 @@ temple_application_init(void* data)
     Base::vec2_t uv1 {1.0f, 0.0f};
     Base::vec2_t uv2 {0.0f, 1.0f};
     Base::vec3_t normal {0.0f, 0.0f, -1.0f};
-    Base::vec4_t fred = Bonfire::get_color_vec4(s_red);
-    Base::vec4_t fgreen = Bonfire::get_color_vec4(s_green);
-    Base::vec4_t fblue = Bonfire::get_color_vec4(s_blue);
+    Base::vec4_t fred = Render::get_color_vec4(s_red);
+    Base::vec4_t fgreen = Render::get_color_vec4(s_green);
+    Base::vec4_t fblue = Render::get_color_vec4(s_blue);
     s_abc.push_back(a);
     s_abc.push_back(b);
     s_abc.push_back(c);
@@ -117,7 +117,7 @@ temple_application_init(void* data)
             const Base::vec2_t* tex_ptr = reinterpret_cast<const Base::vec2_t*>(pixel_color_ptr + 1);
             const Base::vec3_t* normal_ptr = reinterpret_cast<const Base::vec3_t*>(tex_ptr + 1);
             // per-pixel
-            Base::vec4_t tex_color = Bonfire::TextureHolder::instance()->get_pixel(0, tex_ptr->u, tex_ptr->v);
+            Base::vec4_t tex_color = Render::TextureHolder::instance()->get_pixel(0, tex_ptr->u, tex_ptr->v);
             // illumination
             const Base::vec3_t* camera_position_ptr = reinterpret_cast<const Base::vec3_t*>(descriptor_set.data());
             const int*          light_count_ptr = reinterpret_cast<const int*>(camera_position_ptr + 1);
@@ -244,7 +244,7 @@ temple_application_update(void* data)
     s_render_context.set_model_matrix(translation_matrix * rotation_matrix * scale_matrix);
     s_render_context.set_view_matrix(Base::mat4_t::get_identity_matrix()); // not really used yet
     s_render_context.set_perspective(90.0f, width / (float)height, 0.4f, 100.0f);
-    s_render_context.set_backface_culling(Bonfire::ECullingMode::CounterClockWise);
+    s_render_context.set_backface_culling(Render::ECullingMode::CounterClockWise);
     //
     std::vector<uint8_t> descriptor_set;
     Base::vec3_t         camera_position {0.0f, 0.0f, 0.0f};

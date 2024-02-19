@@ -15,7 +15,7 @@ load_texture_win(const char* path)
         int            w, h, ch;
         unsigned char* img = stbi_load(path, &w, &h, &ch, 0);
         uint32_t       tex_id =
-            Temple::Bonfire::TextureHolder::instance()->add_texture(reinterpret_cast<const uint8_t*>(img), w, h, ch);
+            Sisyphus::Render::TextureHolder::instance()->add_texture(reinterpret_cast<const uint8_t*>(img), w, h, ch);
         s_textures_loaded[path] = tex_id;
         return tex_id;
     }

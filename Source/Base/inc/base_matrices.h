@@ -4,7 +4,7 @@
 
 #include <iostream>
 
-namespace Temple
+namespace Sisyphus
 {
 namespace Base
 {
@@ -127,4 +127,4 @@ namespace Base
     mat4_t
     operator/(const mat4_t& M, float s);
 } // namespace Base
-} // namespace Temple
+} // namespace Sisyphus

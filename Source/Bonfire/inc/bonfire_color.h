@@ -2,9 +2,9 @@
 #include <cstdint>
 #include <base_vectors.h>
 
-namespace Temple
+namespace Sisyphus
 {
-namespace Bonfire
+namespace Render
 {
 #pragma pack(push, 1)
     struct col4u_t {
@@ -21,5 +21,5 @@ namespace Bonfire
 #pragma pack(pop)
     Base::vec4_t
     get_color_vec4(const col4u_t& c);
-} // namespace Bonfire
-} // namespace Temple
+} // namespace Render
+} // namespace Sisyphus

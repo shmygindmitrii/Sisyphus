@@ -6,7 +6,7 @@
 #include <cmath>
 #include <iostream>
 
-namespace Temple
+namespace Sisyphus
 {
 namespace Base
 {
@@ -444,4 +444,4 @@ namespace Base
     std::ostream&
     operator<<(std::ostream& os, const vec4_t& v);
 } // namespace Base
-} // namespace Temple
+} // namespace Sisyphus

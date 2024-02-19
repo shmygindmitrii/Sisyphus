@@ -5,9 +5,9 @@
 #include "base_vectors.h"
 #include "base_matrices.h"
 
-namespace Temple
+namespace Sisyphus
 {
-namespace Bonfire
+namespace Render
 {
     enum class EPrimitiveType {
         LINE,
@@ -146,5 +146,5 @@ namespace Bonfire
         //
         ~RenderContext();
     };
-} // namespace Bonfire
-} // namespace Temple
+} // namespace Render
+} // namespace Sisyphus

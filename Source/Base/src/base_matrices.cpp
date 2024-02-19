@@ -5,44 +5,44 @@
 
 // mat3_t
 
-Temple::Base::vec3_t&
-Temple::Base::mat3_t::operator[](int i)
+Sisyphus::Base::vec3_t&
+Sisyphus::Base::mat3_t::operator[](int i)
 {
     return (&r0)[i];
 }
 
-const Temple::Base::vec3_t&
-Temple::Base::mat3_t::operator[](int i) const
+const Sisyphus::Base::vec3_t&
+Sisyphus::Base::mat3_t::operator[](int i) const
 {
     return (&r0)[i];
 }
 
 float&
-Temple::Base::mat3_t::operator()(int i, int j)
+Sisyphus::Base::mat3_t::operator()(int i, int j)
 {
     return data[i][j];
 }
 
 const float&
-Temple::Base::mat3_t::operator()(int i, int j) const
+Sisyphus::Base::mat3_t::operator()(int i, int j) const
 {
     return data[i][j];
 }
 
 const bool
-Temple::Base::mat3_t::operator==(const mat3_t& M) const
+Sisyphus::Base::mat3_t::operator==(const mat3_t& M) const
 {
     return r0 == M[0] && r1 == M[1] && r2 == M[2];
 }
 
 const bool
-Temple::Base::mat3_t::operator!=(const mat3_t& M) const
+Sisyphus::Base::mat3_t::operator!=(const mat3_t& M) const
 {
     return !((*this) == M);
 }
 
-Temple::Base::mat3_t&
-Temple::Base::mat3_t::operator*=(float s)
+Sisyphus::Base::mat3_t&
+Sisyphus::Base::mat3_t::operator*=(float s)
 {
     data[0][0] *= s;
     data[0][1] *= s;
@@ -58,16 +58,16 @@ Temple::Base::mat3_t::operator*=(float s)
     return *this;
 }
 
-Temple::Base::mat3_t&
-Temple::Base::mat3_t::operator/=(float s)
+Sisyphus::Base::mat3_t&
+Sisyphus::Base::mat3_t::operator/=(float s)
 {
     s = 1.0f / s;
     (*this) *= s;
     return *this;
 }
 
-Temple::Base::mat3_t&
-Temple::Base::mat3_t::operator+=(const mat3_t& M)
+Sisyphus::Base::mat3_t&
+Sisyphus::Base::mat3_t::operator+=(const mat3_t& M)
 {
     data[0][0] += M.data[0][0];
     data[0][1] += M.data[0][1];
@@ -83,8 +83,8 @@ Temple::Base::mat3_t::operator+=(const mat3_t& M)
     return *this;
 }
 
-Temple::Base::mat3_t&
-Temple::Base::mat3_t::operator-=(const mat3_t& M)
+Sisyphus::Base::mat3_t&
+Sisyphus::Base::mat3_t::operator-=(const mat3_t& M)
 {
     data[0][0] -= M.data[0][0];
     data[0][1] -= M.data[0][1];
@@ -100,31 +100,31 @@ Temple::Base::mat3_t::operator-=(const mat3_t& M)
     return *this;
 }
 
-Temple::Base::mat3_t
-Temple::Base::mat3_t::operator+(const mat3_t& M) const
+Sisyphus::Base::mat3_t
+Sisyphus::Base::mat3_t::operator+(const mat3_t& M) const
 {
     return mat3_t {data[0][0] + M.data[0][0], data[0][1] + M.data[0][1], data[0][2] + M.data[0][2],
                    data[1][0] + M.data[1][0], data[1][1] + M.data[1][1], data[1][2] + M.data[1][2],
                    data[2][0] + M.data[2][0], data[2][1] + M.data[2][1], data[2][2] + M.data[2][2]};
 }
 
-Temple::Base::mat3_t
-Temple::Base::mat3_t::operator-() const
+Sisyphus::Base::mat3_t
+Sisyphus::Base::mat3_t::operator-() const
 {
     return mat3_t {-data[0][0], -data[0][1], -data[0][2], -data[1][0], -data[1][1],
                    -data[1][2], -data[2][0], -data[2][1], -data[2][2]};
 }
 
-Temple::Base::mat3_t
-Temple::Base::mat3_t::operator-(const mat3_t& M) const
+Sisyphus::Base::mat3_t
+Sisyphus::Base::mat3_t::operator-(const mat3_t& M) const
 {
     return mat3_t {data[0][0] - M.data[0][0], data[0][1] - M.data[0][1], data[0][2] - M.data[0][2],
                    data[1][0] - M.data[1][0], data[1][1] - M.data[1][1], data[1][2] - M.data[1][2],
                    data[2][0] - M.data[2][0], data[2][1] - M.data[2][1], data[2][2] - M.data[2][2]};
 }
 
-Temple::Base::mat3_t
-Temple::Base::mat3_t::operator*(const mat3_t& M) const
+Sisyphus::Base::mat3_t
+Sisyphus::Base::mat3_t::operator*(const mat3_t& M) const
 {
     return mat3_t {
         data[0][0] * M.data[0][0] + data[0][1] * M.data[1][0] + data[0][2] * M.data[2][0],
@@ -138,8 +138,8 @@ Temple::Base::mat3_t::operator*(const mat3_t& M) const
         data[2][0] * M.data[0][2] + data[2][1] * M.data[1][2] + data[2][2] * M.data[2][2]};
 }
 
-Temple::Base::vec3_t
-Temple::Base::mat3_t::operator*(const vec3_t& v) const
+Sisyphus::Base::vec3_t
+Sisyphus::Base::mat3_t::operator*(const vec3_t& v) const
 {
     return vec3_t {
         data[0][0] * v.x + data[0][1] * v.y + data[0][2] * v.z, data[1][0] * v.x + data[1][1] * v.y + data[1][2] * v.z,
@@ -147,7 +147,7 @@ Temple::Base::mat3_t::operator*(const vec3_t& v) const
 }
 
 std::ostream&
-Temple::Base::operator<<(std::ostream& os, const mat3_t& M)
+Sisyphus::Base::operator<<(std::ostream& os, const mat3_t& M)
 {
     os << std::fixed << std::setprecision(4) << "[ " << M(0, 0) << ' ' << M(0, 1) << ' ' << M(0, 2) << '\n'
        << "  " << M(1, 0) << ' ' << M(1, 1) << ' ' << M(1, 2) << '\n'
@@ -155,40 +155,40 @@ Temple::Base::operator<<(std::ostream& os, const mat3_t& M)
     return os;
 }
 
-Temple::Base::mat3_t
-Temple::Base::operator*(float s, const Temple::Base::mat3_t& M)
+Sisyphus::Base::mat3_t
+Sisyphus::Base::operator*(float s, const Sisyphus::Base::mat3_t& M)
 {
     return mat3_t {M(0, 0) * s, M(0, 1) * s, M(0, 2) * s, M(1, 0) * s, M(1, 1) * s,
                    M(1, 2) * s, M(2, 0) * s, M(2, 1) * s, M(2, 2) * s};
 }
 
-Temple::Base::mat3_t
-Temple::Base::operator/(const Temple::Base::mat3_t& M, float s)
+Sisyphus::Base::mat3_t
+Sisyphus::Base::operator/(const Sisyphus::Base::mat3_t& M, float s)
 {
     s = 1.0f / s;
     return s * M;
 }
 
-Temple::Base::mat3_t
-Temple::Base::mat3_t::calculate_rotation_matrix_around_x(float angle)
+Sisyphus::Base::mat3_t
+Sisyphus::Base::mat3_t::calculate_rotation_matrix_around_x(float angle)
 {
     return mat3_t {1.0f, 0.0f, 0.0f, 0.0f, cos(angle), -sin(angle), 0.0f, sin(angle), cos(angle)};
 }
 
-Temple::Base::mat3_t
-Temple::Base::mat3_t::calculate_rotation_matrix_around_y(float angle)
+Sisyphus::Base::mat3_t
+Sisyphus::Base::mat3_t::calculate_rotation_matrix_around_y(float angle)
 {
     return mat3_t {cos(angle), 0.0f, sin(angle), 0.0f, 1.0f, 0.0f, -sin(angle), 0.0f, cos(angle)};
 }
 
-Temple::Base::mat3_t
-Temple::Base::mat3_t::calculate_rotation_matrix_around_z(float angle)
+Sisyphus::Base::mat3_t
+Sisyphus::Base::mat3_t::calculate_rotation_matrix_around_z(float angle)
 {
     return mat3_t {cos(angle), -sin(angle), 0.0f, sin(angle), cos(angle), 0.0f, 0.0f, 0.0f, 1.0f};
 }
 
-Temple::Base::mat3_t
-Temple::Base::mat3_t::calculate_rotation_matrix(const Temple::Base::vec3_t& n, float angle)
+Sisyphus::Base::mat3_t
+Sisyphus::Base::mat3_t::calculate_rotation_matrix(const Sisyphus::Base::vec3_t& n, float angle)
 {
     float R00 = cos(angle) + n.x * n.x * (1.0f - cos(angle));
     float R01 = n.x * n.y * (1.0f - cos(angle)) - n.z * sin(angle);
@@ -205,8 +205,8 @@ Temple::Base::mat3_t::calculate_rotation_matrix(const Temple::Base::vec3_t& n, f
     return mat3_t {R00, R01, R02, R10, R11, R12, R20, R21, R22};
 }
 
-Temple::Base::mat3_t
-Temple::Base::mat3_t::get_identity_matrix()
+Sisyphus::Base::mat3_t
+Sisyphus::Base::mat3_t::get_identity_matrix()
 {
     mat3_t m;
     m.r0.x = 1.0f;
@@ -217,44 +217,44 @@ Temple::Base::mat3_t::get_identity_matrix()
 
 // mat4_t
 
-Temple::Base::vec4_t&
-Temple::Base::mat4_t::operator[](int i)
+Sisyphus::Base::vec4_t&
+Sisyphus::Base::mat4_t::operator[](int i)
 {
     return (&r0)[i];
 }
 
-const Temple::Base::vec4_t&
-Temple::Base::mat4_t::operator[](int i) const
+const Sisyphus::Base::vec4_t&
+Sisyphus::Base::mat4_t::operator[](int i) const
 {
     return (&r0)[i];
 }
 
 float&
-Temple::Base::mat4_t::operator()(int i, int j)
+Sisyphus::Base::mat4_t::operator()(int i, int j)
 {
     return data[i][j];
 }
 
 const float&
-Temple::Base::mat4_t::operator()(int i, int j) const
+Sisyphus::Base::mat4_t::operator()(int i, int j) const
 {
     return data[i][j];
 }
 
 const bool
-Temple::Base::mat4_t::operator==(const mat4_t& M) const
+Sisyphus::Base::mat4_t::operator==(const mat4_t& M) const
 {
     return r0 == M[0] && r1 == M[1] && r2 == M[2] && r3 == M[3];
 }
 
 const bool
-Temple::Base::mat4_t::operator!=(const mat4_t& M) const
+Sisyphus::Base::mat4_t::operator!=(const mat4_t& M) const
 {
     return !((*this) == M);
 }
 
-Temple::Base::mat4_t&
-Temple::Base::mat4_t::operator*=(float s)
+Sisyphus::Base::mat4_t&
+Sisyphus::Base::mat4_t::operator*=(float s)
 {
     data[0][0] *= s;
     data[0][1] *= s;
@@ -278,16 +278,16 @@ Temple::Base::mat4_t::operator*=(float s)
     return *this;
 }
 
-Temple::Base::mat4_t&
-Temple::Base::mat4_t::operator/=(float s)
+Sisyphus::Base::mat4_t&
+Sisyphus::Base::mat4_t::operator/=(float s)
 {
     s = 1.0f / s;
     (*this) *= s;
     return *this;
 }
 
-Temple::Base::mat4_t&
-Temple::Base::mat4_t::operator+=(const mat4_t& M)
+Sisyphus::Base::mat4_t&
+Sisyphus::Base::mat4_t::operator+=(const mat4_t& M)
 {
     data[0][0] += M.data[0][0];
     data[0][1] += M.data[0][1];
@@ -311,8 +311,8 @@ Temple::Base::mat4_t::operator+=(const mat4_t& M)
     return *this;
 }
 
-Temple::Base::mat4_t&
-Temple::Base::mat4_t::operator-=(const mat4_t& M)
+Sisyphus::Base::mat4_t&
+Sisyphus::Base::mat4_t::operator-=(const mat4_t& M)
 {
     data[0][0] -= M.data[0][0];
     data[0][1] -= M.data[0][1];
@@ -336,8 +336,8 @@ Temple::Base::mat4_t::operator-=(const mat4_t& M)
     return *this;
 }
 
-Temple::Base::mat4_t
-Temple::Base::mat4_t::operator+(const mat4_t& M) const
+Sisyphus::Base::mat4_t
+Sisyphus::Base::mat4_t::operator+(const mat4_t& M) const
 {
     mat4_t m {
         data[0][0] + M.data[0][0], data[0][1] + M.data[0][1], data[0][2] + M.data[0][2], data[0][3] + M.data[0][3],
@@ -347,16 +347,16 @@ Temple::Base::mat4_t::operator+(const mat4_t& M) const
     return m;
 }
 
-Temple::Base::mat4_t
-Temple::Base::mat4_t::operator-() const
+Sisyphus::Base::mat4_t
+Sisyphus::Base::mat4_t::operator-() const
 {
     return mat4_t {-data[0][0], -data[0][1], -data[0][2], -data[0][3], -data[1][0], -data[1][1],
                    -data[1][2], -data[1][3], -data[2][0], -data[2][1], -data[2][2], -data[2][3],
                    -data[3][0], -data[3][1], -data[3][2], -data[3][3]};
 }
 
-Temple::Base::mat4_t
-Temple::Base::mat4_t::operator-(const mat4_t& M) const
+Sisyphus::Base::mat4_t
+Sisyphus::Base::mat4_t::operator-(const mat4_t& M) const
 {
     return mat4_t {
         data[0][0] - M.data[0][0], data[0][1] - M.data[0][1], data[0][2] - M.data[0][2], data[0][3] - M.data[0][3],
@@ -365,8 +365,8 @@ Temple::Base::mat4_t::operator-(const mat4_t& M) const
         data[3][0] - M.data[3][0], data[3][1] - M.data[3][1], data[3][2] - M.data[3][2], data[3][3] - M.data[3][3]};
 }
 
-Temple::Base::mat4_t
-Temple::Base::mat4_t::operator*(const mat4_t& M) const
+Sisyphus::Base::mat4_t
+Sisyphus::Base::mat4_t::operator*(const mat4_t& M) const
 {
     return mat4_t {
         data[0][0] * M.data[0][0] + data[0][1] * M.data[1][0] + data[0][2] * M.data[2][0] + data[0][3] * M.data[3][0],
@@ -390,8 +390,8 @@ Temple::Base::mat4_t::operator*(const mat4_t& M) const
         data[3][0] * M.data[0][3] + data[3][1] * M.data[1][3] + data[3][2] * M.data[2][3] + data[3][3] * M.data[3][3]};
 }
 
-Temple::Base::vec4_t
-Temple::Base::mat4_t::operator*(const vec4_t& v) const
+Sisyphus::Base::vec4_t
+Sisyphus::Base::mat4_t::operator*(const vec4_t& v) const
 {
     return vec4_t {
         data[0][0] * v.x + data[0][1] * v.y + data[0][2] * v.z + data[0][3] * v.w,
@@ -401,7 +401,7 @@ Temple::Base::mat4_t::operator*(const vec4_t& v) const
 }
 
 std::ostream&
-Temple::Base::operator<<(std::ostream& os, const mat4_t& M)
+Sisyphus::Base::operator<<(std::ostream& os, const mat4_t& M)
 {
     os << std::fixed << std::setprecision(4) << "[ " << M(0, 0) << ' ' << M(0, 1) << ' ' << M(0, 2) << ' ' << M(0, 3)
        << '\n'
@@ -411,8 +411,8 @@ Temple::Base::operator<<(std::ostream& os, const mat4_t& M)
     return os;
 }
 
-Temple::Base::mat4_t
-Temple::Base::operator*(float s, const Temple::Base::mat4_t& M)
+Sisyphus::Base::mat4_t
+Sisyphus::Base::operator*(float s, const Sisyphus::Base::mat4_t& M)
 {
     return mat4_t {M.data[0][0] * s, M.data[0][1] * s, M.data[0][2] * s, M.data[0][3] * s,
                    M.data[1][0] * s, M.data[1][1] * s, M.data[1][2] * s, M.data[1][3] * s,
@@ -420,36 +420,36 @@ Temple::Base::operator*(float s, const Temple::Base::mat4_t& M)
                    M.data[3][0] * s, M.data[3][1] * s, M.data[3][2] * s, M.data[3][3] * s};
 }
 
-Temple::Base::mat4_t
-Temple::Base::operator/(const Temple::Base::mat4_t& M, float s)
+Sisyphus::Base::mat4_t
+Sisyphus::Base::operator/(const Sisyphus::Base::mat4_t& M, float s)
 {
     s = 1.0f / s;
     return s * M;
 }
 
-Temple::Base::mat4_t
-Temple::Base::mat4_t::calculate_rotation_matrix_around_x(float angle)
+Sisyphus::Base::mat4_t
+Sisyphus::Base::mat4_t::calculate_rotation_matrix_around_x(float angle)
 {
     return mat4_t {1.0f, 0.0f,       0.0f,       0.0f, 0.0f, cos(angle), -sin(angle), 0.0f,
                    0.0f, sin(angle), cos(angle), 0.0f, 0.0f, 0.0f,       0.0f,        1.0f};
 }
 
-Temple::Base::mat4_t
-Temple::Base::mat4_t::calculate_rotation_matrix_around_y(float angle)
+Sisyphus::Base::mat4_t
+Sisyphus::Base::mat4_t::calculate_rotation_matrix_around_y(float angle)
 {
     return mat4_t {cos(angle),  0.0f, sin(angle), 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
                    -sin(angle), 0.0f, cos(angle), 0.0f, 0.0f, 0.0f, 0.0f, 1.0f};
 }
 
-Temple::Base::mat4_t
-Temple::Base::mat4_t::calculate_rotation_matrix_around_z(float angle)
+Sisyphus::Base::mat4_t
+Sisyphus::Base::mat4_t::calculate_rotation_matrix_around_z(float angle)
 {
     return mat4_t {cos(angle), -sin(angle), 0.0f, 0.0f, sin(angle), cos(angle), 0.0f, 0.0f,
                    0.0f,       0.0f,        1.0f, 0.0f, 0.0f,       0.0f,       0.0f, 1.0f};
 }
 
-Temple::Base::mat4_t
-Temple::Base::mat4_t::calculate_rotation_matrix(const Temple::Base::vec4_t& n, float angle)
+Sisyphus::Base::mat4_t
+Sisyphus::Base::mat4_t::calculate_rotation_matrix(const Sisyphus::Base::vec4_t& n, float angle)
 {
     float R00 = cos(angle) + n.x * n.x * (1.0f - cos(angle));
     float R01 = n.x * n.y * (1.0f - cos(angle)) - n.z * sin(angle);
@@ -466,8 +466,8 @@ Temple::Base::mat4_t::calculate_rotation_matrix(const Temple::Base::vec4_t& n, f
     return mat4_t {R00, R01, R02, 0.0f, R10, R11, R12, 0.0f, R20, R21, R22, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f};
 }
 
-Temple::Base::mat4_t
-Temple::Base::mat4_t::get_identity_matrix()
+Sisyphus::Base::mat4_t
+Sisyphus::Base::mat4_t::get_identity_matrix()
 {
     mat4_t m = {};
     m.r0.x = 1.0f;
@@ -477,8 +477,8 @@ Temple::Base::mat4_t::get_identity_matrix()
     return m;
 }
 
-Temple::Base::mat4_t
-Temple::Base::mat4_t::calculate_projection_matrix(float fov, float aspect, float znear, float zfar)
+Sisyphus::Base::mat4_t
+Sisyphus::Base::mat4_t::calculate_projection_matrix(float fov, float aspect, float znear, float zfar)
 {
     mat4_t m = get_identity_matrix();
     // take aspect into account + fov

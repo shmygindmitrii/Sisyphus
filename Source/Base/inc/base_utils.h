@@ -4,9 +4,9 @@
 #include <vector>
 #include <cassert>
 
-#define EQUAL_FLOATS(a, b) (abs(a - b) < Temple::Base::eps)
+#define EQUAL_FLOATS(a, b) (abs(a - b) < Sisyphus::Base::eps)
 
-namespace Temple
+namespace Sisyphus
 {
 namespace Base
 {
@@ -37,4 +37,4 @@ namespace Base
         std::vector<uint8_t>& v, const uint8_t* data_ptr, const int dest_offset, const int src_size,
         const int src_offset);
 } // namespace Base
-} // namespace Temple
+} // namespace Sisyphus

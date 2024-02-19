@@ -4,8 +4,8 @@
 #include <sstream>
 #include <memory>
 
-std::shared_ptr<Temple::Barn::ObjFile>
-Temple::Barn::read_obj_model_file(const char* filename)
+std::shared_ptr<Sisyphus::Barn::ObjFile>
+Sisyphus::Barn::read_obj_model_file(const char* filename)
 {
     std::ifstream file(filename);
 

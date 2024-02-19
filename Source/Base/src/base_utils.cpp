@@ -1,7 +1,7 @@
 #include "base_utils.h"
 
 std::vector<float>
-Temple::Base::interpolate(float x0, float y0, float x1, float y1)
+Sisyphus::Base::interpolate(float x0, float y0, float x1, float y1)
 {
     // interpolate second value - y in this case
     std::vector<float> vals = {};
@@ -23,7 +23,7 @@ Temple::Base::interpolate(float x0, float y0, float x1, float y1)
 }
 
 void
-Temple::Base::append_data(std::vector<uint8_t>& v, const uint8_t* data_ptr, const int src_size, const int src_offset)
+Sisyphus::Base::append_data(std::vector<uint8_t>& v, const uint8_t* data_ptr, const int src_size, const int src_offset)
 {
     int oldSize = v.size();
     v.resize(oldSize + src_size);
@@ -31,7 +31,7 @@ Temple::Base::append_data(std::vector<uint8_t>& v, const uint8_t* data_ptr, cons
 }
 
 void
-Temple::Base::replace_data(
+Sisyphus::Base::replace_data(
     std::vector<uint8_t>& v, const uint8_t* data_ptr, const int dest_offset, const int src_size, const int src_offset)
 {
     assert(dest_offset + src_size <= v.size());
