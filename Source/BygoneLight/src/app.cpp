@@ -176,8 +176,8 @@ temple_application_init(void* data)
         });
     // load model and texture
     char tex_path[128], obj_path[128];
-    snprintf(tex_path, 128, "%s/side_colored.png", TEMPLE_RESOURCES_FOLDER);
-    snprintf(obj_path, 128, "%s/cube_sided.obj", TEMPLE_RESOURCES_FOLDER);
+    snprintf(tex_path, 128, "%s/side_colored.png", SISYPHUS_RESOURCES_FOLDER);
+    snprintf(obj_path, 128, "%s/cube_sided.obj", SISYPHUS_RESOURCES_FOLDER);
     uint32_t                       mosaic_texture = load_texture_win(tex_path);
     std::shared_ptr<Barn::ObjFile> obj_file = Barn::read_obj_model_file(obj_path);
 

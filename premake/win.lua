@@ -5,7 +5,7 @@ function create_solution_win(solution_name)
         platforms { "x64" }
         defines { "WIN32", "_CONSOLE" }
         language "C++"
-        location(TEMPLE.project_output_directory)
+        location(SOLUTION_VARS.project_output_directory)
 
     filter "platforms:x64"
         system "Windows"

@@ -20,16 +20,16 @@ end
 -- lib section
 
 function create_lib(project_name, lib_type, include_dirs)
-    print("    Create library project for \"" .. project_name .. "\" of type \"" .. lib_type .. "\" for platform " .. string.upper(TEMPLE.platform))
-    local platfromed_project_name = project_name .. "-" .. TEMPLE.platform
+    print("    Create library project for \"" .. project_name .. "\" of type \"" .. lib_type .. "\" for platform " .. string.upper(SOLUTION_VARS.platform))
+    local platfromed_project_name = project_name .. "-" .. SOLUTION_VARS.platform
     project(platfromed_project_name)
         kind(lib_type)
         targetname(platfromed_project_name)
         files(get_default_sources(project_name))
         includedirs(concat_tables({ "../Source/" .. project_name .. "/inc" }, include_dirs))
-        location(TEMPLE.output_directory)
-        targetdir(TEMPLE.target_directory .. "/" .. project_name)
-        objdir(TEMPLE.intermediate_directory .. "/" .. project_name)
+        location(SOLUTION_VARS.output_directory)
+        targetdir(SOLUTION_VARS.target_directory .. "/" .. project_name)
+        objdir(SOLUTION_VARS.intermediate_directory .. "/" .. project_name)
         defines { "_LIB" }
     project "*"
     return platfromed_project_name
@@ -46,8 +46,8 @@ end
 -- binary section
 
 function create_binary(project_name, binary_type, include_dirs, link_projs, resource_files)
-    print("    Create runable project for \"" .. project_name .. "\" of type \"" .. binary_type .. "\" for platform " .. string.upper(TEMPLE.platform))
-    local platfromed_project_name = project_name .. "-" .. TEMPLE.platform
+    print("    Create runable project for \"" .. project_name .. "\" of type \"" .. binary_type .. "\" for platform " .. string.upper(SOLUTION_VARS.platform))
+    local platfromed_project_name = project_name .. "-" .. SOLUTION_VARS.platform
     project(platfromed_project_name)
         kind(binary_type)
         targetname(platfromed_project_name)
@@ -56,9 +56,9 @@ function create_binary(project_name, binary_type, include_dirs, link_projs, reso
             proj_files = concat_tables(proj_files, resource_files)
         end
         files(proj_files)
-        location(TEMPLE.output_directory)
-        targetdir(TEMPLE.target_directory .. "/" .. project_name)
-        objdir(TEMPLE.intermediate_directory .. "/" .. project_name)
+        location(SOLUTION_VARS.output_directory)
+        targetdir(SOLUTION_VARS.target_directory .. "/" .. project_name)
+        objdir(SOLUTION_VARS.intermediate_directory .. "/" .. project_name)
         includedirs(concat_tables({ "../Source/" .. project_name .. "/inc" }, include_dirs))
         links(link_projs)
     project "*"
