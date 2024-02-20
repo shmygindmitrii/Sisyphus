@@ -26,7 +26,7 @@ static std::vector<Base::vec4_t>    s_default_colors = {
 static Render::col4u_t s_bg_color {15, 15, 35, 255};
 static Render::col4u_t s_line_color {0, 150, 0, 255};
 
-static Render::RenderContext s_render_context(1, 1, 4);
+static Render::Context s_render_context(1, 1, 4);
 
 static std::vector<Base::vec4_t> s_abc = {};
 static std::vector<int>          s_abc_line_indices = {0, 1, 1, 2, 2, 0};
