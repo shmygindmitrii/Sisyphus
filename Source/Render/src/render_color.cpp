@@ -1,4 +1,4 @@
-#include "bonfire_color.h"
+#include "render_color.h"
 
 Sisyphus::Render::col4u_t
 Sisyphus::Render::col4u_t::operator+(const col4u_t& other)

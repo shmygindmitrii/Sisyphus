@@ -1,4 +1,4 @@
-#include "bonfire_texture_holder.h"
+#include "render_texture_holder.h"
 #if _WIN32 && !PLATFORM_XBO
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "stb_image_write.h"

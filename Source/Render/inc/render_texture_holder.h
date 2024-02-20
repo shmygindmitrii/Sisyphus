@@ -2,8 +2,8 @@
 
 #include <cstdint>
 #include <vector>
-#include "bonfire_texture.h"
-#include "bonfire_color.h"
+#include "render_texture.h"
+#include "render_color.h"
 
 namespace Sisyphus
 {

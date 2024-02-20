@@ -2,7 +2,7 @@
 
 #include <cstdint>
 #include <vector>
-#include "bonfire_color.h"
+#include "render_color.h"
 #include "base_vectors.h"
 
 namespace Sisyphus

@@ -1,4 +1,4 @@
-#include "bonfire_render_context.h"
+#include "render_context.h"
 #include "base_utils.h"
 
 #include <algorithm>
@@ -200,8 +200,7 @@ Sisyphus::Render::Context::resize(int width, int height, int bytes_per_pixel)
 }
 
 void
-Sisyphus::Render::Context::set_viewport(
-    float x_min, float y_min, float z_min, float x_max, float y_max, float z_max)
+Sisyphus::Render::Context::set_viewport(float x_min, float y_min, float z_min, float x_max, float y_max, float z_max)
 {
     m_viewport_min.x = x_min;
     m_viewport_min.y = y_min;
@@ -705,6 +704,21 @@ Sisyphus::Render::Context::cull_triangle_by_frustum(
     }
 }
 
+static void
+cull_segment_by_plane(
+    const Sisyphus::Base::vec4_t& a_world, const Sisyphus::Base::vec4_t& b_world, const uint8_t* a_data,
+    const uint8_t* b_data, const Sisyphus::Render::VertexFormat& v_out_format, Sisyphus::Base::vec4_t& a,
+    Sisyphus::Base::vec4_t& b)
+{}
+
+void
+Sisyphus::Render::Context::cull_segment_by_frustum(
+    const Base::vec4_t& a_world, const Base::vec4_t& b_world, const uint8_t* a_data, const uint8_t* b_data,
+    const VertexFormat& v_out_format, Base::vec4_t& a, Base::vec4_t& b)
+{
+    for (int i = 0; i < 6; i++)
+    {}
+}
 
 void
 Sisyphus::Render::Context::draw_lines(
@@ -722,10 +736,14 @@ Sisyphus::Render::Context::draw_lines(
         const uint8_t*      data_a_ptr = &vertex_data_ptr[indices[i] * v_in_format.size];
         const uint8_t*      data_b_ptr = &vertex_data_ptr[indices[i + 1] * v_in_format.size];
         // draw single line here
-        Base::vec4_t         a, b;
+        Base::vec4_t         a_world, b_world;
         std::vector<uint8_t> a_vertex_out(v_out_format.size), b_vertex_out(v_out_format.size);
-        this->m_vsf(va, a, a_vertex_out, data_a_ptr, this->m_builtins, this->m_descriptor_set);
-        this->m_vsf(vb, b, b_vertex_out, data_b_ptr, this->m_builtins, this->m_descriptor_set);
+        this->m_vsf(va, a_world, a_vertex_out, data_a_ptr, this->m_builtins, this->m_descriptor_set);
+        this->m_vsf(vb, b_world, b_vertex_out, data_b_ptr, this->m_builtins, this->m_descriptor_set);
+        // frustum culling
+        // only two possible separation cases - a outside or b outside
+        Base::vec4_t a, b;
+        this->cull_segment_by_frustum(a_world, b_world, a_vertex_out.data(), b_vertex_out.data(), v_out_format, a, b);
         //
         a = this->process_vertex(a);
         b = this->process_vertex(b);

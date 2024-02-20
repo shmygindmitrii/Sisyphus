@@ -1,7 +1,7 @@
 #pragma once
 
 #include <cstdint>
-#include "bonfire_color.h"
+#include "render_color.h"
 #include "base_vectors.h"
 #include "base_matrices.h"
 
@@ -124,6 +124,10 @@ namespace Render
             const Base::vec4_t& a, const Base::vec4_t& b, const Base::vec4_t& c, const uint8_t* a_data,
             const uint8_t* b_data, const uint8_t* c_data, const VertexFormat& vf,
             std::vector<Base::vec4_t>& passed_vertex_coords, std::vector<uint8_t>& passed_vertex_data);
+        void
+        cull_segment_by_frustum(
+            const Base::vec4_t& a_world, const Base::vec4_t& b_world, const uint8_t* a_data, const uint8_t* b_data,
+            const VertexFormat& v_out_format, Base::vec4_t& a, Base::vec4_t& b);
         void
         set_depth_test(bool flag);
         void

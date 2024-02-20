@@ -1,9 +1,9 @@
 #include <vector>
 
 #include "app.h"
-#include "bonfire_color.h"
-#include "bonfire_render_context.h"
-#include "bonfire_texture_holder.h"
+#include "render_color.h"
+#include "render_context.h"
+#include "render_texture_holder.h"
 #include "win_tex_loader.h"
 #include "obj_file.h"
 

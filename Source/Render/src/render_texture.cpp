@@ -1,4 +1,4 @@
-#include "bonfire_texture.h"
+#include "render_texture.h"
 
 Sisyphus::Render::Texture::Texture()
     : width(0)

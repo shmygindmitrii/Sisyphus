@@ -2,14 +2,10 @@
 #include <math.h>
 
 #include "framework.h"
-#include "bonfire_render_context.h"
-#include "base_matrices.h"
-#include "obj_file.h"
-#include "bonfire_texture_holder.h"
-#include "win_tex_loader.h"
 #include <cassert>
 #include "resource.h"
 #include <chrono>
+#include <vector>
 #include <dwmapi.h>
 #pragma comment(lib, "dwmapi.lib")
 
