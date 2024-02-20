@@ -59,7 +59,7 @@ namespace Render
         Plane bounds[6];
     };
     //
-    class RenderContext {
+    class Context {
       private:
         uint8_t*             m_data = nullptr;
         float*               m_depth = nullptr;
@@ -86,7 +86,7 @@ namespace Render
         LogFunc m_log = nullptr;
 
       public:
-        RenderContext(int width, int height, int bytes_per_pixel);
+        Context(int width, int height, int bytes_per_pixel);
         const uint8_t*
         get_frame() const;
         const unsigned int
@@ -144,7 +144,7 @@ namespace Render
         void
         set_log_func(LogFunc log);
         //
-        ~RenderContext();
+        ~Context();
     };
 } // namespace Render
 } // namespace Sisyphus

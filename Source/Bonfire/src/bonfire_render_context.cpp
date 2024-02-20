@@ -136,7 +136,7 @@ Sisyphus::Render::Plane::Plane(const Base::vec3_t& _normal, float _offset)
     , offset(_offset)
 {}
 
-Sisyphus::Render::RenderContext::RenderContext(int width, int height, int bytes_per_pixel)
+Sisyphus::Render::Context::Context(int width, int height, int bytes_per_pixel)
     : m_width(width)
     , m_height(height)
     , m_bytes_per_pixel(bytes_per_pixel)
@@ -151,19 +151,19 @@ Sisyphus::Render::RenderContext::RenderContext(int width, int height, int bytes_
 }
 
 const uint8_t*
-Sisyphus::Render::RenderContext::get_frame() const
+Sisyphus::Render::Context::get_frame() const
 {
     return m_data;
 }
 
 const unsigned int
-Sisyphus::Render::RenderContext::get_frame_size() const
+Sisyphus::Render::Context::get_frame_size() const
 {
     return m_width * m_height * m_bytes_per_pixel;
 }
 
 void
-Sisyphus::Render::RenderContext::resize(int width, int height, int bytes_per_pixel)
+Sisyphus::Render::Context::resize(int width, int height, int bytes_per_pixel)
 {
     size_t old_resolution = m_width * m_height;
     size_t old_size = old_resolution * (size_t)m_bytes_per_pixel;
@@ -200,7 +200,7 @@ Sisyphus::Render::RenderContext::resize(int width, int height, int bytes_per_pix
 }
 
 void
-Sisyphus::Render::RenderContext::set_viewport(
+Sisyphus::Render::Context::set_viewport(
     float x_min, float y_min, float z_min, float x_max, float y_max, float z_max)
 {
     m_viewport_min.x = x_min;
@@ -213,25 +213,25 @@ Sisyphus::Render::RenderContext::set_viewport(
 }
 
 void
-Sisyphus::Render::RenderContext::set_descriptor_set(const std::vector<uint8_t>& descriptor_set)
+Sisyphus::Render::Context::set_descriptor_set(const std::vector<uint8_t>& descriptor_set)
 {
     m_descriptor_set = descriptor_set;
 }
 
 void
-Sisyphus::Render::RenderContext::set_vertex_shader(Sisyphus::Render::VertexShaderFunc vsf)
+Sisyphus::Render::Context::set_vertex_shader(Sisyphus::Render::VertexShaderFunc vsf)
 {
     m_vsf = vsf;
 }
 
 void
-Sisyphus::Render::RenderContext::set_pixel_shader(Sisyphus::Render::PixelShaderFunc psf)
+Sisyphus::Render::Context::set_pixel_shader(Sisyphus::Render::PixelShaderFunc psf)
 {
     m_psf = psf;
 }
 
 void
-Sisyphus::Render::RenderContext::set_model_matrix(const Base::mat4_t& m)
+Sisyphus::Render::Context::set_model_matrix(const Base::mat4_t& m)
 {
     m_model_matrix = m;
     m_model_view_matrix = m_view_matrix * m_model_matrix;
@@ -242,7 +242,7 @@ Sisyphus::Render::RenderContext::set_model_matrix(const Base::mat4_t& m)
 }
 
 void
-Sisyphus::Render::RenderContext::set_view_matrix(const Base::mat4_t& m)
+Sisyphus::Render::Context::set_view_matrix(const Base::mat4_t& m)
 {
     m_view_matrix = m;
     m_model_view_matrix = m_view_matrix * m_model_matrix;
@@ -253,7 +253,7 @@ Sisyphus::Render::RenderContext::set_view_matrix(const Base::mat4_t& m)
 }
 
 void
-Sisyphus::Render::RenderContext::set_perspective_matrix(const Base::mat4_t& m)
+Sisyphus::Render::Context::set_perspective_matrix(const Base::mat4_t& m)
 {
     m_perspective_matrix = m;
     m_transform_matrix = m_perspective_matrix * m_model_view_matrix;
@@ -262,7 +262,7 @@ Sisyphus::Render::RenderContext::set_perspective_matrix(const Base::mat4_t& m)
 }
 
 void
-Sisyphus::Render::RenderContext::set_perspective(float fov, float aspect, float znear, float zfar)
+Sisyphus::Render::Context::set_perspective(float fov, float aspect, float znear, float zfar)
 {
     fov = fov * Sisyphus::Base::pi / 180.0f;
     Base::mat4_t perspective_matrix = Base::mat4_t::calculate_projection_matrix(fov, aspect, znear, zfar);
@@ -271,7 +271,7 @@ Sisyphus::Render::RenderContext::set_perspective(float fov, float aspect, float 
 }
 
 void
-Sisyphus::Render::RenderContext::set_frustum(float fov, float aspect, float znear, float zfar)
+Sisyphus::Render::Context::set_frustum(float fov, float aspect, float znear, float zfar)
 {
     // create 6 planes that forms frustum in view coordinates
     // znear plane
@@ -320,7 +320,7 @@ Sisyphus::Render::RenderContext::set_frustum(float fov, float aspect, float znea
 }
 
 void
-Sisyphus::Render::RenderContext::put_pixel(int x, int y, const Base::vec4_t& color)
+Sisyphus::Render::Context::put_pixel(int x, int y, const Base::vec4_t& color)
 {
     // color - from 0 to 1 each component
     if (x < 0 || x >= m_width || y < 0 || y >= m_height)
@@ -336,7 +336,7 @@ Sisyphus::Render::RenderContext::put_pixel(int x, int y, const Base::vec4_t& col
 }
 
 void
-Sisyphus::Render::RenderContext::fill(const col4u_t& color)
+Sisyphus::Render::Context::fill(const col4u_t& color)
 {
     uint32_t colors = m_width * m_height * m_bytes_per_pixel;
     for (uint32_t i = 0; i < colors; i += m_bytes_per_pixel)
@@ -349,7 +349,7 @@ Sisyphus::Render::RenderContext::fill(const col4u_t& color)
 }
 
 Sisyphus::Base::vec4_t
-Sisyphus::Render::RenderContext::process_vertex(const Base::vec4_t& v)
+Sisyphus::Render::Context::process_vertex(const Base::vec4_t& v)
 {
     Base::vec4_t c = m_perspective_matrix * v;
 
@@ -364,25 +364,25 @@ Sisyphus::Render::RenderContext::process_vertex(const Base::vec4_t& v)
 }
 
 void
-Sisyphus::Render::RenderContext::set_depth_test(bool flag)
+Sisyphus::Render::Context::set_depth_test(bool flag)
 {
     m_depth_test = flag;
 }
 
 void
-Sisyphus::Render::RenderContext::set_depth_write(bool flag)
+Sisyphus::Render::Context::set_depth_write(bool flag)
 {
     m_depth_write = flag;
 }
 
 void
-Sisyphus::Render::RenderContext::set_backface_culling(ECullingMode mode)
+Sisyphus::Render::Context::set_backface_culling(ECullingMode mode)
 {
     m_backface_culling = mode;
 }
 
 void
-Sisyphus::Render::RenderContext::clear_depth(float val)
+Sisyphus::Render::Context::clear_depth(float val)
 {
     for (int i = 0; i < m_width * m_height; i++)
     {
@@ -391,7 +391,7 @@ Sisyphus::Render::RenderContext::clear_depth(float val)
 }
 
 void
-Sisyphus::Render::RenderContext::render_pixel_depth_wise(const Base::vec4_t& p, const uint8_t* data)
+Sisyphus::Render::Context::render_pixel_depth_wise(const Base::vec4_t& p, const uint8_t* data)
 {
     int pix_flat_idx = ((int)p.y) * m_width + (int)p.x;
     if (pix_flat_idx >= 0 && pix_flat_idx < m_width * m_height)
@@ -669,7 +669,7 @@ cull_triangles_by_plane(
 }
 
 void
-Sisyphus::Render::RenderContext::cull_triangle_by_frustum(
+Sisyphus::Render::Context::cull_triangle_by_frustum(
     const Base::vec4_t& a, const Base::vec4_t& b, const Base::vec4_t& c, const uint8_t* data_a_ptr,
     const uint8_t* data_b_ptr, const uint8_t* data_c_ptr, const VertexFormat& vf,
     std::vector<Base::vec4_t>& passed_vertex_coords, std::vector<uint8_t>& passed_vertex_data)
@@ -707,7 +707,7 @@ Sisyphus::Render::RenderContext::cull_triangle_by_frustum(
 
 
 void
-Sisyphus::Render::RenderContext::draw_lines(
+Sisyphus::Render::Context::draw_lines(
     const std::vector<Base::vec4_t>& coords, const std::vector<int>& indices, const uint8_t* vertex_data_ptr,
     const VertexFormat& v_in_format, const VertexFormat& v_out_format)
 {
@@ -799,7 +799,7 @@ Sisyphus::Render::RenderContext::draw_lines(
 }
 
 void
-Sisyphus::Render::RenderContext::draw_triangles(
+Sisyphus::Render::Context::draw_triangles(
     const std::vector<Base::vec4_t>& coords, const std::vector<int>& indices, const uint8_t* vertex_data_ptr,
     const VertexFormat& v_in_format, const VertexFormat& v_out_format)
 {
@@ -1082,12 +1082,12 @@ Sisyphus::Render::RenderContext::draw_triangles(
 }
 
 void
-Sisyphus::Render::RenderContext::set_log_func(LogFunc log)
+Sisyphus::Render::Context::set_log_func(LogFunc log)
 {
     m_log = log;
 }
 
-Sisyphus::Render::RenderContext::~RenderContext()
+Sisyphus::Render::Context::~Context()
 {
     delete[] m_data;
     m_data = nullptr;
