@@ -403,3 +403,4 @@ premake/project/win/*.vcxproj
 premake/project/win/*.vcxproj.filters
 premake/project/win/*.vcxproj.user
 
+Tools/git_*.bat
