@@ -19,8 +19,8 @@ Sisyphus::Base::vec4_t
 Sisyphus::Render::Texture::get_pixel_color(float u, float v) const
 {
     Sisyphus::Base::vec4_t pixel;
-    int                    iu = u * width;
-    int                    iv = (1.0f - v) * height;
+    int                    iu = u * (width - 1);
+    int                    iv = (1.0f - v) * (height - 1);
     uint32_t               idx = iv * width * channels + iu * channels;
     pixel.a = 1.0f;
     if (idx < width * height * channels)
