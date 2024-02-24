@@ -44,17 +44,13 @@ Sisyphus::Base::mat3_t::operator!=(const mat3_t& M) const
 Sisyphus::Base::mat3_t&
 Sisyphus::Base::mat3_t::operator*=(float s)
 {
-    data[0][0] *= s;
-    data[0][1] *= s;
-    data[0][2] *= s;
-
-    data[1][0] *= s;
-    data[1][1] *= s;
-    data[1][2] *= s;
-
-    data[2][0] *= s;
-    data[2][1] *= s;
-    data[2][2] *= s;
+    for (int i = 0; i < 3; i++)
+    {
+        for (int j = 0; j < 3; j++)
+        {
+            this->data[i][j] *= s;
+        }
+    }
     return *this;
 }
 
@@ -69,34 +65,26 @@ Sisyphus::Base::mat3_t::operator/=(float s)
 Sisyphus::Base::mat3_t&
 Sisyphus::Base::mat3_t::operator+=(const mat3_t& M)
 {
-    data[0][0] += M.data[0][0];
-    data[0][1] += M.data[0][1];
-    data[0][2] += M.data[0][2];
-
-    data[1][0] += M.data[1][0];
-    data[1][1] += M.data[1][1];
-    data[1][2] += M.data[1][2];
-
-    data[2][0] += M.data[2][0];
-    data[2][1] += M.data[2][1];
-    data[2][2] += M.data[2][2];
+    for (int i = 0; i < 3; i++)
+    {
+        for (int j = 0; j < 3; j++)
+        {
+            this->data[i][j] += M.data[i][j];
+        }
+    }
     return *this;
 }
 
 Sisyphus::Base::mat3_t&
 Sisyphus::Base::mat3_t::operator-=(const mat3_t& M)
 {
-    data[0][0] -= M.data[0][0];
-    data[0][1] -= M.data[0][1];
-    data[0][2] -= M.data[0][2];
-
-    data[1][0] -= M.data[1][0];
-    data[1][1] -= M.data[1][1];
-    data[1][2] -= M.data[1][2];
-
-    data[2][0] -= M.data[2][0];
-    data[2][1] -= M.data[2][1];
-    data[2][2] -= M.data[2][2];
+    for (int i = 0; i < 3; i++)
+    {
+        for (int j = 0; j < 3; j++)
+        {
+            this->data[i][j] -= M.data[i][j];
+        }
+    }
     return *this;
 }
 
@@ -256,25 +244,13 @@ Sisyphus::Base::mat4_t::operator!=(const mat4_t& M) const
 Sisyphus::Base::mat4_t&
 Sisyphus::Base::mat4_t::operator*=(float s)
 {
-    data[0][0] *= s;
-    data[0][1] *= s;
-    data[0][2] *= s;
-    data[0][3] *= s;
-
-    data[1][0] *= s;
-    data[1][1] *= s;
-    data[1][2] *= s;
-    data[1][3] *= s;
-
-    data[2][0] *= s;
-    data[2][1] *= s;
-    data[2][2] *= s;
-    data[2][3] *= s;
-
-    data[3][0] *= s;
-    data[3][1] *= s;
-    data[3][2] *= s;
-    data[3][3] *= s;
+    for (int i = 0; i < 4; i++)
+    {
+        for (int j = 0; j < 4; j++)
+        {
+            this->data[i][j] *= s;
+        }
+    }
     return *this;
 }
 
@@ -289,50 +265,26 @@ Sisyphus::Base::mat4_t::operator/=(float s)
 Sisyphus::Base::mat4_t&
 Sisyphus::Base::mat4_t::operator+=(const mat4_t& M)
 {
-    data[0][0] += M.data[0][0];
-    data[0][1] += M.data[0][1];
-    data[0][2] += M.data[0][2];
-    data[0][3] += M.data[0][3];
-
-    data[1][0] += M.data[1][0];
-    data[1][1] += M.data[1][1];
-    data[1][2] += M.data[1][2];
-    data[1][3] += M.data[1][3];
-
-    data[2][0] += M.data[2][0];
-    data[2][1] += M.data[2][1];
-    data[2][2] += M.data[2][2];
-    data[2][3] += M.data[2][3];
-
-    data[3][0] += M.data[3][0];
-    data[3][1] += M.data[3][1];
-    data[3][2] += M.data[3][2];
-    data[3][3] += M.data[3][3];
+    for (int i = 0; i < 4; i++)
+    {
+        for (int j = 0; j < 4; j++)
+        {
+            this->data[i][j] += M.data[i][j];
+        }
+    }
     return *this;
 }
 
 Sisyphus::Base::mat4_t&
 Sisyphus::Base::mat4_t::operator-=(const mat4_t& M)
 {
-    data[0][0] -= M.data[0][0];
-    data[0][1] -= M.data[0][1];
-    data[0][2] -= M.data[0][2];
-    data[0][3] -= M.data[0][3];
-
-    data[1][0] -= M.data[1][0];
-    data[1][1] -= M.data[1][1];
-    data[1][2] -= M.data[1][2];
-    data[1][3] -= M.data[1][3];
-
-    data[2][0] -= M.data[2][0];
-    data[2][1] -= M.data[2][1];
-    data[2][2] -= M.data[2][2];
-    data[2][3] -= M.data[2][3];
-
-    data[3][0] -= M.data[3][0];
-    data[3][1] -= M.data[3][1];
-    data[3][2] -= M.data[3][2];
-    data[3][3] -= M.data[3][3];
+    for (int i = 0; i < 4; i++)
+    {
+        for (int j = 0; j < 4; j++)
+        {
+            this->data[i][j] -= M.data[i][j];
+        }
+    }
     return *this;
 }
 
