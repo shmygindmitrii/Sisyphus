@@ -42,7 +42,7 @@ Sisyphus::Render::VertexFormat::VertexFormat(const std::vector<Sisyphus::Render:
 
 template <typename T>
 static inline void
-interpolateAttribsTemplate(const uint8_t*& a_in, const uint8_t*& b_in, uint8_t*& c_out, float weight)
+interpolate_attribs_template(const uint8_t*& a_in, const uint8_t*& b_in, uint8_t*& c_out, float weight)
 {
     *(T*)c_out = (*(T*)b_in) * weight - (*(T*)a_in) * weight + *(T*)a_in;
     a_in += sizeof(T);
@@ -61,25 +61,25 @@ Sisyphus::Render::interpolate_attributes(
         switch (vf.attributes[i])
         {
         case EVertexAttribType::FLOAT32:
-            interpolateAttribsTemplate<float>(a_in, b_in, c_out, weight);
+            interpolate_attribs_template<float>(a_in, b_in, c_out, weight);
             break;
         case EVertexAttribType::INT32:
-            interpolateAttribsTemplate<int32_t>(a_in, b_in, c_out, weight);
+            interpolate_attribs_template<int32_t>(a_in, b_in, c_out, weight);
             break;
         case EVertexAttribType::UINT8:
-            interpolateAttribsTemplate<uint8_t>(a_in, b_in, c_out, weight);
+            interpolate_attribs_template<uint8_t>(a_in, b_in, c_out, weight);
             break;
         case EVertexAttribType::VEC2:
-            interpolateAttribsTemplate<Base::vec2_t>(a_in, b_in, c_out, weight);
+            interpolate_attribs_template<Base::vec2_t>(a_in, b_in, c_out, weight);
             break;
         case EVertexAttribType::VEC3:
-            interpolateAttribsTemplate<Base::vec3_t>(a_in, b_in, c_out, weight);
+            interpolate_attribs_template<Base::vec3_t>(a_in, b_in, c_out, weight);
             break;
         case EVertexAttribType::VEC4:
-            interpolateAttribsTemplate<Base::vec4_t>(a_in, b_in, c_out, weight);
+            interpolate_attribs_template<Base::vec4_t>(a_in, b_in, c_out, weight);
             break;
         case EVertexAttribType::UV:
-            interpolateAttribsTemplate<Base::vec2_t>(a_in, b_in, c_out, weight);
+            interpolate_attribs_template<Base::vec2_t>(a_in, b_in, c_out, weight);
             break;
         }
     }
@@ -87,7 +87,7 @@ Sisyphus::Render::interpolate_attributes(
 
 template <typename T>
 static inline void
-multAttribsTemplate(const uint8_t*& a_in, uint8_t*& c_out, float mult)
+mult_attribs_template(const uint8_t*& a_in, uint8_t*& c_out, float mult)
 {
     *(T*)c_out = (*(T*)a_in) * mult;
     a_in += sizeof(T);
@@ -102,25 +102,25 @@ Sisyphus::Render::multiply_attributes(const uint8_t* a_in, uint8_t* c_out, float
         switch (vf.attributes[i])
         {
         case EVertexAttribType::FLOAT32:
-            multAttribsTemplate<float>(a_in, c_out, mult);
+            mult_attribs_template<float>(a_in, c_out, mult);
             break;
         case EVertexAttribType::INT32:
-            multAttribsTemplate<int32_t>(a_in, c_out, mult);
+            mult_attribs_template<int32_t>(a_in, c_out, mult);
             break;
         case EVertexAttribType::UINT8:
-            multAttribsTemplate<uint8_t>(a_in, c_out, mult);
+            mult_attribs_template<uint8_t>(a_in, c_out, mult);
             break;
         case EVertexAttribType::VEC2:
-            multAttribsTemplate<Base::vec2_t>(a_in, c_out, mult);
+            mult_attribs_template<Base::vec2_t>(a_in, c_out, mult);
             break;
         case EVertexAttribType::VEC3:
-            multAttribsTemplate<Base::vec3_t>(a_in, c_out, mult);
+            mult_attribs_template<Base::vec3_t>(a_in, c_out, mult);
             break;
         case EVertexAttribType::VEC4:
-            multAttribsTemplate<Base::vec4_t>(a_in, c_out, mult);
+            mult_attribs_template<Base::vec4_t>(a_in, c_out, mult);
             break;
         case EVertexAttribType::UV:
-            multAttribsTemplate<Base::vec2_t>(a_in, c_out, mult);
+            mult_attribs_template<Base::vec2_t>(a_in, c_out, mult);
             break;
         }
     }
