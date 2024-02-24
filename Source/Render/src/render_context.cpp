@@ -704,20 +704,66 @@ Sisyphus::Render::Context::cull_triangle_by_frustum(
     }
 }
 
-static void
+static bool
 cull_segment_by_plane(
-    const Sisyphus::Base::vec4_t& a_world, const Sisyphus::Base::vec4_t& b_world, const uint8_t* a_data,
-    const uint8_t* b_data, const Sisyphus::Render::VertexFormat& v_out_format, Sisyphus::Base::vec4_t& a,
-    Sisyphus::Base::vec4_t& b)
-{}
+    Sisyphus::Base::vec4_t& a_world, Sisyphus::Base::vec4_t& b_world, std::vector<uint8_t>& a_data,
+    std::vector<uint8_t>& b_data, const Sisyphus::Render::VertexFormat& v_out_format, const Sisyphus::Render::Plane& p)
+{
+    float a_side = point_plane_side(a_world.xyz, p);
+    float b_side = point_plane_side(b_world.xyz, p);
+    if ((a_side > 0.0f && b_side > 0.0f) || (fabs(a_side) < Sisyphus::Base::eps && b_side > 0.0f) ||
+        (fabs(b_side) < Sisyphus::Base::eps && a_side > 0.0f))
+    {
+        // outside of plane, totally clipped 
+        return false;
+    }
+    else
+    {
+        if (a_side > 0.0f || b_side > 0.0f)
+        {
+            std::vector<uint8_t> c_data(v_out_format.size);
+            if (a_side > 0.0f)
+            {
+                // a is outside
+                float k_ba = segment_plane_intersection(b_world.xyz, a_world.xyz, p);
+                Sisyphus::Base::vec3_t c = b_world.xyz + (a_world.xyz - b_world.xyz) * k_ba;
+                std::swap(a_world, b_world);
+                b_world = {c.x, c.y, c.z, b_world.w};
+                Sisyphus::Render::interpolate_attributes(
+                    b_data.data(), a_data.data(), c_data.data(), k_ba, v_out_format);
+                a_data = c_data;
+                std::swap(a_data, b_data);
 
-void
+            }
+            else
+            {
+                // b is outside
+                float k_ab = segment_plane_intersection(a_world.xyz, b_world.xyz, p);
+                Sisyphus::Base::vec3_t c = a_world.xyz + (b_world.xyz - a_world.xyz) * k_ab;
+                b_world = {c.x, c.y, c.z, b_world.w};
+                Sisyphus::Render::interpolate_attributes(
+                    a_data.data(), b_data.data(), c_data.data(), k_ab, v_out_format);
+                b_data = c_data;
+            }
+        }
+    }
+    return true;
+}
+
+bool
 Sisyphus::Render::Context::cull_segment_by_frustum(
-    const Base::vec4_t& a_world, const Base::vec4_t& b_world, const uint8_t* a_data, const uint8_t* b_data,
-    const VertexFormat& v_out_format, Base::vec4_t& a, Base::vec4_t& b)
+    Base::vec4_t& a_world, Base::vec4_t& b_world, std::vector<uint8_t>& a_data,
+    std::vector<uint8_t>& b_data,
+    const VertexFormat& v_out_format)
 {
     for (int i = 0; i < 6; i++)
-    {}
+    {
+        const Render::Plane& p = this->m_frustum.bounds[i];
+        bool visible = cull_segment_by_plane(a_world, b_world, a_data, b_data, v_out_format, p);
+        if (!visible)
+            return false;
+    }
+    return true;
 }
 
 void
@@ -742,11 +788,13 @@ Sisyphus::Render::Context::draw_lines(
         this->m_vsf(vb, b_world, b_vertex_out, data_b_ptr, this->m_builtins, this->m_descriptor_set);
         // frustum culling
         // only two possible separation cases - a outside or b outside
-        Base::vec4_t a, b;
-        this->cull_segment_by_frustum(a_world, b_world, a_vertex_out.data(), b_vertex_out.data(), v_out_format, a, b);
+        // rewrite a_world, b_world, a_vertex_out, b_vertex_out
+        bool visible = this->cull_segment_by_frustum(a_world, b_world, a_vertex_out, b_vertex_out, v_out_format);
+        if (!visible)
+            continue;
         //
-        a = this->process_vertex(a);
-        b = this->process_vertex(b);
+        Base::vec4_t a = this->process_vertex(a_world);
+        Base::vec4_t b = this->process_vertex(b_world);
         // obtained vertex shader results and go to the pixel stage
         Base::vec4_t a0(a);
         Base::vec4_t b0(b);

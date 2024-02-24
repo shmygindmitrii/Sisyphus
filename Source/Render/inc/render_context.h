@@ -124,10 +124,10 @@ namespace Render
             const Base::vec4_t& a, const Base::vec4_t& b, const Base::vec4_t& c, const uint8_t* a_data,
             const uint8_t* b_data, const uint8_t* c_data, const VertexFormat& vf,
             std::vector<Base::vec4_t>& passed_vertex_coords, std::vector<uint8_t>& passed_vertex_data);
-        void
+        bool
         cull_segment_by_frustum(
-            const Base::vec4_t& a_world, const Base::vec4_t& b_world, const uint8_t* a_data, const uint8_t* b_data,
-            const VertexFormat& v_out_format, Base::vec4_t& a, Base::vec4_t& b);
+            Base::vec4_t& a_world, Base::vec4_t& b_world, std::vector<uint8_t>& a_data,
+            std::vector<uint8_t>& b_data, const VertexFormat& v_out_format);
         void
         set_depth_test(bool flag);
         void
