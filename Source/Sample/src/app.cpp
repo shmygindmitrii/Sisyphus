@@ -276,14 +276,21 @@ temple_application_update(void* data)
     //
     s_render_context.set_descriptor_set(descriptor_set);
     s_render_context.draw_triangles(
-        s_abc,                                                           // s_model_verts,
-        s_abc_triangle_indices,                                          // g_modelInds,
-        reinterpret_cast<const uint8_t*>(s_abc_triangle_attribs.data()), // reinterpret_cast<const
-                                                                         // uint8_t*>(g_modelVertAttribs.data()),
+        s_abc,
+        s_abc_triangle_indices,
+        reinterpret_cast<const uint8_t*>(s_abc_triangle_attribs.data()),
         s_vertex_input_format, s_vertex_output_format);
     s_render_context.draw_triangles(
         s_model_verts, s_model_inds, reinterpret_cast<const uint8_t*>(s_model_vertex_attribs.data()),
         s_vertex_input_format, s_vertex_output_format);
+#if TRIANGLE_LINE
+    s_render_context.draw_lines(
+        s_abc,
+        s_abc_line_indices,
+        reinterpret_cast<const uint8_t*>(s_abc_triangle_attribs.data()),
+        s_vertex_input_format, s_vertex_output_format
+    );
+#endif
 }
 
 void
