@@ -18,12 +18,13 @@ HINSTANCE hInst;                         // current instance
 WCHAR     szTitle[MAX_LOADSTRING];       // The title bar text
 WCHAR     szWindowClass[MAX_LOADSTRING]; // the main window class name
 HWND      hWnd;
+BOOL      bClose;
 
 // Forward declarations of functions included in this code module:
 ATOM
 MyRegisterClass(HINSTANCE hInstance);
-BOOL
-                 InitInstance(HINSTANCE, int);
+BOOL 
+InitInstance(HINSTANCE, int);
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK About(HWND, UINT, WPARAM, LPARAM);
 
@@ -136,8 +137,8 @@ wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPWSTR
                 break;
             }
         }
-
-        draw(hWnd);
+        if (!bClose)
+            draw(hWnd);
     }
 
     return (int)msg.wParam;
@@ -237,14 +238,9 @@ WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         }
     }
     break;
-    case WM_PAINT:
-    {
-        // nothing to do
-        // draw(hWnd);
-    }
-    break;
     case WM_DESTROY:
         PostQuitMessage(0);
+        bClose = 1;
         break;
     default:
         return DefWindowProc(hWnd, message, wParam, lParam);
