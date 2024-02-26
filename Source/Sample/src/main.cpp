@@ -116,26 +116,16 @@ wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPWSTR
 
     HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_BYGONE_LIGHT));
 
-    MSG msg;
-
     // Main message loop:
-    BOOL bRet;
-    while (TRUE)
+
+    MSG msg = {};
+    while (msg.message != WM_QUIT)
     {
         // PeekMessage, unlike GetMessage, doesn't block if there's no message
-        bRet = PeekMessage(&msg, NULL, 0, 0, PM_REMOVE);
-
-        if (bRet)
+        if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
         {
-            // Process the message
             TranslateMessage(&msg);
             DispatchMessage(&msg);
-
-            // Check for WM_QUIT message
-            if (msg.message == WM_QUIT)
-            {
-                break;
-            }
         }
         if (!bClose)
             draw(hWnd);
