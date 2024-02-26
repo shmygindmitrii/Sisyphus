@@ -53,7 +53,7 @@ static Render::VertexFormat s_vertex_input_format({
 extern "C"
 {
 void
-temple_application_init(void* data)
+sisyphus_application_init(void* data)
 {
     // sample triangle for debuggin purposes
     Base::vec4_t a {-0.0f, -0.0f, +0.2f, +1.0f};
@@ -207,7 +207,7 @@ temple_application_init(void* data)
 }
 
 void
-temple_application_update(void* data)
+sisyphus_application_update(void* data)
 {
     int*   update_data_i_ptr = reinterpret_cast<int*>(data);
     int    width = *update_data_i_ptr++;
@@ -294,19 +294,19 @@ temple_application_update(void* data)
 }
 
 void
-temple_application_set_log_function(void (*func)(const char* msg, unsigned int msg_size))
+sisyphus_application_set_log_function(void (*func)(const char* msg, unsigned int msg_size))
 {
     s_render_context.set_log_func(func);
 }
 
 void
-temple_application_close()
+sisyphus_application_close()
 {
     // s_render_context.destroy();
 }
 
 void
-temple_application_get_frame(void* data_ptr, unsigned int data_size)
+sisyphus_application_get_frame(void* data_ptr, unsigned int data_size)
 {
     unsigned int frame_size = s_render_context.get_frame_size();
     assert(frame_size <= data_size);

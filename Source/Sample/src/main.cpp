@@ -77,11 +77,11 @@ draw(HWND hWnd)
     }
     nanoseconds_prev = nanoseconds;
     update_info_t upd {width, height, 4, dt};
-    temple_application_update(&upd);
+    sisyphus_application_update(&upd);
 
     static std::vector<uint8_t> frame_data = {};
     frame_data.resize(width * height * 4);
-    temple_application_get_frame(frame_data.data(), static_cast<unsigned int>(frame_data.size()));
+    sisyphus_application_get_frame(frame_data.data(), static_cast<unsigned int>(frame_data.size()));
 
     SetDIBitsToDevice(
         hdc, 0, 0, width, height, 0, 0, 0, height, (unsigned char*)frame_data.data(), &bmi, DIB_RGB_COLORS);
@@ -111,8 +111,8 @@ wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPWSTR
     }
 
     // software renderer application is inside
-    temple_application_init(nullptr);
-    temple_application_set_log_function(PrintToWinConsole);
+    sisyphus_application_init(nullptr);
+    sisyphus_application_set_log_function(PrintToWinConsole);
 
     HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_BYGONE_LIGHT));
 
@@ -140,6 +140,7 @@ wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPWSTR
         if (!bClose)
             draw(hWnd);
     }
+    sisyphus_application_close();
 
     return (int)msg.wParam;
 }
