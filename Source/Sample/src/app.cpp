@@ -179,7 +179,7 @@ sisyphus_application_init(void* data)
     snprintf(tex_path, 128, "%s/side_colored.png", SISYPHUS_RESOURCES_FOLDER);
     snprintf(obj_path, 128, "%s/cube_sided.obj", SISYPHUS_RESOURCES_FOLDER);
     uint32_t                       mosaic_texture = load_texture_win(tex_path);
-    std::shared_ptr<Barn::ObjFile> obj_file = Barn::read_obj_model_file(obj_path);
+    std::shared_ptr<Util::ObjFile> obj_file = Util::read_obj_model_file(obj_path);
 
     std::vector<Base::vec4_t> colors;
     for (int vert_idx = 0; vert_idx < obj_file->coord.size(); vert_idx++)
@@ -189,7 +189,7 @@ sisyphus_application_init(void* data)
     int gidx = 0;
     for (int i = 0; i < obj_file->faces.size(); i++)
     {
-        const Barn::ObjFace& face = obj_file->faces[i];
+        const Util::ObjFace& face = obj_file->faces[i];
         for (int j = 0; j < 3; j++)
         {
             int          vert_idx = face.indices[j].position - 1;
