@@ -1,14 +1,11 @@
 function create_solution_win(solution_name)
     print("Create solution \"" .. solution_name .. "\" for platform WIN")
-    workspace(solution_name .. "-win")
+    workspace(solution_name)
         configurations { "Debug", "Release" }
-        platforms { "x64" }
+        architecture "x64"
         defines { "WIN32", "_CONSOLE" }
         language "C++"
         location(SOLUTION_VARS.project_output_directory)
-
-    filter "platforms:x64"
-        system "Windows"
 
     filter "configurations:Debug"
         defines { "_DEBUG" }

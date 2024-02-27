@@ -21,7 +21,7 @@ end
 
 function create_lib(project_name, lib_type, include_dirs)
     print("    Create library project for \"" .. project_name .. "\" of type \"" .. lib_type .. "\" for platform " .. string.upper(SOLUTION_VARS.platform))
-    local platfromed_project_name = project_name .. "-" .. SOLUTION_VARS.platform
+    local platfromed_project_name = project_name
     project(platfromed_project_name)
         kind(lib_type)
         targetname(platfromed_project_name)
@@ -47,7 +47,7 @@ end
 
 function create_binary(project_name, binary_type, include_dirs, link_projs, resource_files)
     print("    Create runable project for \"" .. project_name .. "\" of type \"" .. binary_type .. "\" for platform " .. string.upper(SOLUTION_VARS.platform))
-    local platfromed_project_name = project_name .. "-" .. SOLUTION_VARS.platform
+    local platfromed_project_name = project_name
     project(platfromed_project_name)
         kind(binary_type)
         targetname(platfromed_project_name)
