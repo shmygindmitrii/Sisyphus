@@ -6,13 +6,15 @@ def main():
     # --------------------------------------------------- #
     # check for clang-format.exe
     # --------------------------------------------------- #
-    clang_format_exe_tmpl = "C:\\Program Files\\Microsoft Visual Studio\\{version}\\Community\\VC\\Tools\\Llvm\\bin\\clang-format.exe"
-    for ver in (2022, 2019, 2017):
-        clang_format_exe = clang_format_exe_tmpl.format(version=ver)
-        if os.path.exists(clang_format_exe):
-            break
-        else:
-            clang_format_exe = None
+    clang_format_exe = "C:\\Program Files\\LLVM\\bin\\clang-format.exe"
+    if not os.path.exists(clang_format_exe):
+        clang_format_exe_tmpl = "C:\\Program Files\\Microsoft Visual Studio\\{version}\\Community\\VC\\Tools\\Llvm\\bin\\clang-format.exe"
+        for ver in (2022, 2019, 2017):
+            clang_format_exe = clang_format_exe_tmpl.format(version=ver)
+            if os.path.exists(clang_format_exe):
+                break
+            else:
+                clang_format_exe = None
     if clang_format_exe is None:
         print("clang-format.exe was not found in Visual Studio directories! Exit.")
         sys.exit(1)
