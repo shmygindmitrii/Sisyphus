@@ -1,6 +1,6 @@
 include("win-util")
 
-local function create_build_task_json(wkspc, cnfg)
+local function create_build_task_entry(wkspc, cnfg)
   --find MSBuild first with inner visual studio utility
   local handle = io.popen("\"\"%ProgramFiles(x86)%\\Microsoft Visual Studio\\Installer\\vswhere.exe\" -latest -prerelease -products * -requires Microsoft.Component.MSBuild -find MSBuild\\**\\Bin\\MSBuild.exe\"")
   local output = handle:read('*a')
@@ -12,6 +12,7 @@ local function create_build_task_json(wkspc, cnfg)
   content = content .. indent .. "\"dependsOrder\": \"sequence\",\n"
   content = content .. indent .. "\"dependsOn\": [\n"
   content = content .. indent .. "  \"generate_" .. wkspc.name .. "_" .. os.target() .. "\",\n"
+  content = content .. indent .. "  \"export_" .. wkspc.name .. "_" .. os.target() .. "_compile_commands\",\n"
   content = content .. indent .. "],\n"
   content = content .. indent .. "\"command\": \"" .. MSBUILD .. "\",\n"
   content = content .. indent .. "\"options\": {\n"
@@ -26,7 +27,7 @@ local function create_build_task_json(wkspc, cnfg)
   return "    {\n" .. content .. "\n    },"
 end
 
-local function create_generation_task_json(wkspc)
+local function create_generation_task_entry(wkspc)
   local vs_version = latest_installed_visual_studio()
   local indent = "      "
   local content = indent .. "\"type\": \"shell\",\n"
@@ -41,7 +42,21 @@ local function create_generation_task_json(wkspc)
   return "    {\n" .. content .. "\n    },"
 end
 
-local function create_launch_json(prj, cnfg)
+local function create_export_compile_commands_task_entry(wkspc)
+  local indent = "      "
+  local content = indent .. "\"type\": \"shell\",\n"
+  content = content .. indent .. "\"label\": \"export_" .. wkspc.name .. "_" .. os.target() .. "_compile_commands\",\n"
+  content = content .. indent .. "\"command\": \"${workspaceRoot}/premake/premake5.exe\",\n"
+  content = content .. indent .. "\"options\": {\n"
+  content = content .. indent .. "  \"cwd\": \"${workspaceRoot}/premake\",\n"
+  content = content .. indent .. "},\n"
+  content = content .. indent .. "\"args\": [\n"
+  content = content .. indent .. "  \"export-compile-commands\",\n"
+  content = content .. indent .. "]"
+  return "    {\n" .. content .. "\n    },"
+end
+
+local function create_launch_entry(prj, cnfg)
   local indent = "      "
   --local content = indent .. "\"name\": \"Tests_windows_Debug\",\n"
   local content = indent .. "\"name\": \"" .. prj.name .. "_" .. os.target() .. "_" .. cnfg.name .. "\",\n"
@@ -69,16 +84,17 @@ local function create_vscode_jsons()
   local wkspc = premake.global.eachWorkspace()()
   local launch_content = "{\n  \"version\": \"0.1.0\",\n  \"configurations\": [\n"
   local tasks_content = "{\n  \"version\": \"2.0.0\",\n  \"tasks\": [\n"
-  tasks_content = tasks_content .. create_generation_task_json(wkspc) .. "\n"
+  tasks_content = tasks_content .. create_generation_task_entry(wkspc) .. "\n"
+  tasks_content = tasks_content .. create_export_compile_commands_task_entry(wkspc) .. "\n"
   local configs_made = {}
   for prj in premake.workspace.eachproject(wkspc) do
     for cnfg in premake.project.eachconfig(prj) do
       if (prj.kind == "WindowedApp" or prj.kind == "ConsoleApp") then
         if configs_made[cnfg.name] == nil then
-          tasks_content = tasks_content .. create_build_task_json(wkspc, cnfg) .. "\n"
+          tasks_content = tasks_content .. create_build_task_entry(wkspc, cnfg) .. "\n"
           configs_made[cnfg.name] = true
         end
-        launch_content = launch_content .. create_launch_json(prj, cnfg) .. "\n"
+        launch_content = launch_content .. create_launch_entry(prj, cnfg) .. "\n"
       end
     end
   end
