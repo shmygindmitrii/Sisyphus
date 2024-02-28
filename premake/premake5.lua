@@ -5,6 +5,7 @@
 --]]
 
 require("premake-vscode/vscode-win")
+require("premake-export-compile-commands/export-compile-commands")
 
 include("common-util") --use to create similar to each other projects
 

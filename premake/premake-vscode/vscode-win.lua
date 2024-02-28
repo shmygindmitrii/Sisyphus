@@ -60,8 +60,8 @@ end
 local function create_vscode_jsons()
   --by default we assume that premake-build scripts are located in the
   --premake directory of the root folder
-  local tasks_path = "../" .. ".vscode/tasks.json"
-  local launch_path = "../" .. ".vscode/launch.json"
+  local tasks_path = "../.vscode/tasks.json"
+  local launch_path = "../.vscode/launch.json"
   if not os.isdir("../.vscode") then
     os.mkdir("../.vscode")
   end
