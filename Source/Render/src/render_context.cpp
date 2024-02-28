@@ -714,7 +714,7 @@ cull_segment_by_plane(
     if ((a_side > 0.0f && b_side > 0.0f) || (fabs(a_side) < Sisyphus::Base::eps && b_side > 0.0f) ||
         (fabs(b_side) < Sisyphus::Base::eps && a_side > 0.0f))
     {
-        // outside of plane, totally clipped 
+        // outside of plane, totally clipped
         return false;
     }
     else
@@ -725,7 +725,7 @@ cull_segment_by_plane(
             if (a_side > 0.0f)
             {
                 // a is outside
-                float k_ba = segment_plane_intersection(b_world.xyz, a_world.xyz, p);
+                float                  k_ba = segment_plane_intersection(b_world.xyz, a_world.xyz, p);
                 Sisyphus::Base::vec3_t c = b_world.xyz + (a_world.xyz - b_world.xyz) * k_ba;
                 std::swap(a_world, b_world);
                 b_world = {c.x, c.y, c.z, b_world.w};
@@ -733,12 +733,11 @@ cull_segment_by_plane(
                     b_data.data(), a_data.data(), c_data.data(), k_ba, v_out_format);
                 a_data = c_data;
                 std::swap(a_data, b_data);
-
             }
             else
             {
                 // b is outside
-                float k_ab = segment_plane_intersection(a_world.xyz, b_world.xyz, p);
+                float                  k_ab = segment_plane_intersection(a_world.xyz, b_world.xyz, p);
                 Sisyphus::Base::vec3_t c = a_world.xyz + (b_world.xyz - a_world.xyz) * k_ab;
                 b_world = {c.x, c.y, c.z, b_world.w};
                 Sisyphus::Render::interpolate_attributes(
@@ -752,16 +751,17 @@ cull_segment_by_plane(
 
 bool
 Sisyphus::Render::Context::cull_segment_by_frustum(
-    Base::vec4_t& a_world, Base::vec4_t& b_world, std::vector<uint8_t>& a_data,
-    std::vector<uint8_t>& b_data,
+    Base::vec4_t& a_world, Base::vec4_t& b_world, std::vector<uint8_t>& a_data, std::vector<uint8_t>& b_data,
     const VertexFormat& v_out_format)
 {
     for (int i = 0; i < 6; i++)
     {
         const Render::Plane& p = this->m_frustum.bounds[i];
-        bool visible = cull_segment_by_plane(a_world, b_world, a_data, b_data, v_out_format, p);
+        bool                 visible = cull_segment_by_plane(a_world, b_world, a_data, b_data, v_out_format, p);
         if (!visible)
+        {
             return false;
+        }
     }
     return true;
 }
@@ -791,7 +791,9 @@ Sisyphus::Render::Context::draw_lines(
         // rewrite a_world, b_world, a_vertex_out, b_vertex_out
         bool visible = this->cull_segment_by_frustum(a_world, b_world, a_vertex_out, b_vertex_out, v_out_format);
         if (!visible)
+        {
             continue;
+        }
         //
         Base::vec4_t a = this->process_vertex(a_world);
         Base::vec4_t b = this->process_vertex(b_world);

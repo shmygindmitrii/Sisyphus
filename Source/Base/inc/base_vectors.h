@@ -290,7 +290,7 @@ namespace Base
             };
             struct {
                 vec3_t xyz;
-                float  w;
+                float  w_;
             };
             float data[4];
         };
