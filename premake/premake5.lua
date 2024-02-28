@@ -1,8 +1,10 @@
---[[  
+--[[
     testing premake file
     not really used, created for
     learning purposes first
 --]]
+
+require("premake-vscode/vscode-win")
 
 include("common-util") --use to create similar to each other projects
 
@@ -10,11 +12,13 @@ include("common-util") --use to create similar to each other projects
 
 -- global namespace for all other manipulations
 SOLUTION_VARS = {}
-SOLUTION_VARS.platform = "win"
-SOLUTION_VARS.project_output_directory = "project/"..SOLUTION_VARS.platform
+SOLUTION_VARS.project_output_directory = "project/"..os.target()
 --for case of different platforms here customization is needed
-include("win.lua")  
-create_solution_win("Sisyphus")
+
+if os.target() == "windows" then
+    include("win.lua")
+    create_solution_win("Sisyphus")
+end
 
 SOLUTION_VARS.target_directory = SOLUTION_VARS.project_output_directory.."/".."bin/%{cfg.buildcfg}"
 SOLUTION_VARS.intermediate_directory = SOLUTION_VARS.project_output_directory.."/".."obj/%{cfg.buildcfg}"
@@ -35,13 +39,13 @@ local render_proj = create_static_lib(
 
 group "Util"
 local util_proj = create_static_lib(
-    "Util", 
+    "Util",
     { "../Source/Base/inc", "../Source/Thirdparty/inc", "../Source/Render/inc" }
 )
 
 group "Samples"
 local tests_proj = create_binary(
-    "Tests", 
+    "Tests",
     "ConsoleApp",
     { "../Source/Base/inc", "../Source/Thirdparty/inc", "../Source/Render/inc" },
     { base_proj, thirdparty_proj },
@@ -59,4 +63,4 @@ local sample_proj = create_binary(
 
 startproject(sample_proj)
 
-group "" --no group 
+group "" --no group

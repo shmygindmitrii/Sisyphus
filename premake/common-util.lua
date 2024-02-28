@@ -1,13 +1,13 @@
 -- very common functions
 
-function concat_tables(t1, t2) 
+function concat_tables(t1, t2)
    for i=1, #t2 do
        t1[#t1+1] = t2[i]
    end
    return t1
 end
 
-function get_default_sources(project_name) 
+function get_default_sources(project_name)
     local proj_files = {
             "../Source/" .. project_name .. "/src/*.c",
             "../Source/" .. project_name .. "/src/*.cpp",
@@ -20,7 +20,7 @@ end
 -- lib section
 
 function create_lib(project_name, lib_type, include_dirs)
-    print("    Create library project for \"" .. project_name .. "\" of type \"" .. lib_type .. "\" for platform " .. string.upper(SOLUTION_VARS.platform))
+    print("    Create library project for \"" .. project_name .. "\" of type \"" .. lib_type .. "\" for platform " .. os.target())
     local platfromed_project_name = project_name
     project(platfromed_project_name)
         kind(lib_type)
@@ -46,7 +46,7 @@ end
 -- binary section
 
 function create_binary(project_name, binary_type, include_dirs, link_projs, resource_files)
-    print("    Create runable project for \"" .. project_name .. "\" of type \"" .. binary_type .. "\" for platform " .. string.upper(SOLUTION_VARS.platform))
+    print("    Create runable project for \"" .. project_name .. "\" of type \"" .. binary_type .. "\" for platform " .. os.target())
     local platfromed_project_name = project_name
     project(platfromed_project_name)
         kind(binary_type)

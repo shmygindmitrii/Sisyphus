@@ -1,5 +1,5 @@
 function create_solution_win(solution_name)
-    print("Create solution \"" .. solution_name .. "\" for platform WIN")
+    print("Create solution \"" .. solution_name .. "\" for platform windows")
     workspace(solution_name)
         configurations { "Debug", "Release" }
         architecture "x64"
@@ -18,6 +18,3 @@ function create_solution_win(solution_name)
 
     filter {}
 end
-
-
-
