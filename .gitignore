@@ -398,10 +398,9 @@ FodyWeavers.xsd
 *.sln.iml
 
 # ignore generated Visual Studio solution, projects and filters
-premake/project/win/*.sln
-premake/project/win/*.vcxproj
-premake/project/win/*.vcxproj.filters
-premake/project/win/*.vcxproj.user
+premake/project/*
 
 Tools/git_*.bat
 .editorconfig
+.vscode/*
+
