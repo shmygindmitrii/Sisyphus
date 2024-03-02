@@ -59,7 +59,7 @@ end
 local function create_launch_entry(prj, cnfg)
   local indent = "      "
   --local content = indent .. "\"name\": \"Tests_windows_Debug\",\n"
-  local content = indent .. "\"name\": \"" .. prj.name .. "_" .. os.target() .. "_" .. cnfg.name .. "\",\n"
+  local content = indent .. "\"name\": \"" .. prj.name .. "_" .. cnfg.name .. "\",\n"
   content = content .. indent .. "\"type\": \"cppvsdbg\",\n"
   content = content .. indent .. "\"request\": \"launch\",\n"
   content = content .. indent .. "\"program\": \"" .. cnfg.targetdir .. "/" .. prj.name .. ".exe\",\n"
